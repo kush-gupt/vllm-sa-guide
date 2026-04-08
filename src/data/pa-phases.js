@@ -66,7 +66,7 @@ export const paPhases = [
       },
       {
         title: 'The result',
-        caption: 'Fragmentation stays near zero because blocks never relocate and reservations are never wasted. Memory goes to tokens instead of bookkeeping.',
+        caption: 'Waste stays near zero because blocks never relocate and reservations are never over-provisioned. Memory goes to tokens instead of bookkeeping.',
         cells: [
           { owner: 'B', label: 'B0', sub: 'Sys prompt', state: 'shared', tone: 'a' },
           { owner: 'B', label: 'B2', sub: 'Decode', state: 'active', tone: 'b' },

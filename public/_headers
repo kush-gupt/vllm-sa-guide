@@ -1,0 +1,14 @@
+# Hashed assets (JS/CSS) — immutable, cached forever at edge
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Fonts — immutable, cached forever at edge
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# HTML — always revalidate so deploys take effect immediately
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate

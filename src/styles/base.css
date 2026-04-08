@@ -34,6 +34,21 @@
   50% { opacity: 1; }
 }
 
+@keyframes ctaBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+
+@keyframes twBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes twFadeOut {
+  0%, 40% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 @keyframes heroAmbient {
   0% {
     opacity: 0.55;

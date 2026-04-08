@@ -1755,6 +1755,30 @@
 }
 
 
+/* ---------- HERO TYPEWRITER ---------- */
+[data-typewriter="active"] .tw-word {
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+[data-typewriter="active"] .tw-word.tw-visible {
+  opacity: 1;
+}
+
+.tw-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  background: var(--red);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: twBlink 0.8s step-end infinite;
+}
+
+.tw-cursor-done {
+  animation: twFadeOut 1.5s ease forwards;
+}
+
 /* ---------- REFRESH OVERRIDES ---------- */
 :root {
   --container-max: 1280px;
@@ -1771,17 +1795,16 @@
 .stat-card {
   width: 100%;
   min-width: 0;
-  min-height: 168px;
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: 10px;
-  padding: 24px 26px;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 22px 24px;
+  text-align: left;
 }
 
 .stat-label {
-  margin-top: 0;
-  line-height: 1.6;
+  margin-top: 2px;
 }
 
 .arch-overview-head,
@@ -3050,16 +3073,26 @@
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
-  padding: 24px;
+  padding: 24px 12px;
   margin-bottom: 24px;
   display: flex;
   justify-content: center;
-  min-height: 100px;
+  align-items: center;
+  min-height: 180px;
 }
 
 .engine-loop-diagram svg {
-  max-width: 100%;
+  max-width: 420px;
+  width: 100%;
   height: auto;
+}
+
+@keyframes engine-orbit-spin {
+  to { stroke-dashoffset: -40; }
+}
+
+.engine-loop-orbit {
+  animation: engine-orbit-spin 20s linear infinite;
 }
 
 .engine-loop-cards {

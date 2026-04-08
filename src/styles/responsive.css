@@ -41,14 +41,8 @@
     display: flex;
   }
 
-  .hero-stats {
-    flex-direction: column;
-    align-items: center;
-  }
-
   .stat-card {
     width: 100%;
-    max-width: 280px;
   }
 
   .deploy-modes {

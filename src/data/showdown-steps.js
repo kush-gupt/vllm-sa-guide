@@ -9,7 +9,7 @@ export const SHOWDOWN_STEPS = [
     ],
     naive: {
       caption: 'Each request reserves a contiguous region up front. Gray cells are wasted. No one else can use them.',
-      metrics: { Waste: '32%', Active: '3', Admission: 'Queued' },
+      metrics: { Waste: '50%', Active: '3', Admission: 'Queued' },
     },
     paged: {
       caption: 'Only the blocks needed are allocated. The rest of the pool stays free.',
@@ -30,7 +30,7 @@ export const SHOWDOWN_STEPS = [
         { slot: 'P7', free: true }, { slot: 'P8', free: true },
       ],
     },
-    contrast: '<p><strong>Naive</strong> strands 32% of capacity in reservations. <strong>Paged</strong> keeps four blocks genuinely free.</p>',
+    contrast: '<p><strong>Naive</strong> strands 50% of capacity in reservations. <strong>Paged</strong> keeps four blocks genuinely free.</p>',
   },
   {
     label: 'Sequences grow',
@@ -41,8 +41,8 @@ export const SHOWDOWN_STEPS = [
       { name: 'Req D', used: 0, reserved: 0, tone: 'd', waiting: true, note: 'Still queued' },
     ],
     naive: {
-      caption: 'As sequences grow, reserved tails expand too. Waste rises to 35% and Req D is still locked out.',
-      metrics: { Waste: '35%', Active: '3', Admission: 'Still queued' },
+      caption: 'As sequences grow, reserved tails expand too. Waste rises to 37% and Req D is still locked out.',
+      metrics: { Waste: '37%', Active: '3', Admission: 'Still queued' },
     },
     paged: {
       caption: 'Growth appends a new tail block. Existing blocks stay put. Nothing is relocated.',
@@ -76,7 +76,7 @@ export const SHOWDOWN_STEPS = [
     ],
     naive: {
       caption: 'Req D is admitted but must duplicate Req A\u2019s prompt. No block-level sharing exists.',
-      metrics: { Waste: '28%', Active: '4', Admission: 'Late' },
+      metrics: { Waste: '32%', Active: '4', Admission: 'Late' },
     },
     paged: {
       caption: 'Req D reuses Req A\u2019s prompt blocks physically. Only D\u2019s unique tail needs new memory.',

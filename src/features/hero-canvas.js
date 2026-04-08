@@ -1,198 +1,215 @@
 export function init() {
-  const heroCanvas = document.getElementById('hero-canvas');
-  if (!heroCanvas) return;
+  const canvas = document.getElementById('hero-canvas');
+  if (!canvas) return;
 
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  if (prefersReducedMotion.matches) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  const hCtx = heroCanvas.getContext('2d');
-  if (!hCtx) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
 
-  let heroAnimId;
-  let heroStartTime = performance.now();
+  let animId;
   let resizeTimer;
 
-  function resizeHeroCanvas() {
-    const dpr = window.devicePixelRatio || 1;
-    heroCanvas.width = heroCanvas.offsetWidth * dpr;
-    heroCanvas.height = heroCanvas.offsetHeight * dpr;
-    hCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const VOCAB = [
+    'The', 'model', 'returns', 'async', 'def', 'import', 'class',
+    'attention', 'token', 'batch', 'GPU', 'memory', 'cache',
+    'inference', 'request', 'stream', 'output', 'layer', 'weight',
+    'embed', 'decode', 'prefill', 'query', 'key', 'value',
+    'forward', 'compute', 'tensor', 'block', 'schedule',
+    'prompt', 'response', 'latency', 'yield', 'True', 'None',
+    'self', 'data', 'config', 'norm', 'softmax', 'linear',
+  ];
+
+  const isMobile = window.innerWidth < 768;
+  const LANE_COUNT = isMobile ? 5 : 8;
+  const FONT_SIZE = isMobile ? 10 : 12;
+  const LANE_GAP = isMobile ? 32 : 38;
+  const TOKEN_H = isMobile ? 20 : 24;
+  const TOKEN_PAD_X = 7;
+  const TOKEN_GAP = 5;
+  const TOKEN_R = 3;
+  const SPAWN_MS = isMobile ? 220 : 160;
+
+  const fontStr = `500 ${FONT_SIZE}px "Red Hat Mono", "SF Mono", "Fira Code", monospace`;
+
+  const widthCache = new Map();
+  function tokenWidth(text) {
+    if (widthCache.has(text)) return widthCache.get(text);
+    ctx.font = fontStr;
+    const w = ctx.measureText(text).width + TOKEN_PAD_X * 2;
+    widthCache.set(text, w);
+    return w;
   }
 
-  const particles = [];
-  const isMobile = window.innerWidth < 768;
-  const PARTICLE_COUNT = isMobile ? 35 : 80;
-  const CONNECT_DIST = isMobile ? 140 : 185;
-  const SPEED = 0.45;
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = canvas.offsetWidth * dpr;
+    canvas.height = canvas.offsetHeight * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    widthCache.clear();
+  }
 
-  function initParticles() {
-    particles.length = 0;
-    const w = heroCanvas.offsetWidth;
-    const h = heroCanvas.offsetHeight;
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      particles.push({
-        x: Math.random() * w,
-        y: Math.random() * h,
-        baseVx: (Math.random() - 0.5) * SPEED,
-        baseVy: (Math.random() - 0.5) * SPEED,
-        baseR: Math.random() * 1.8 + 0.8,
-        phase: Math.random() * Math.PI * 2,
-        freqX: 0.0003 + Math.random() * 0.0004,
-        freqY: 0.0002 + Math.random() * 0.0005,
-        breathFreq: 0.001 + Math.random() * 0.002,
-      });
+  function pickTokens() {
+    const count = 6 + Math.floor(Math.random() * 10);
+    const out = [];
+    for (let i = 0; i < count; i++) {
+      out.push(VOCAB[Math.floor(Math.random() * VOCAB.length)]);
+    }
+    return out;
+  }
+
+  function createLane(y) {
+    return {
+      y: y + (Math.random() * 8 - 4),
+      baseY: y,
+      tokens: pickTokens(),
+      revealed: 0,
+      prefillDur: 500 + Math.random() * 1500,
+      born: performance.now(),
+      opacity: 0,
+      done: false,
+      fadeStart: 0,
+    };
+  }
+
+  let lanes = [];
+
+  function initLanes() {
+    lanes = [];
+    const h = canvas.offsetHeight;
+    const margin = LANE_GAP;
+    const usable = h - margin * 2;
+    const gap = LANE_COUNT > 1 ? usable / (LANE_COUNT - 1) : 0;
+    for (let i = 0; i < LANE_COUNT; i++) {
+      const lane = createLane(margin + i * gap);
+      lane.born = performance.now() - Math.random() * 4000;
+      lanes.push(lane);
     }
   }
 
-  const CELL_SIZE = CONNECT_DIST;
-
-  function buildGrid(w, h) {
-    const cols = Math.ceil(w / CELL_SIZE) + 1;
-    const rows = Math.ceil(h / CELL_SIZE) + 1;
-    const grid = new Array(cols * rows);
-    for (let i = 0; i < grid.length; i++) grid[i] = [];
-
-    particles.forEach((p, idx) => {
-      const cx = Math.floor(p.x / CELL_SIZE);
-      const cy = Math.floor(p.y / CELL_SIZE);
-      const key = cy * cols + cx;
-      if (key >= 0 && key < grid.length) grid[key].push(idx);
-    });
-
-    return { grid, cols, rows };
+  function rrect(x, y, w, h, r) {
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.arcTo(x + w, y, x + w, y + r, r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+    ctx.lineTo(x + r, y + h);
+    ctx.arcTo(x, y + h, x, y + h - r, r);
+    ctx.lineTo(x, y + r);
+    ctx.arcTo(x, y, x + r, y, r);
+    ctx.closePath();
   }
 
-  // Pre-render a radial glow sprite (replaces expensive per-particle shadowBlur)
-  const GLOW_SIZE = 48;
-  const glowCanvas = document.createElement('canvas');
-  glowCanvas.width = GLOW_SIZE;
-  glowCanvas.height = GLOW_SIZE;
-  const glowCtx = glowCanvas.getContext('2d');
-  const halfGlow = GLOW_SIZE / 2;
-  const grad = glowCtx.createRadialGradient(halfGlow, halfGlow, 0, halfGlow, halfGlow, halfGlow);
-  grad.addColorStop(0, 'rgba(238, 0, 0, 0.4)');
-  grad.addColorStop(1, 'rgba(238, 0, 0, 0)');
-  glowCtx.fillStyle = grad;
-  glowCtx.fillRect(0, 0, GLOW_SIZE, GLOW_SIZE);
+  function draw(now) {
+    const w = canvas.offsetWidth;
+    const h = canvas.offsetHeight;
+    ctx.clearRect(0, 0, w, h);
 
-  const BUCKET_COUNT = 4;
-  const lineBuckets = Array.from({ length: BUCKET_COUNT }, () => []);
-
-  function drawHero(now) {
-    const w = heroCanvas.offsetWidth;
-    const h = heroCanvas.offsetHeight;
-    hCtx.clearRect(0, 0, w, h);
-
-    const t = now - heroStartTime;
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    const baseAlpha = isDark ? 0.6 : 0.4;
-    const linePulse = 0.82 + 0.18 * Math.sin(t * 0.00045);
-    const lineBaseAlpha = (isDark ? 0.12 : 0.085) * linePulse;
+    ctx.font = fontStr;
+    ctx.textBaseline = 'middle';
 
-    particles.forEach(p => {
-      const driftX = Math.sin(t * p.freqX + p.phase) * 0.35;
-      const driftY = Math.cos(t * p.freqY + p.phase * 1.3) * 0.35;
-      p.x += p.baseVx + driftX;
-      p.y += p.baseVy + driftY;
-      if (p.x < -10) p.x = w + 10;
-      if (p.x > w + 10) p.x = -10;
-      if (p.y < -10) p.y = h + 10;
-      if (p.y > h + 10) p.y = -10;
-    });
+    for (let li = 0; li < lanes.length; li++) {
+      const lane = lanes[li];
+      const elapsed = now - lane.born;
 
-    const { grid, cols, rows } = buildGrid(w, h);
-    const distSq = CONNECT_DIST * CONNECT_DIST;
+      if (!lane.done) lane.opacity = Math.min(1, elapsed / 600);
 
-    for (let b = 0; b < BUCKET_COUNT; b++) lineBuckets[b].length = 0;
-
-    for (let cy = 0; cy < rows; cy++) {
-      for (let cx = 0; cx < cols; cx++) {
-        const cell = grid[cy * cols + cx];
-        if (!cell.length) continue;
-
-        for (let ncx = cx; ncx <= cx + 1 && ncx < cols; ncx++) {
-          for (let ncy = cy - 1; ncy <= cy + 1 && ncy < rows; ncy++) {
-            if (ncy < 0) continue;
-            const neighbor = grid[ncy * cols + ncx];
-            if (!neighbor.length) continue;
-
-            for (let ii = 0; ii < cell.length; ii++) {
-              const pi = particles[cell[ii]];
-              for (let jj = (ncx === cx && ncy === cy) ? ii + 1 : 0; jj < neighbor.length; jj++) {
-                const pj = particles[neighbor[jj]];
-                const dx = pi.x - pj.x;
-                const dy = pi.y - pj.y;
-                const d2 = dx * dx + dy * dy;
-                if (d2 < distSq) {
-                  const ratio = 1 - Math.sqrt(d2) / CONNECT_DIST;
-                  const bucket = Math.min(Math.floor(ratio * BUCKET_COUNT), BUCKET_COUNT - 1);
-                  lineBuckets[bucket].push(pi.x, pi.y, pj.x, pj.y);
-                }
-              }
-            }
-          }
+      let laneAlpha = lane.opacity;
+      if (lane.done) {
+        const fadeMs = now - lane.fadeStart;
+        laneAlpha *= Math.max(0, 1 - fadeMs / 800);
+        if (fadeMs > 800) {
+          lanes[li] = createLane(lane.baseY);
+          continue;
         }
       }
-    }
+      if (laneAlpha < 0.01) continue;
 
-    // Draw all connection lines in a few batched strokes instead of per-line
-    hCtx.lineWidth = 1;
-    for (let b = 0; b < BUCKET_COUNT; b++) {
-      const coords = lineBuckets[b];
-      if (!coords.length) continue;
-      hCtx.strokeStyle = `rgba(238, 0, 0, ${(lineBaseAlpha * ((b + 0.5) / BUCKET_COUNT)).toFixed(3)})`;
-      hCtx.beginPath();
-      for (let i = 0; i < coords.length; i += 4) {
-        hCtx.moveTo(coords[i], coords[i + 1]);
-        hCtx.lineTo(coords[i + 2], coords[i + 3]);
+      // Prefill phase — shimmering bar
+      if (elapsed < lane.prefillDur) {
+        const progress = elapsed / lane.prefillDur;
+        const shimmer = 0.2 + 0.12 * Math.sin(elapsed * 0.01);
+        const a = shimmer * laneAlpha * (isDark ? 1 : 0.65);
+        ctx.fillStyle = `rgba(238, 0, 0, ${a.toFixed(3)})`;
+        ctx.beginPath();
+        rrect(24, lane.y, 50 + progress * 90, TOKEN_H, TOKEN_R);
+        ctx.fill();
+        continue;
       }
-      hCtx.stroke();
+
+      // Decode phase — tokens appear one by one
+      const decodeMs = elapsed - lane.prefillDur;
+      lane.revealed = Math.min(lane.tokens.length, Math.floor(decodeMs / SPAWN_MS) + 1);
+
+      let x = 24;
+      for (let i = 0; i < lane.revealed; i++) {
+        const text = lane.tokens[i];
+        const tw = tokenWidth(text);
+        if (x + tw > w - 24) break;
+
+        const age = decodeMs - i * SPAWN_MS;
+        const fadeIn = Math.min(1, age / 200);
+        const breathe = 0.82 + 0.18 * Math.sin(now * 0.0025 + i * 1.7);
+        const a = fadeIn * laneAlpha * breathe;
+        const isNewest = i === lane.revealed - 1 && lane.revealed < lane.tokens.length;
+
+        ctx.fillStyle = `rgba(238, 0, 0, ${((isDark ? 0.1 : 0.07) * a).toFixed(3)})`;
+        ctx.beginPath();
+        rrect(x, lane.y, tw, TOKEN_H, TOKEN_R);
+        ctx.fill();
+
+        if (isNewest) {
+          ctx.strokeStyle = `rgba(238, 0, 0, ${(0.35 * a).toFixed(3)})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          rrect(x, lane.y, tw, TOKEN_H, TOKEN_R);
+          ctx.stroke();
+        }
+
+        ctx.fillStyle = `rgba(238, 0, 0, ${((isDark ? 0.4 : 0.28) * a).toFixed(3)})`;
+        ctx.fillText(text, x + TOKEN_PAD_X, lane.y + TOKEN_H / 2 + 1);
+
+        x += tw + TOKEN_GAP;
+      }
+
+      // Blinking cursor at stream head
+      if (lane.revealed < lane.tokens.length && !lane.done) {
+        if (Math.sin(now * 0.005) > 0) {
+          const ca = (isDark ? 0.5 : 0.35) * laneAlpha;
+          ctx.fillStyle = `rgba(238, 0, 0, ${ca.toFixed(3)})`;
+          ctx.fillRect(x + 2, lane.y + 4, 1.5, TOKEN_H - 8);
+        }
+      }
+
+      if (lane.revealed >= lane.tokens.length && !lane.done) {
+        lane.done = true;
+        lane.fadeStart = now + 300;
+      }
     }
 
-    // Draw glow sprites then particle dots (cheap drawImage replaces shadowBlur)
-    particles.forEach(p => {
-      const breath = 0.8 + 0.2 * Math.sin(t * p.breathFreq + p.phase);
-      const r = p.baseR * breath;
-      const alpha = baseAlpha * (0.7 + 0.3 * breath);
-      const glowR = r * 6;
-
-      hCtx.globalAlpha = alpha;
-      hCtx.drawImage(glowCanvas, p.x - glowR, p.y - glowR, glowR * 2, glowR * 2);
-
-      hCtx.globalAlpha = 1;
-      hCtx.fillStyle = `rgba(238, 0, 0, ${alpha.toFixed(3)})`;
-      hCtx.beginPath();
-      hCtx.arc(p.x, p.y, r, 0, Math.PI * 2);
-      hCtx.fill();
-    });
-    hCtx.globalAlpha = 1;
-
-    heroAnimId = requestAnimationFrame(drawHero);
+    animId = requestAnimationFrame(draw);
   }
 
-  resizeHeroCanvas();
-  initParticles();
-  drawHero(performance.now());
+  resize();
+  initLanes();
+  draw(performance.now());
 
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
-      resizeHeroCanvas();
-      initParticles();
+      resize();
+      initLanes();
     }, 150);
   });
 
-  const heroObserver = new IntersectionObserver(
+  new IntersectionObserver(
     (entries) => {
       entries.forEach(entry => {
-        if (!entry.isIntersecting) {
-          cancelAnimationFrame(heroAnimId);
-        } else {
-          requestAnimationFrame(drawHero);
-        }
+        if (!entry.isIntersecting) cancelAnimationFrame(animId);
+        else requestAnimationFrame(draw);
       });
     },
-    { threshold: 0 }
-  );
-  heroObserver.observe(heroCanvas);
+    { threshold: 0 },
+  ).observe(canvas);
 }

@@ -1,5 +1,6 @@
-export function init() {
-  const abbrs = document.querySelectorAll('abbr[data-tip]');
+/** Bind tooltip behavior to abbr[data-tip] inside root that are not already bound. */
+export function bindAbbrTips(root = document) {
+  const abbrs = root.querySelectorAll('abbr[data-tip]:not(.jargon-term)');
   if (!abbrs.length) return;
 
   abbrs.forEach(el => {
@@ -34,4 +35,8 @@ export function init() {
       if (e.key === 'Escape') { hide(); el.blur(); }
     });
   });
+}
+
+export function init() {
+  bindAbbrTips(document);
 }

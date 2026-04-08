@@ -5,6 +5,7 @@ import { init as initSourceRefs } from './features/source-refs.js';
 import { init as initScrollProgress } from './features/scroll-progress.js';
 import { init as initBackToTop } from './features/back-to-top.js';
 import { init as initHeroCanvas } from './features/hero-canvas.js';
+import { init as initHeroTypewriter } from './features/hero-typewriter.js';
 
 const isDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
 
@@ -35,7 +36,8 @@ safeInit(initReveal, 'reveal');
 safeInit(initSourceRefs, 'source-refs');
 safeInit(initScrollProgress, 'scroll-progress');
 safeInit(initBackToTop, 'back-to-top');
-safeInit(initHeroCanvas, 'hero-canvas');
+requestAnimationFrame(() => safeInit(initHeroCanvas, 'hero-canvas'));
+safeInit(initHeroTypewriter, 'hero-typewriter');
 
 // --- Lazy-load below-fold features when their section approaches viewport ---
 function lazySection(sectionId, loaders) {

@@ -1,5 +1,6 @@
 import { modernTopicData } from '../data/modern-topic-data.js';
 import { crossfade } from '../utils/crossfade.js';
+import { bindAbbrTips } from './tooltips.js';
 
 export function init() {
   const section = document.getElementById('modern-inference');
@@ -20,14 +21,28 @@ export function init() {
   ) {
     let modernInitialized = false;
 
+    function removeBoundTipsFrom(container) {
+      container.querySelectorAll('.jargon-term').forEach((el) => {
+        const tid = el.getAttribute('aria-describedby');
+        if (tid) document.getElementById(tid)?.remove();
+      });
+    }
+
     function updateModernTopicDirect(topic) {
       const data = modernTopicData[topic];
       if (!data) return;
+      removeBoundTipsFrom(modernTopicWhat);
+      removeBoundTipsFrom(modernTopicWhy);
+      removeBoundTipsFrom(modernTopicWhen);
       modernTopicTitle.textContent = data.title;
-      modernTopicWhat.textContent = data.what;
-      modernTopicWhy.textContent = data.why;
-      modernTopicWhen.textContent = data.when;
+      modernTopicWhat.innerHTML = data.what;
+      modernTopicWhy.innerHTML = data.why;
+      modernTopicWhen.innerHTML = data.when;
       modernTopicSource.innerHTML = data.source;
+      const panel = section
+        ? section.querySelector('.modern-topic-panel')
+        : document.querySelector('.modern-topic-panel');
+      if (panel) bindAbbrTips(panel);
     }
 
     function updateModernTopic(topic) {

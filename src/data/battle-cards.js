@@ -2,44 +2,44 @@ export const battleCards = [
   {
     versus: 'OpenAI / Cloud APIs',
     scenario: '"We\'re already using OpenAI (or Azure OpenAI, Bedrock, etc.) and it works fine."',
-    howVllmDiffers: 'Cloud APIs are great for prototyping, but at production scale the per-token costs add up fast. vLLM on your own GPUs gives you predictable costs, full data control, and the ability to fine-tune or swap models without rewriting your app.<a href="#source-10">[10]</a>',
+    howVllmDiffers: 'Provider APIs bill per token, so steady high-volume traffic can concentrate spend on inference charges. Self-hosted vLLM shifts cost to GPU capacity and operations you control, keeps prompts and completions on your network, and lets you swap models without rewriting every integration.<a href="#source-10">[10]</a>',
     keyDifferences: [
-      'OpenAI-compatible API means zero code changes to switch',
-      'Data never leaves your infrastructure',
-      'No per-token metering: pay for hardware, not usage',
-      'Fine-tune and serve custom models freely'
+      'OpenAI-compatible server: point clients at your base URL and served model name; audit unsupported parameters and vendor-only features before cutover',
+      'Data stays on your infrastructure when self-hosted',
+      'Self-hosted spend is mainly GPU time, power, and ops, not cloud per-token metering',
+      'Fine-tune and serve custom models without provider approval'
     ]
   },
   {
     versus: 'TensorRT-LLM',
     scenario: '"NVIDIA says TensorRT-LLM is the fastest option for our GPU fleet."',
-    howVllmDiffers: 'TensorRT-LLM is optimized for NVIDIA hardware, but it locks you into a single vendor stack. vLLM delivers competitive throughput across NVIDIA, AMD, Intel, and more, with a faster release cycle and broader community.<a href="#source-3">[3]</a>',
+    howVllmDiffers: 'TensorRT-LLM targets NVIDIA GPUs and the TensorRT build path. vLLM runs on NVIDIA, AMD, Intel, and several other accelerators, ships frequent releases, and lists thousands of GitHub contributors.<a href="#source-3">[3]</a>',
     keyDifferences: [
       'Runs on NVIDIA, AMD, Intel, TPU, Gaudi, and more <a href="#source-10">[10]</a>',
-      'Open-source with 2,000+ contributors and rapid iteration <a href="#source-10">[10]</a>',
-      'Simpler deployment: no compilation step needed',
-      'PagedAttention pioneered the efficient memory management others now follow <a href="#source-9">[9]</a>'
+      'Open source with 2,000+ GitHub contributors and frequent releases <a href="#source-10">[10]</a>',
+      'Typical vLLM path: load Hugging Face weights directly; TensorRT-LLM workflows often include a separate engine build step',
+      'vLLM paper introduced PagedAttention for block-structured KV caches; other engines ship related cache layouts <a href="#source-9">[9]</a>'
     ]
   },
   {
     versus: 'TGI (Hugging Face)',
     scenario: '"We use Hugging Face for everything, so TGI is the natural choice."',
-    howVllmDiffers: 'TGI is familiar if you\'re already in the HF toolchain, but vLLM\'s PagedAttention and continuous batching deliver higher throughput and better GPU utilization at scale. Plus, vLLM loads the same Hugging Face models.<a href="#source-9">[9]</a>',
+    howVllmDiffers: 'Hugging Face moved TGI to maintenance mode in December 2025 (bugfix-oriented changes only). vLLM reads the same Hugging Face checkpoints, combines PagedAttention with continuous batching for concurrent traffic, and exposes an OpenAI-compatible API.<a href="#source-9">[9]</a>',
     keyDifferences: [
       'Same Hugging Face model hub, no model conversion needed',
       'Higher throughput under concurrent load (PagedAttention + continuous batching) <a href="#source-9">[9]</a>',
       'Richer parallelism options (TP, PP, DP, EP, CP) for larger models <a href="#source-12">[12]</a>',
-      'Larger community and faster release cadence <a href="#source-10">[10]</a>'
+      'Large contributor base and frequent releases <a href="#source-10">[10]</a>'
     ]
   },
   {
     versus: 'Custom / DIY Stack',
     scenario: '"Our ML team built something custom and it works for now."',
-    howVllmDiffers: 'Custom inference stacks work until traffic grows. vLLM handles the hard problems (memory management, request scheduling, multi-GPU scaling) so your team can focus on the application instead of the infrastructure.',
+    howVllmDiffers: 'In-house schedulers need sustained work on KV memory, batching, and multi-GPU execution. vLLM ships those layers behind an OpenAI-compatible server so your team spends time on prompts, evaluation, and product logic.',
     keyDifferences: [
-      'Continuous batching and PagedAttention are hard to build from scratch',
-      'Production features: structured output, streaming, tool calling, multi-LoRA',
-      'Active community means security patches and performance improvements arrive fast',
+      'Continuous batching and PagedAttention are non-trivial to reproduce and tune in-house',
+      'Production-oriented features: structured output, streaming, tool calling, multi-LoRA',
+      'Security and performance fixes arrive through reviewed releases; plan upgrades like any open-source dependency',
       'Enterprise support available through multiple vendors'
     ]
   }

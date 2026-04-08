@@ -111,12 +111,12 @@ export const strategies = {
       },
       cp: {
         title: 'Context Parallelism',
-        summary: 'Split a very long context across devices when the sequence length itself becomes the dominant scaling problem.',
+        summary: 'Split a very long context across devices when the sequence length itself becomes the dominant scaling problem. Prefill CP and decode CP have different topologies.',
         best: 'Extreme context windows where a single device cannot comfortably hold the full sequence state',
-        tradeoff: 'More coordination around sequence partitioning and KV movement',
+        tradeoff: 'More coordination around sequence partitioning and KV movement; decode CP shards within the TP group rather than adding GPUs',
         combo: 'Often paired with TP/DP in long-context serving stacks',
-        flag: '--prefill-context-parallel-size K --decode-context-parallel-size K',
-        caution: 'Bring CP into the design early when long-context is the business requirement, not just a benchmark target.',
+        flag: '--prefill-context-parallel-size K --decode-context-parallel-size J',
+        caution: 'Prefill CP adds GPUs; decode CP (-dcp / --decode-context-parallel-size) shards KV inside the TP group without extra devices. See context_parallel_deployment for bounds and topology.',
         visual: [
           {
             label: 'Context slices',

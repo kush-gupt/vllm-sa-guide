@@ -79,7 +79,7 @@ export const batchingScenarios = {
       [{ name: 'Utilization', value: 'High' }, { name: 'TTFT', value: 'Stable' }, { name: 'Queue', value: 'Near empty' }],
     ],
     takeaways: [
-      'Both systems start full, but only continuous batching is ready to admit the next request as soon as a slot frees.',
+      'Req D is queued in both panels. Iteration-level scheduling admits D on the next step when a slot frees; batch-locked scheduling waits until the current batch completes.',
       'By step 2, the continuous scheduler already converts finished work into first-token progress for a queued request.',
       'Static batching feels worst here: useful work is done, but admission is still blocked.',
       'Continuous batching keeps TTFT and queue growth under control because every iteration is a chance to rebalance.',
