@@ -1,0 +1,206 @@
+/* ---------- ANIMATION KEYFRAMES ---------- */
+@keyframes revealUp {
+  from { opacity: 0; transform: translateY(32px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 transparent; }
+  50% { box-shadow: 0 0 20px rgba(238, 0, 0, 0.12); }
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
+}
+
+@keyframes heroAmbient {
+  0% {
+    opacity: 0.55;
+    transform: scale(1) translate(0, 0);
+  }
+  100% {
+    opacity: 0.95;
+    transform: scale(1.06) translate(1.5%, -1%);
+  }
+}
+
+/* ---------- RESET & BASE ---------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--nav-height);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 16px;
+  z-index: 10000;
+  padding: 12px 24px;
+  background: var(--red);
+  color: #fff;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: 12px;
+}
+
+body {
+  font-family: var(--font-text);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+a {
+  color: var(--red);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+a:hover { color: #ff4444; }
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--card-bg-alt);
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+}
+
+strong { font-weight: 700; }
+
+.container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ---------- SECTION BASICS ---------- */
+.section {
+  padding: 100px 0;
+  position: relative;
+}
+
+.section:not(.hero-section) {
+  content-visibility: auto;
+  contain-intrinsic-block-size: auto 800px;
+}
+
+.section:nth-child(even) {
+  background: var(--bg-alt);
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+
+.section-num {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--red);
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+  padding: 4px 12px;
+  border: 1px solid var(--red);
+  border-radius: 999px;
+}
+
+.section-header h2 {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.section-lead {
+  font-size: 1.15rem;
+  color: var(--text-muted);
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+
+/* ---------- REVEAL ANIMATION ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px) scale(0.97);
+  will-change: opacity, transform;
+}
+
+.reveal.visible {
+  animation: revealUp 0.8s var(--ease-out-expo) forwards;
+}
+
+.stagger-children.visible > * {
+  opacity: 0;
+  animation: fadeInUp 0.6s var(--ease-out-expo) forwards;
+}
+
+.stagger-children.visible > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children.visible > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-children.visible > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-children.visible > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-children.visible > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-children.visible > *:nth-child(6) { animation-delay: 0.3s; }
+.stagger-children.visible > *:nth-child(7) { animation-delay: 0.35s; }
+.stagger-children.visible > *:nth-child(8) { animation-delay: 0.4s; }
+.stagger-children.visible > *:nth-child(9) { animation-delay: 0.45s; }
+.stagger-children.visible > *:nth-child(10) { animation-delay: 0.5s; }
+
+/* ---------- CROSSFADE UTILITY ---------- */
+.crossfade-container {
+  transition: opacity 0.22s var(--ease-out-expo), transform 0.22s var(--ease-out-expo);
+  will-change: opacity, transform;
+}
+
+.crossfade-container[data-transitioning] {
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+}
+

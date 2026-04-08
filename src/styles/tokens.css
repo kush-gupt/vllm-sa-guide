@@ -1,0 +1,91 @@
+/* ==============================
+   vLLM Inference Guide — Design Tokens
+   ============================== */
+
+/* ---------- DESIGN TOKENS ---------- */
+:root {
+  --red: #EE0000;
+  --red-dark: #A30000;
+  --red-glow: rgba(238, 0, 0, 0.25);
+  --green: #3E8635;
+  --green-light: #5BA352;
+  --gold: #F0AB00;
+
+  --bg: #0C0C0C;
+  --bg-alt: #141414;
+  --card-bg: #1A1A1A;
+  --card-bg-alt: #252525;
+  --card-border: #2A2A2A;
+  --text: #E8E8E8;
+  --text-muted: #A0A0A0;
+  --text-dim: #777;
+
+  --nav-bg: rgba(12, 12, 12, 0.85);
+  --nav-height: 64px;
+
+  --font-display: 'Red Hat Display', system-ui, sans-serif;
+  --font-text: 'Red Hat Text', system-ui, sans-serif;
+  --font-mono: 'Red Hat Mono', 'Fira Code', monospace;
+
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  --container-max: 1200px;
+}
+
+[data-theme="light"] {
+  --bg: #F5F5F5;
+  --bg-alt: #EDEDED;
+  --card-bg: #FFFFFF;
+  --card-bg-alt: #E8E8E8;
+  --card-border: #D4D4D4;
+  --text: #1A1A1A;
+  --text-muted: #4A4A4A;
+  --text-dim: #6E6E6E;
+  --nav-bg: rgba(245, 245, 245, 0.9);
+}
+
+/* Prism "tomorrow" is dark-first — lighten for light mode */
+[data-theme="light"] code[class*="language-"],
+[data-theme="light"] pre[class*="language-"] {
+  color: #1A1A1A;
+  text-shadow: none;
+}
+[data-theme="light"] .code-block,
+[data-theme="light"] pre[class*="language-"] {
+  background: #F0F0F0 !important;
+  border-color: #D4D4D4;
+}
+[data-theme="light"] .token.comment,
+[data-theme="light"] .token.prolog,
+[data-theme="light"] .token.doctype,
+[data-theme="light"] .token.cdata { color: #6A737D; }
+[data-theme="light"] .token.punctuation { color: #24292E; }
+[data-theme="light"] .token.property,
+[data-theme="light"] .token.tag,
+[data-theme="light"] .token.boolean,
+[data-theme="light"] .token.number,
+[data-theme="light"] .token.constant,
+[data-theme="light"] .token.symbol { color: #005CC5; }
+[data-theme="light"] .token.selector,
+[data-theme="light"] .token.attr-name,
+[data-theme="light"] .token.string,
+[data-theme="light"] .token.char,
+[data-theme="light"] .token.builtin { color: #22863A; }
+[data-theme="light"] .token.operator,
+[data-theme="light"] .token.entity,
+[data-theme="light"] .token.url,
+[data-theme="light"] .token.variable { color: #E36209; }
+[data-theme="light"] .token.atrule,
+[data-theme="light"] .token.attr-value,
+[data-theme="light"] .token.keyword { color: #D73A49; }
+[data-theme="light"] .token.function { color: #6F42C1; }
+[data-theme="light"] .token.regex,
+[data-theme="light"] .token.important { color: #E36209; }

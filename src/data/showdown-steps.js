@@ -1,0 +1,138 @@
+export const SHOWDOWN_STEPS = [
+  {
+    label: 'Burst begins',
+    rows: [
+      { name: 'Req A', used: 8, reserved: 14, tone: 'a' },
+      { name: 'Req B', used: 6, reserved: 12, tone: 'b' },
+      { name: 'Req C', used: 4, reserved: 10, tone: 'c' },
+      { name: 'Req D', used: 0, reserved: 0, tone: 'd', waiting: true, note: 'Queued' },
+    ],
+    naive: {
+      caption: 'Each request reserves a contiguous region up front. Gray cells are wasted. No one else can use them.',
+      metrics: { Waste: '32%', Active: '3', Admission: 'Queued' },
+    },
+    paged: {
+      caption: 'Only the blocks needed are allocated. The rest of the pool stays free.',
+      metrics: { Waste: 'Tail only', Active: '3', Admission: 'Not blocked' },
+      logical: [
+        { name: 'Req A', blocks: [{ id: 'A0', meta: 'Prompt', tone: 'a' }, { id: 'A1', meta: 'KV', tone: 'a' }] },
+        { name: 'Req B', blocks: [{ id: 'B0', meta: 'Prompt', tone: 'b' }, { id: 'B1', meta: 'KV', tone: 'b' }] },
+        { name: 'Req C', blocks: [{ id: 'C0', meta: 'Prompt', tone: 'c' }] },
+        { name: 'Req D', waiting: true },
+      ],
+      physical: [
+        { slot: 'P0', label: 'A0', meta: 'Prompt', tone: 'a' },
+        { slot: 'P1', label: 'A1', meta: 'KV', tone: 'a' },
+        { slot: 'P2', label: 'B0', meta: 'Prompt', tone: 'b' },
+        { slot: 'P3', label: 'B1', meta: 'KV', tone: 'b' },
+        { slot: 'P4', label: 'C0', meta: 'Prompt', tone: 'c' },
+        { slot: 'P5', free: true }, { slot: 'P6', free: true },
+        { slot: 'P7', free: true }, { slot: 'P8', free: true },
+      ],
+    },
+    contrast: '<p><strong>Naive</strong> strands 32% of capacity in reservations. <strong>Paged</strong> keeps four blocks genuinely free.</p>',
+  },
+  {
+    label: 'Sequences grow',
+    rows: [
+      { name: 'Req A', used: 11, reserved: 16, tone: 'a' },
+      { name: 'Req B', used: 8, reserved: 12, tone: 'b' },
+      { name: 'Req C', used: 5, reserved: 10, tone: 'c' },
+      { name: 'Req D', used: 0, reserved: 0, tone: 'd', waiting: true, note: 'Still queued' },
+    ],
+    naive: {
+      caption: 'As sequences grow, reserved tails expand too. Waste rises to 35% and Req D is still locked out.',
+      metrics: { Waste: '35%', Active: '3', Admission: 'Still queued' },
+    },
+    paged: {
+      caption: 'Growth appends a new tail block. Existing blocks stay put. Nothing is relocated.',
+      metrics: { Waste: 'Tail only', Active: '3', Admission: 'Policy queued' },
+      logical: [
+        { name: 'Req A', blocks: [{ id: 'A0', meta: 'Prompt', tone: 'a' }, { id: 'A1', meta: 'KV', tone: 'a' }, { id: 'A2', meta: 'Decode tail', tone: 'a' }] },
+        { name: 'Req B', blocks: [{ id: 'B0', meta: 'Prompt', tone: 'b' }, { id: 'B1', meta: 'KV', tone: 'b' }] },
+        { name: 'Req C', blocks: [{ id: 'C0', meta: 'Prompt', tone: 'c' }, { id: 'C1', meta: 'Decode tail', tone: 'c' }] },
+        { name: 'Req D', waiting: true },
+      ],
+      physical: [
+        { slot: 'P0', label: 'A0', meta: 'Prompt', tone: 'a' },
+        { slot: 'P1', label: 'A1', meta: 'KV', tone: 'a' },
+        { slot: 'P2', label: 'B0', meta: 'Prompt', tone: 'b' },
+        { slot: 'P3', label: 'B1', meta: 'KV', tone: 'b' },
+        { slot: 'P4', label: 'C0', meta: 'Prompt', tone: 'c' },
+        { slot: 'P5', label: 'A2', meta: 'Decode tail', tone: 'a' },
+        { slot: 'P6', label: 'C1', meta: 'Decode tail', tone: 'c' },
+        { slot: 'P7', free: true }, { slot: 'P8', free: true },
+      ],
+    },
+    contrast: '<p><strong>Naive</strong> waste grows with each sequence. <strong>Paged</strong> added two blocks without relocating anything.</p>',
+  },
+  {
+    label: 'Prefix sharing',
+    rows: [
+      { name: 'Req A', used: 13, reserved: 16, tone: 'a' },
+      { name: 'Req B', used: 9, reserved: 12, tone: 'b' },
+      { name: 'Req C', used: 7, reserved: 10, tone: 'c' },
+      { name: 'Req D', used: 5, reserved: 12, tone: 'd' },
+    ],
+    naive: {
+      caption: 'Req D is admitted but must duplicate Req A\u2019s prompt. No block-level sharing exists.',
+      metrics: { Waste: '28%', Active: '4', Admission: 'Late' },
+    },
+    paged: {
+      caption: 'Req D reuses Req A\u2019s prompt blocks physically. Only D\u2019s unique tail needs new memory.',
+      metrics: { Waste: 'Tail only', Active: '4', Admission: 'Faster', Reuse: 'Shared prefix' },
+      logical: [
+        { name: 'Req A', blocks: [{ id: 'A0', meta: 'Prompt', tone: 'a' }, { id: 'A1', meta: 'KV', tone: 'a' }, { id: 'A2', meta: 'Decode', tone: 'a' }] },
+        { name: 'Req B', blocks: [{ id: 'B0', meta: 'Prompt', tone: 'b' }, { id: 'B1', meta: 'KV', tone: 'b' }] },
+        { name: 'Req C', blocks: [{ id: 'C0', meta: 'Prompt', tone: 'c' }, { id: 'C1', meta: 'Decode', tone: 'c' }] },
+        { name: 'Req D', blocks: [{ id: 'D0', meta: 'Shared w/ A', tone: 'd', shared: true }, { id: 'D1', meta: 'Shared w/ A', tone: 'd', shared: true }, { id: 'D2', meta: 'Unique tail', tone: 'd' }] },
+      ],
+      physical: [
+        { slot: 'P0', label: 'A0+D0', meta: 'Shared prompt', tone: 'a', shared: true },
+        { slot: 'P1', label: 'A1+D1', meta: 'Shared KV', tone: 'a', shared: true },
+        { slot: 'P2', label: 'B0', meta: 'Prompt', tone: 'b' },
+        { slot: 'P3', label: 'B1', meta: 'KV', tone: 'b' },
+        { slot: 'P4', label: 'C0', meta: 'Prompt', tone: 'c' },
+        { slot: 'P5', label: 'A2', meta: 'Decode', tone: 'a' },
+        { slot: 'P6', label: 'C1', meta: 'Decode', tone: 'c' },
+        { slot: 'P7', label: 'D2', meta: 'Unique tail', tone: 'd' },
+        { slot: 'P8', free: true },
+      ],
+    },
+    contrast: '<p><strong>Naive</strong> duplicates A\u2019s prompt for D. <strong>Paged</strong> maps D to A\u2019s existing blocks, saving memory and compute.</p>',
+  },
+  {
+    label: 'Reclaim',
+    rows: [
+      { name: 'Req A', used: 14, reserved: 16, tone: 'a' },
+      { name: 'Req C', used: 8, reserved: 10, tone: 'c' },
+      { name: 'Req D', used: 6, reserved: 12, tone: 'd' },
+      { name: 'Req E', used: 0, reserved: 0, tone: 'b', waiting: true, note: 'Next in queue' },
+    ],
+    naive: {
+      caption: 'Req B exits, but reserved tails still fragment memory. Req E waits for a big enough gap.',
+      metrics: { Waste: '26%', Active: '3', Admission: 'Fragmented' },
+    },
+    paged: {
+      caption: 'Req B\u2019s blocks rejoin the free list instantly. Req E can start without compaction.',
+      metrics: { Waste: 'Tail only', Active: '3', Admission: 'Reuse-ready', Reuse: 'Instant reclaim' },
+      logical: [
+        { name: 'Req A', blocks: [{ id: 'A0', meta: 'Prompt', tone: 'a' }, { id: 'A1', meta: 'KV', tone: 'a' }, { id: 'A2', meta: 'Decode', tone: 'a' }] },
+        { name: 'Req C', blocks: [{ id: 'C0', meta: 'Prompt', tone: 'c' }, { id: 'C1', meta: 'Decode', tone: 'c' }] },
+        { name: 'Req D', blocks: [{ id: 'D0', meta: 'Shared w/ A', tone: 'd', shared: true }, { id: 'D1', meta: 'Shared w/ A', tone: 'd', shared: true }, { id: 'D2', meta: 'Unique tail', tone: 'd' }] },
+        { name: 'Req E', waiting: true },
+      ],
+      physical: [
+        { slot: 'P0', label: 'A0+D0', meta: 'Shared prompt', tone: 'a', shared: true },
+        { slot: 'P1', label: 'A1+D1', meta: 'Shared KV', tone: 'a', shared: true },
+        { slot: 'P2', free: true }, { slot: 'P3', free: true },
+        { slot: 'P4', label: 'C0', meta: 'Prompt', tone: 'c' },
+        { slot: 'P5', label: 'A2', meta: 'Decode', tone: 'a' },
+        { slot: 'P6', label: 'C1', meta: 'Decode', tone: 'c' },
+        { slot: 'P7', label: 'D2', meta: 'Unique tail', tone: 'd' },
+        { slot: 'P8', free: true },
+      ],
+    },
+    contrast: '<p><strong>Naive</strong> frees one island but fragmentation remains. <strong>Paged</strong> reclaims blocks instantly. Req E is ready to go.</p>',
+  },
+];

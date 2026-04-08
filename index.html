@@ -1,0 +1,1703 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>vLLM: The Modern Inference Guide</title>
+  <meta name="description" content="An interactive guide to modern LLM inference with vLLM: PagedAttention, continuous batching, disaggregated prefill, scheduling, tuning, and benchmarking.">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="vLLM: The Modern Inference Guide">
+  <meta property="og:description" content="An interactive guide to modern LLM inference with vLLM: PagedAttention, continuous batching, disaggregated prefill, scheduling, tuning, and benchmarking.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="vLLM: The Modern Inference Guide">
+  <meta name="twitter:description" content="Interactive guide to modern LLM inference with vLLM.">
+  <!-- OG image intentionally omitted — add /og-image.png to public/ when a real asset is available -->
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230C0C0C'/%3E%3Ctext x='16' y='24' text-anchor='middle' font-family='system-ui' font-weight='900' font-size='22' fill='%23EE0000'%3Ev%3C/text%3E%3C/svg%3E">
+
+  <!-- Fonts self-hosted in public/fonts/ — loaded via src/styles/fonts.css -->
+
+  <link rel="stylesheet" href="/src/styles/main.css">
+</head>
+<body>
+  <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- ========== NAV ========== -->
+  <nav id="main-nav" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a href="#hero" class="nav-logo">
+        <span class="logo-v">v</span><span class="logo-llm">LLM</span>
+        <span class="logo-sep">|</span>
+        <span class="logo-subtitle">Inference Guide</span>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links">
+        <li><a href="#why">The Problem</a></li>
+        <li><a href="#modern-inference">Modern Requirements</a></li>
+        <li><a href="#models">Capabilities</a></li>
+        <li><a href="#deployment">Deployment</a></li>
+        <li class="nav-divider" aria-hidden="true"></li>
+        <li><a href="#paged-attention">PagedAttention</a></li>
+        <li><a href="#batching">Batching</a></li>
+        <li><a href="#architecture">Architecture</a></li>
+        <li><a href="#tuning">Tuning</a></li>
+        <li><a href="#reference">Reference</a></li>
+      </ul>
+      <button class="theme-toggle" aria-label="Toggle light/dark mode" title="Toggle theme">
+        <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <main id="main-content">
+
+  <!-- ========== HERO ========== -->
+  <section id="hero" class="section hero-section">
+    <canvas id="hero-canvas"></canvas>
+    <div class="hero-content reveal">
+      <div class="hero-badge">Updated for April 2026 &middot; Interactive learning resource</div>
+      <h1>
+        <span class="hero-v">v</span>LLM
+        <span class="hero-subtitle">
+          <span class="hero-subtitle-line">Modern LLM Inference</span>
+          <span class="hero-subtitle-line">The Practitioner's Guide</span>
+        </span>
+      </h1>
+      <p class="hero-desc">
+        Understand how modern inference engines balance time to first token, smooth streaming, KV cache
+        efficiency, and multi-tenant throughput, with vLLM as the anchor for the conversation.
+      </p>
+      <div class="hero-stats stagger-children">
+        <div class="stat-card">
+          <span class="stat-num"><abbr data-tip="Time to First Token — how long before the user sees the AI start responding">TTFT</abbr></span>
+          <span class="stat-label">How fast the user sees the first word of a response. Shaped by prompt size, caching strategy, and engine design.</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num"><abbr data-tip="Inter-Token Latency — how smooth the streaming response feels to users">ITL</abbr></span>
+          <span class="stat-label">How smooth the response streams after it starts. Users notice stutters before they notice raw speed.</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num"><abbr data-tip="Key-Value cache — the AI's working memory for conversation context">KV</abbr></span>
+          <span class="stat-label">The GPU memory that stores conversation context. Usually the real limit on how many users an engine can serve at once.</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num"><abbr data-tip="Service Level Objectives — the performance promises made to users">SLOs</abbr></span>
+          <span class="stat-label">Production systems are judged on consistent performance under real load, not peak benchmark numbers.</span>
+        </div>
+      </div>
+      <a href="#why" class="hero-cta">Explore Modern Serving &darr;</a>
+      <p class="hero-footnote">
+        Source snapshot: public docs and engineering posts reviewed in April 2026.
+        <a href="#source-1">[1]</a>
+        <a href="#source-2">[2]</a>
+        <a href="#source-3">[3]</a>
+        <a href="#source-4">[4]</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       TIER 1 — START HERE: FOUNDATIONS
+       ===================================================================== -->
+
+  <!-- ========== WHY vLLM ========== -->
+  <section id="why" class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-num">01</span>
+        <h2>The Inference Challenge <span class="section-tier tier-1">Start here</span></h2>
+        <p class="section-lead">Organizations are paying for expensive GPU hardware, but their AI applications feel slow and can only handle a handful of users at a time. The root cause is the same tension: fast responses and efficient GPU usage compete for the same resources. This section explains the tension and what vLLM does about it.</p>
+      </div>
+
+      <div class="problem-grid reveal stagger-children">
+        <div class="problem-card">
+          <div class="problem-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="9" y1="12" x2="15" y2="12"/></svg>
+          </div>
+          <h3>Outcomes Over Benchmarks</h3>
+          <p>Teams care about first-token speed, smooth streaming, prompt reuse, multimodal inputs, structured outputs, shared-cluster behavior, and operational fit. Tokens per second alone rarely captures what matters.</p>
+        </div>
+        <div class="problem-card">
+          <div class="problem-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="1.5"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="6" y1="10" x2="6" y2="14"/><line x1="10" y1="10" x2="10" y2="14"/><line x1="14" y1="10" x2="14" y2="14"/><line x1="18" y1="10" x2="18" y2="14"/></svg>
+          </div>
+          <h3><abbr data-tip="Prefill: the initial processing of your prompt. Decode: generating the response word by word.">Prefill and Decode</abbr> Are Different Jobs</h3>
+          <p>Prefill is prompt-heavy and compute-bound. Decode is incremental, user-visible, and often memory-bandwidth-bound. A production engine has to balance both at the same time. <a href="#source-4">[4]</a></p>
+        </div>
+        <div class="problem-card">
+          <div class="problem-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="1.5"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <h3><abbr data-tip="Key-Value cache — the AI's working memory that stores past computations so they don't need to be redone">KV Cache</abbr> Becomes the Real Budget</h3>
+          <p>Long context, concurrency, and model size all compete for KV cache space. How the engine is designed determines whether GPU memory goes to useful tokens or to fragmentation, eviction pressure, and <abbr data-tip="Preemption — temporarily pausing a lower-priority request to free GPU memory for a higher-priority one">preemption</abbr>.</p>
+        </div>
+      </div>
+
+      <div class="solution-banner reveal">
+        <div class="solution-icon">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <div class="solution-text">
+          <h3>vLLM addresses all three.</h3>
+          <p><strong><abbr data-tip="PagedAttention — vLLM's core innovation that manages GPU memory like a computer's virtual memory, eliminating waste">PagedAttention</abbr></strong> makes KV memory more efficient. <a href="#source-9">[9]</a> <strong><abbr data-tip="Continuous batching — accepting new requests immediately instead of making them wait for the current batch to finish">Continuous batching</abbr></strong> keeps accelerators productive under mixed load. The broader runtime covers prefix caching, structured outputs, multimodality, modern <abbr data-tip="Parallelism — splitting the AI model across multiple GPUs to handle larger models or more users">parallelism</abbr>, and production-ready APIs.</p>
+        </div>
+      </div>
+
+      <div id="quickstart" class="quickstart-banner reveal">
+        <button class="quickstart-toggle" aria-expanded="true" type="button">
+          <div>
+            <span class="section-tier tier-overview">Quick overview</span>
+            <h3>vLLM at a Glance</h3>
+          </div>
+          <span class="expand-icon" aria-hidden="true">&times;</span>
+        </button>
+        <div class="quickstart-body">
+          <p class="quickstart-pitch">vLLM is an <strong>open-source engine for fast, cost-effective AI inference at scale</strong>. It is the most widely adopted LLM serving runtime in the open-source ecosystem, with a large community and broad hardware support. <a href="#source-10">[10]</a></p>
+
+          <div class="quickstart-pillars">
+            <div class="quickstart-card">
+              <div class="quickstart-card-icon">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              </div>
+              <h3>Faster Responses</h3>
+              <p>Users see the first word sooner, and the answer streams smoothly. That is the difference between an AI feature people use and one they abandon.</p>
+            </div>
+            <div class="quickstart-card">
+              <div class="quickstart-card-icon">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              </div>
+              <h3>More Users, Same Hardware</h3>
+              <p>vLLM squeezes 2&ndash;4&times; more work out of every GPU through intelligent memory management and request scheduling. <a href="#source-9">[9]</a> That translates directly to cost savings.</p>
+            </div>
+            <div class="quickstart-card">
+              <div class="quickstart-card-icon">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+              </div>
+              <h3>Production-Ready</h3>
+              <p>A production runtime that deploys on Kubernetes with certified containers, security hardening, and vendor support.</p>
+            </div>
+          </div>
+
+          <div class="quickstart-cost-callout">
+            <strong>Cost impact:</strong> A single high-end GPU costs $2&ndash;4 per hour. If vLLM lets an organization serve the same traffic on 2 GPUs instead of 6, that is tens of thousands of dollars saved per month.
+          </div>
+
+          <div class="quickstart-triggers">
+            <h4>vLLM is a good fit when you need to&hellip;</h4>
+            <div class="quickstart-trigger-pills">
+              <span class="trigger-pill">Reduce AI response latency</span>
+              <span class="trigger-pill">Control GPU costs at scale</span>
+              <span class="trigger-pill">Keep data on-prem or in your own cloud</span>
+              <span class="trigger-pill">Move off proprietary API providers</span>
+              <span class="trigger-pill">Handle many concurrent users</span>
+              <span class="trigger-pill">Serve multiple models from shared infrastructure</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== MODERN INFERENCE ========== -->
+  <section id="modern-inference" class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-num">02</span>
+        <h2>What Production Requires <span class="section-tier tier-1">Start here</span></h2>
+        <p class="section-lead">Users expect AI to feel like a fast conversation, not a loading screen. They want answers to start appearing immediately, stream smoothly, and work reliably even when hundreds of people are using the system at once. The mental model below explains prefill, decode, caching, and how vLLM addresses each requirement.</p>
+      </div>
+
+      <div class="modern-summary reveal">
+        <div class="modern-summary-card">
+          <h3>The modern mental model</h3>
+          <p>Prefill and decode are increasingly treated as different resources with different bottlenecks. Modern engines win by scheduling, caching, and routing them deliberately rather than treating generation as one homogeneous job. <a href="#source-2">[2]</a> <a href="#source-4">[4]</a></p>
+        </div>
+        <div class="modern-summary-card">
+          <h3>How to apply this in practice</h3>
+          <p>Start with prompt length, concurrency, prefix reuse, multimodal inputs, and latency targets. Those answers usually tell you whether the focus should be on batching, KV pressure, parallelism, or disaggregated serving.</p>
+        </div>
+      </div>
+
+      <div class="modern-patterns reveal">
+        <div class="modern-topic-buttons" role="tablist" aria-label="Modern inference topics">
+          <button class="modern-topic-btn active" data-topic="disagg" role="tab" aria-selected="true" tabindex="0">Disagg prefill</button>
+          <button class="modern-topic-btn" data-topic="spec" role="tab" aria-selected="false" tabindex="-1">Spec decode</button>
+          <button class="modern-topic-btn" data-topic="parallel" role="tab" aria-selected="false" tabindex="-1">MoE + parallelism</button>
+          <button class="modern-topic-btn" data-topic="multimodal" role="tab" aria-selected="false" tabindex="-1">Multimodal</button>
+          <button class="modern-topic-btn" data-topic="structured" role="tab" aria-selected="false" tabindex="-1">Structured output</button>
+          <button class="modern-topic-btn" data-topic="observe" role="tab" aria-selected="false" tabindex="-1">Observe + benchmark</button>
+        </div>
+        <div class="modern-topic-panel crossfade-container" role="tabpanel" aria-label="Topic details">
+          <span class="mini-label">Interactive explainer</span>
+          <h3 id="modern-topic-title">Disaggregated prefill / decode</h3>
+          <div class="modern-topic-grid">
+            <div class="modern-topic-card">
+              <span class="modern-topic-kicker">What it is</span>
+              <p id="modern-topic-what">Separate prompt ingestion and token streaming into different pools so compute-heavy prefill does not starve decode-sensitive traffic.</p>
+            </div>
+            <div class="modern-topic-card">
+              <span class="modern-topic-kicker">Why it matters</span>
+              <p id="modern-topic-why">It gives operators another way to protect TTFT and smooth streaming when prompt-heavy traffic shares a cluster with interactive chat. <a href="#source-2">[2]</a> <a href="#source-4">[4]</a></p>
+            </div>
+          </div>
+          <div class="modern-topic-footer">
+            <div class="modern-topic-foot">
+              <span class="modern-topic-kicker">When it matters</span>
+              <p id="modern-topic-when">Prompt lengths are volatile, TTFT matters, or the team wants to scale prefill and decode independently.</p>
+            </div>
+            <div class="modern-topic-foot">
+              <span class="modern-topic-kicker">Reference</span>
+              <p id="modern-topic-source"><a href="https://docs.vllm.ai/en/latest/examples/online_serving/disaggregated_prefill.html" target="_blank" rel="noopener">vLLM docs: Disaggregated Prefill</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="landscape-section reveal">
+        <h3>How vLLM Compares</h3>
+        <div class="landscape-grid">
+          <div class="landscape-card landscape-vllm">
+            <h4>vLLM</h4>
+            <p>Strong open-source default for high-throughput serving, broad model support, OpenAI-compatible APIs, and research-to-production features such as PagedAttention, unified scheduling, and prefix caching. <a href="#source-10">[10]</a></p>
+          </div>
+          <div class="landscape-card">
+            <h4>TGI</h4>
+            <p>Often appears in conversations as a familiar Hugging Face serving stack. Useful comparison point for API serving and Hugging Face model compatibility.</p>
+          </div>
+          <div class="landscape-card">
+            <h4>TensorRT-LLM</h4>
+            <p>Comes up when teams want deep NVIDIA-specific optimization, low-level runtime control, and advanced KV cache knobs on NVIDIA fleets. <a href="#source-3">[3]</a></p>
+          </div>
+          <div class="landscape-card">
+            <h4>SGLang</h4>
+            <p>Shows up in fast-moving research and developer conversations around structured generation, scheduling ideas, and advanced serving ergonomics.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="battle-section-wrap reveal">
+        <h3>Detailed Comparison</h3>
+        <p class="battle-intro">When evaluating inference engines, these comparisons show where vLLM differs and what tradeoffs to consider.</p>
+        <div class="battle-cards-grid" id="battle-cards-grid"></div>
+      </div>
+
+      <div class="discovery-section reveal">
+        <h3>Is vLLM Right for You?</h3>
+        <p class="section-lead">Whether you are an engineer scoping a deployment or a team evaluating inference options, these are the questions that shape most vLLM projects.</p>
+
+        <h4>Questions to Ask Yourself</h4>
+        <div class="discovery-grid">
+          <div class="discovery-card">
+            <h4>Latency target</h4>
+            <p>Is the user experience dominated by first token, smooth streaming, or offline throughput?</p>
+          </div>
+          <div class="discovery-card">
+            <h4>Prompt profile</h4>
+            <p>Are prompts short and repetitive, or long, bursty, and retrieval-heavy?</p>
+          </div>
+          <div class="discovery-card">
+            <h4>Workload mix</h4>
+            <p>Is this mostly chat, long-form generation, multimodal requests, or structured/tool-driven flows?</p>
+          </div>
+          <div class="discovery-card">
+            <h4>Deployment boundary</h4>
+            <p>Single node, shared cluster, air-gapped enterprise, or multi-node fleet with strict operational controls?</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="objection-section reveal">
+        <h3>Frequently Asked Questions</h3>
+        <p class="objection-intro">Click any question to see a detailed answer and supporting points.</p>
+        <div class="objection-cards" id="objection-cards"></div>
+      </div>
+
+      <div class="benchmark-callout reveal">
+        <h3>Benchmarking Caveats</h3>
+        <ul class="benchmark-list">
+          <li>Separate TTFT, inter-token latency, and total throughput instead of reporting only one aggregate score.</li>
+          <li>Warmup, cache state, and request arrival pattern materially change results for dynamic batching systems.</li>
+          <li>Use a real prompt-length distribution, not a single toy prompt, when comparing engines.</li>
+          <li>Always record hardware, precision, context limit, and key scheduler settings alongside the results. <a href="#source-7">[7]</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== MODELS & FEATURES ========== -->
+  <section id="models" class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-num">03</span>
+        <h2>What vLLM Can Do <span class="section-tier tier-1">Start here</span></h2>
+        <p class="section-lead">When someone asks &ldquo;can it run my model?&rdquo; the answer is almost always yes. vLLM supports 200+ model architectures across chat, code, vision, audio, and embedding workloads. <a href="#source-14">[14]</a> The runtime capabilities below are what matter in production.</p>
+      </div>
+
+      <div class="model-coverage reveal">
+        <h3>Coverage Snapshot</h3>
+        <div class="coverage-grid">
+          <article class="coverage-card">
+            <h4>Dense chat and code models</h4>
+            <p>The most common deployment target: frontier open models, chat assistants, copilots, and code generation stacks.</p>
+            <div class="coverage-tags">
+              <span class="tag">Llama</span>
+              <span class="tag">Qwen</span>
+              <span class="tag">Mistral</span>
+              <span class="tag">Granite</span>
+            </div>
+          </article>
+          <article class="coverage-card">
+            <h4>Sparse MoE families</h4>
+            <p>vLLM is also where the conversation shifts from "can it run?" to "which parallelism and hardware strategy keeps MoE efficient?"</p>
+            <div class="coverage-tags">
+              <span class="tag">Mixtral</span>
+              <span class="tag">DeepSeek</span>
+              <span class="tag">Expert parallelism</span>
+            </div>
+          </article>
+          <article class="coverage-card">
+            <h4>Multimodal request paths</h4>
+            <p>Vision, audio, OCR, and mixed asset pipelines matter because they change preprocessing, memory pressure, and TTFT expectations.</p>
+            <div class="coverage-tags">
+              <span class="tag">LLaVA</span>
+              <span class="tag">Qwen2-VL</span>
+              <span class="tag">Pixtral</span>
+            </div>
+          </article>
+          <article class="coverage-card">
+            <h4>Embedding, scoring, and retrieval</h4>
+            <p>Do not reduce vLLM to chat only. Pooling, embedding, and ranking paths matter for RAG, search, and agent systems too.</p>
+            <div class="coverage-tags">
+              <span class="tag">Embedding</span>
+              <span class="tag">Scoring</span>
+              <span class="tag">Pooling</span>
+            </div>
+          </article>
+        </div>
+        <p class="coverage-note">In practice, "model support" is usually shorthand for workload shape. Group by dense text, MoE, multimodal, or pooling rather than listing individual model names.</p>
+      </div>
+
+      <div class="feature-matrix reveal">
+        <h3>Feature Matrix</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th>Description</th>
+                <th>Key Benefit</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Speculative Decoding</strong></td>
+                <td>Draft-model or n-gram proposals with verify-and-accept</td>
+                <td>Lower wall-clock latency when acceptance rate is healthy</td>
+              </tr>
+              <tr>
+                <td><strong><abbr data-tip="Quantization — compressing a model to use less GPU memory, like JPEG for AI">Quantization</abbr></strong></td>
+                <td>GPTQ, AWQ, FP8, BitsAndBytes, GGUF, TorchAO, and more <a href="#source-10">[10]</a></td>
+                <td>Run larger models on fewer GPUs</td>
+              </tr>
+              <tr>
+                <td><strong>LoRA Adapters</strong></td>
+                <td>Runtime loading/unloading of LoRA weights</td>
+                <td>Serve many fine-tuned variants from one base</td>
+              </tr>
+              <tr>
+                <td><strong>Structured Output</strong></td>
+                <td>JSON schema, regex, grammar, and choice constraints</td>
+                <td>Safer integration with tools and downstream systems</td>
+              </tr>
+              <tr>
+                <td><strong>Prefix Caching</strong></td>
+                <td>Automatic hash-based KV block reuse for shared prefixes <a href="#source-13">[13]</a></td>
+                <td>Better TTFT for repeated system prompts and shared context</td>
+              </tr>
+              <tr>
+                <td><strong>Expert / MoE Support</strong></td>
+                <td>Serve sparse MoE architectures such as Mixtral and DeepSeek families</td>
+                <td>Use hardware more efficiently for large sparse models</td>
+              </tr>
+              <tr>
+                <td><strong>Disaggregated Prefill</strong></td>
+                <td>Separate prompt-ingest and decode pools when workloads justify it</td>
+                <td>Protect TTFT-sensitive traffic under prompt-heavy load</td>
+              </tr>
+              <tr>
+                <td><strong>Multimodal</strong></td>
+                <td>Vision, audio, and OCR model support</td>
+                <td>Unified serving for diverse AI workloads</td>
+              </tr>
+              <tr>
+                <td><strong>CUDA Graphs</strong></td>
+                <td>Captured execution graphs for repeat decode shapes</td>
+                <td>Lower per-step launch overhead on stable workloads</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="hw-support reveal">
+        <div class="hw-support-head">
+          <div>
+            <h3>Hardware Support Across the vLLM Organization</h3>
+            <p>The main repo covers core platforms directly. The broader vLLM GitHub organization adds dedicated hardware projects and plugins. <a href="#source-10">[10]</a></p>
+          </div>
+        </div>
+        <div class="hw-groups">
+          <div class="hw-group">
+            <h4>Mainline platforms</h4>
+            <div class="hw-grid">
+              <div class="hw-card">
+                <div class="hw-icon hw-nvidia">Core</div>
+                <h4>NVIDIA CUDA</h4>
+                <p>Mainline GPU path for high-throughput serving across common enterprise and hyperscaler fleets.</p>
+                <a href="https://docs.vllm.ai/en/latest/getting_started/installation/gpu/#nvidia-cuda" target="_blank" rel="noopener"><code class="code-path">repo: vllm</code></a>
+              </div>
+              <div class="hw-card">
+                <div class="hw-icon hw-amd">Core</div>
+                <h4>AMD ROCm</h4>
+                <p>ROCm-backed deployments for AMD accelerator fleets, including MI-series hardware.</p>
+                <a href="https://docs.vllm.ai/en/latest/getting_started/installation/gpu/#amd-rocm" target="_blank" rel="noopener"><code class="code-path">repo: vllm</code></a>
+              </div>
+              <div class="hw-card">
+                <div class="hw-icon hw-intel">Core</div>
+                <h4>Intel XPU</h4>
+                <p>In-tree Intel GPU/XPU support, including the platform-specific runtime and operator paths.</p>
+                <a href="https://docs.vllm.ai/en/latest/getting_started/installation/gpu/#intel-xpu" target="_blank" rel="noopener"><code class="code-path">repo: vllm</code></a>
+              </div>
+              <div class="hw-card">
+                <div class="hw-icon hw-cpu">Core</div>
+                <h4>CPU Family</h4>
+                <p>x86_64, Arm AArch64, Apple silicon CPU paths, and IBM Z are all supported in the mainline install path.</p>
+                <a href="https://docs.vllm.ai/en/latest/getting_started/installation/cpu/" target="_blank" rel="noopener"><code class="code-path">repo: vllm</code></a>
+              </div>
+              <div class="hw-card">
+                <div class="hw-icon hw-google">Org repo</div>
+                <h4>Google TPU</h4>
+                <p>Cloud TPU support is covered by a dedicated org repo.</p>
+                <a href="https://github.com/vllm-project/tpu-inference" target="_blank" rel="noopener"><code class="code-path">repo: tpu-inference</code></a>
+              </div>
+              <div class="hw-card">
+                <div class="hw-icon hw-aws">Org repo</div>
+                <h4>AWS Neuron</h4>
+                <p>Trainium and Inferentia are part of the broader vLLM organization footprint for specialized AWS deployments.</p>
+                <a href="https://github.com/vllm-project/vllm-neuron" target="_blank" rel="noopener"><code class="code-path">repo: vllm-neuron</code></a>
+              </div>
+            </div>
+          </div>
+          <div class="hw-group">
+            <h4>Organization plugins and platform projects</h4>
+            <div class="hw-grid">
+              <div class="hw-card">
+                <div class="hw-icon hw-huawei">Plugin</div>
+                <h4>Ascend NPU</h4>
+                <p>The hardware-plugin reference implementation for Huawei Ascend deployments.</p>
+                <a href="https://github.com/vllm-project/vllm-ascend" target="_blank" rel="noopener"><code class="code-path">repo: vllm-ascend</code></a>
+              </div>
+              <div class="hw-card">
+                <div class="hw-icon hw-gaudi">Plugin</div>
+                <h4>Intel Gaudi</h4>
+                <p>Dedicated org plugin for Gaudi/HPU environments and their operator + runtime differences.</p>
+                <a href="https://github.com/vllm-project/vllm-gaudi" target="_blank" rel="noopener"><code class="code-path">repo: vllm-gaudi</code></a>
+              </div>
+              <div class="hw-card">
+                <div class="hw-icon hw-ibm">Plugin</div>
+                <h4>IBM Spyre</h4>
+                <p>Official vLLM organization project for IBM Spyre AIU acceleration.</p>
+                <a href="https://github.com/vllm-project/vllm-spyre" target="_blank" rel="noopener"><code class="code-path">repo: vllm-spyre</code></a>
+              </div>
+              <div class="hw-card">
+                <div class="hw-icon hw-apple">Plugin</div>
+                <h4>Apple Silicon / Metal</h4>
+                <p>Organization-maintained Metal path for Mac workflows and Apple unified-memory serving experiments.</p>
+                <a href="https://github.com/vllm-project/vllm-metal" target="_blank" rel="noopener"><code class="code-path">repo: vllm-metal</code></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== DEPLOYMENT ========== -->
+  <section id="deployment" class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-num">04</span>
+        <h2>Deployment Options <span class="section-tier tier-1">Start here</span></h2>
+        <p class="section-lead">Teams want to go from prototype to production without rewriting everything. vLLM fits into the stack they already have, from a single GPU on a developer laptop to a multi-node fleet on Kubernetes.</p>
+      </div>
+
+      <div class="deploy-ecosystem reveal">
+        <h3>Enterprise Deployment Ecosystem</h3>
+        <div class="ecosystem-cards">
+          <div class="ecosystem-card">
+            <div class="ecosystem-card-icon">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+            </div>
+            <h4>Kubernetes-Native Serving</h4>
+            <p>vLLM integrates with KServe and Kubernetes-native platforms including OpenShift AI, so teams deploy and scale models with familiar tooling. <a href="#source-8">[8]</a></p>
+          </div>
+          <div class="ecosystem-card">
+            <div class="ecosystem-card-icon">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            </div>
+            <h4>Optimized Models</h4>
+            <p>Multiple organizations publish optimized, quantized models on Hugging Face that are tested and ready for production with vLLM.</p>
+          </div>
+          <div class="ecosystem-card">
+            <div class="ecosystem-card-icon">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h4>Security and Compliance</h4>
+            <p>FIPS-compatible hashing, container image provenance, vulnerability management, and documentation for reverse proxy / K8s Gateway hardening. <a href="#source-10">[10]</a></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="deploy-modes reveal">
+        <div class="deploy-card">
+          <div class="deploy-card-grid">
+            <div class="deploy-copy">
+              <div class="deploy-header">
+                <span class="deploy-badge offline">Offline</span>
+                <h3>Batch Inference</h3>
+              </div>
+              <p>Use the <code>LLM</code> Python class for batch processing. No server, no HTTP overhead. Ideal for data pipelines, evaluation jobs, and controlled offline generation.</p>
+              <ul class="deploy-points">
+                <li>Lowest operational overhead</li>
+                <li>Great for ETL, backfills, and eval loops</li>
+                <li>No network hop between caller and runtime</li>
+              </ul>
+            </div>
+            <pre class="code-block"><code class="language-python">from vllm import LLM, SamplingParams
+
+llm = LLM(model="meta-llama/Llama-3.1-8B-Instruct")
+params = SamplingParams(temperature=0.7, max_tokens=256)
+
+outputs = llm.generate(
+    ["Explain Kubernetes in one paragraph.",
+     "What is Kubernetes?"],
+    params
+)
+
+for output in outputs:
+    print(output.outputs[0].text)</code></pre>
+          </div>
+        </div>
+
+        <div class="deploy-card">
+          <div class="deploy-card-grid">
+            <div class="deploy-copy">
+              <div class="deploy-header">
+                <span class="deploy-badge online">Online</span>
+                <h3>API Server</h3>
+              </div>
+              <p>Launch an OpenAI-compatible HTTP server with a single command. Supports chat, completions, embeddings, and more.</p>
+              <ul class="deploy-points">
+                <li>Fastest path to app integration</li>
+                <li>Best for TTFT / ITL conversations</li>
+                <li>Natural home for continuous batching</li>
+              </ul>
+            </div>
+            <pre class="code-block"><code class="language-bash"># Single GPU
+vllm serve meta-llama/Llama-3.1-8B-Instruct
+
+# Multi-GPU with tensor parallelism
+vllm serve meta-llama/Llama-3.1-70B-Instruct \
+  --tensor-parallel-size 4
+
+# With quantization
+vllm serve meta-llama/Llama-3.1-70B-Instruct \
+  --quantization awq \
+  --dtype float16</code></pre>
+          </div>
+        </div>
+
+        <div class="deploy-card">
+          <div class="deploy-card-grid">
+            <div class="deploy-copy">
+              <div class="deploy-header">
+                <span class="deploy-badge k8s">Kubernetes</span>
+                <h3>Scalable Deployment</h3>
+              </div>
+              <p>Deploy on Kubernetes or OpenShift with GPU node selectors, resource limits, and room to grow into multi-node topologies.</p>
+              <ul class="deploy-points">
+                <li>Best fit for shared clusters and platform teams</li>
+                <li>Pairs with autoscaling and service meshes</li>
+                <li>Good handoff point into OpenShift AI and KServe stories</li>
+              </ul>
+            </div>
+            <pre class="code-block"><code class="language-yaml">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm-server
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: vllm
+        image: vllm/vllm-openai:latest
+        args:
+        - "--model"
+        - "meta-llama/Llama-3.1-8B-Instruct"
+        - "--tensor-parallel-size"
+        - "2"
+        resources:
+          limits:
+            nvidia.com/gpu: 2</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="parallelism-chooser" class="parallelism-section reveal">
+        <div class="parallelism-shell">
+          <div class="parallelism-panel">
+            <span class="mini-label">Interactive chooser</span>
+            <h3>Parallelism Strategies</h3>
+            <p>Pick the axis you are scaling and see the topology, sweet spot, and operational tradeoff that usually come with it. <a href="#source-12">[12]</a></p>
+            <div class="parallelism-tabs" role="tablist" aria-label="Parallelism strategies">
+              <button class="par-tab active" data-strategy="tp" type="button" role="tab" aria-selected="true" tabindex="0">TP</button>
+              <button class="par-tab" data-strategy="pp" type="button" role="tab" aria-selected="false" tabindex="-1">PP</button>
+              <button class="par-tab" data-strategy="dp" type="button" role="tab" aria-selected="false" tabindex="-1">DP</button>
+              <button class="par-tab" data-strategy="ep" type="button" role="tab" aria-selected="false" tabindex="-1">EP</button>
+              <button class="par-tab" data-strategy="cp" type="button" role="tab" aria-selected="false" tabindex="-1">CP</button>
+            </div>
+            <div class="parallelism-visual crossfade-container" id="parallelism-visual" role="tabpanel" aria-label="Strategy visualization"></div>
+          </div>
+          <div class="parallelism-detail crossfade-container">
+            <h4 id="par-title">Tensor Parallelism</h4>
+            <p id="par-summary">Split each layer across GPUs when the model fits on one node but not on one device.</p>
+            <div class="par-detail-grid">
+              <div class="par-detail-card">
+                <span>Best when</span>
+                <strong id="par-best">Single node, fast interconnect, latency-sensitive serving</strong>
+              </div>
+              <div class="par-detail-card">
+                <span>Tradeoff</span>
+                <strong id="par-tradeoff">More collectives and tighter node-level coupling</strong>
+              </div>
+              <div class="par-detail-card">
+                <span>Pairs with</span>
+                <strong id="par-combo">Quantization or PP when the model still outgrows one node</strong>
+              </div>
+            </div>
+            <div class="par-flag-row">
+              <code id="par-flag">--tensor-parallel-size N</code>
+              <span id="par-caution">Watch interconnect bandwidth and collective overhead.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       TIER 3 — TECHNICAL DEEP-DIVE
+       ===================================================================== -->
+
+  <!-- ========== PAGED ATTENTION ========== -->
+  <section id="paged-attention" class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-num">05</span>
+        <h2>PagedAttention <span class="section-tier tier-3">Technical deep-dive</span></h2>
+        <p class="section-lead">The core innovation: treat KV cache like virtual memory so long contexts and mixed workloads do not waste the GPU.</p>
+      </div>
+
+      <p class="biz-caption reveal">See why vLLM wastes less GPU memory than traditional approaches. Wasted memory means wasted dollars.</p>
+      <div id="allocator-showdown" class="showdown reveal">
+        <div class="showdown-header">
+          <span class="mini-label">Allocator showdown</span>
+          <h3>Same Requests, Two Allocators</h3>
+          <p>Step through a burst of requests to see how pre-allocated contiguous memory compares to on-demand block allocation.</p>
+        </div>
+
+        <div class="showdown-scrub">
+          <input type="range" id="showdown-step" min="0" max="3" value="0" step="1">
+          <span class="showdown-step-label" id="showdown-step-label" aria-live="polite">Step 1 / 4</span>
+        </div>
+
+        <div class="showdown-panels">
+          <div class="showdown-panel showdown-panel--naive">
+            <div class="showdown-panel-head">
+              <h4>Naive Contiguous</h4>
+              <span class="showdown-panel-tag showdown-tag--naive">Contiguous pre-allocation</span>
+            </div>
+            <div class="showdown-grid" id="naive-grid"></div>
+            <div class="showdown-metrics" id="naive-metrics"></div>
+            <p class="showdown-caption" id="naive-caption"></p>
+          </div>
+
+          <div class="showdown-vs"><span>vs</span></div>
+
+          <div class="showdown-panel showdown-panel--paged">
+            <div class="showdown-panel-head">
+              <h4>PagedAttention</h4>
+              <span class="showdown-panel-tag showdown-tag--paged">On-demand block pool</span>
+            </div>
+            <div class="showdown-paged-section">
+              <span class="showdown-sub-label">Logical block tables</span>
+              <div class="showdown-logical" id="paged-logical"></div>
+            </div>
+            <div class="showdown-paged-section">
+              <span class="showdown-sub-label">Physical block pool</span>
+              <div class="showdown-physical" id="paged-physical"></div>
+            </div>
+            <div class="showdown-metrics" id="paged-metrics"></div>
+            <p class="showdown-caption" id="paged-caption"></p>
+          </div>
+        </div>
+
+        <div class="showdown-contrast" id="showdown-contrast"></div>
+      </div>
+
+      <div class="pa-intro reveal">
+        <p>Just as an OS maps virtual pages to scattered physical frames, vLLM maps each request's <strong>logical KV blocks</strong> to a shared <strong>physical block pool</strong> on the GPU. <a href="#source-9">[9]</a> The indirection unlocks four things that contiguous allocation cannot do.</p>
+        <div class="pa-benefit-pills">
+          <span class="pa-pill">Grow without relocating</span>
+          <span class="pa-pill">Share prefixes for free</span>
+          <span class="pa-pill">Reclaim blocks instantly</span>
+          <span class="pa-pill">Near-zero fragmentation</span>
+        </div>
+      </div>
+
+      <p class="biz-caption reveal">Watch how vLLM dynamically manages GPU memory so no capacity goes unused. Higher utilization means more users on the same hardware.</p>
+      <div class="pa-cinema reveal" id="pa-cinema" data-phase="0">
+        <div class="pa-cinema-head">
+          <div>
+            <span class="mini-label">Animated walkthrough</span>
+            <h3 id="pa-cinema-title">Allocate on demand</h3>
+          </div>
+          <button class="pa-play-btn" id="pa-cinema-play" type="button" aria-label="Pause animation">Pause</button>
+        </div>
+
+        <p class="pa-cinema-caption" id="pa-cinema-caption">Req A arrives. Blocks land wherever space exists. No contiguous reservation needed.</p>
+
+        <div class="pa-cinema-stage">
+          <div class="pa-labels" id="pa-labels"></div>
+          <div class="pa-connectors" id="pa-connectors"></div>
+          <div class="pa-strip" id="pa-strip">
+            <div class="pa-cell" data-idx="0"></div>
+            <div class="pa-cell" data-idx="1"></div>
+            <div class="pa-cell" data-idx="2"></div>
+            <div class="pa-cell" data-idx="3"></div>
+            <div class="pa-cell" data-idx="4"></div>
+            <div class="pa-cell" data-idx="5"></div>
+            <div class="pa-cell" data-idx="6"></div>
+            <div class="pa-cell" data-idx="7"></div>
+            <div class="pa-cell" data-idx="8"></div>
+            <div class="pa-cell" data-idx="9"></div>
+            <div class="pa-cell" data-idx="10"></div>
+            <div class="pa-cell" data-idx="11"></div>
+          </div>
+        </div>
+
+        <div class="pa-cinema-stats" id="pa-cinema-stats">
+          <div class="pa-cstat"><span>Used</span><strong id="pa-cstat-used">0</strong></div>
+          <div class="pa-cstat"><span>Shared</span><strong id="pa-cstat-shared">0</strong></div>
+          <div class="pa-cstat"><span>Free</span><strong id="pa-cstat-free">12</strong></div>
+          <div class="pa-util-wrap">
+            <span>Utilization</span>
+            <div class="pa-util-bar"><div class="pa-util-fill" id="pa-util-fill"></div></div>
+          </div>
+        </div>
+
+        <div class="pa-phase-bar" id="pa-phase-bar" role="tablist" aria-label="PagedAttention phases">
+          <button class="pa-phase-btn active" data-phase="0" type="button" role="tab" aria-selected="true" tabindex="0">Allocate</button>
+          <button class="pa-phase-btn" data-phase="1" type="button" role="tab" aria-selected="false" tabindex="-1">Share</button>
+          <button class="pa-phase-btn" data-phase="2" type="button" role="tab" aria-selected="false" tabindex="-1">Reclaim</button>
+          <button class="pa-phase-btn" data-phase="3" type="button" role="tab" aria-selected="false" tabindex="-1">Result</button>
+        </div>
+      </div>
+
+      <div class="paper-ref reveal">
+        <div class="paper-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </div>
+        <div>
+          <strong>Research Paper:</strong> Kwon et al., <em>"Efficient Memory Management for Large Language Model Serving with PagedAttention"</em>, SOSP 2023.
+          <a href="https://arxiv.org/abs/2309.06180" target="_blank" rel="noopener">arXiv:2309.06180</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CONTINUOUS BATCHING ========== -->
+  <section id="batching" class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-num">06</span>
+        <h2>Continuous Batching &amp; Chunked Prefill <span class="section-tier tier-3">Technical deep-dive</span></h2>
+        <p class="section-lead">See why modern engines schedule work at every step instead of waiting for an entire batch to drain. <a href="#source-8">[8]</a></p>
+      </div>
+
+      <p class="biz-caption reveal">Compare old vs new: vLLM serves new requests immediately instead of making users wait for the current batch to finish.</p>
+      <div class="scheduler-lab reveal">
+        <div class="lab-heading">
+          <div>
+            <span class="mini-label">Scheduler simulator</span>
+            <h3>Continuous Batching Lab</h3>
+            <p>Scrub through scheduler steps and compare static batching versus vLLM-style continuous admission.</p>
+          </div>
+          <div class="batch-legend">
+            <span class="legend-pill prefill">Prefill</span>
+            <span class="legend-pill decode">Decode</span>
+            <span class="legend-pill admit">Admitted</span>
+            <span class="legend-pill wait">Waiting</span>
+            <span class="legend-pill idle">Idle</span>
+          </div>
+        </div>
+
+        <div class="lab-toolbar">
+          <div class="lab-control-group">
+            <span class="lab-label">Workload mix</span>
+            <div class="segmented-control" role="tablist" aria-label="Workload mix">
+              <button class="workload-btn active" data-workload="balanced" role="tab" aria-selected="true" tabindex="0">Balanced chat</button>
+              <button class="workload-btn" data-workload="prompt" role="tab" aria-selected="false" tabindex="-1">Prompt-heavy</button>
+              <button class="workload-btn" data-workload="bursty" role="tab" aria-selected="false" tabindex="-1">Bursty traffic</button>
+            </div>
+          </div>
+          <div class="batch-scrub">
+            <input type="range" id="batch-step" min="0" max="4" value="0">
+            <span class="batch-step-label" id="batch-step-readout" aria-live="polite">Step 1 / 5</span>
+          </div>
+        </div>
+
+        <div class="batching-comparison">
+          <div class="batch-panel batch-panel--static">
+            <div class="batch-panel-head">
+              <h4>Static Batching</h4>
+              <span class="batch-panel-tag batch-tag--static">Batch-locked</span>
+            </div>
+            <div class="batch-slots" id="static-slots">
+              <div class="batch-slot" data-tone="prefill">
+                <span class="batch-slot-phase">Prefill</span>
+                <strong class="batch-slot-title">Req A</strong>
+                <span class="batch-slot-detail">Long prompt prefill</span>
+              </div>
+              <div class="batch-slot" data-tone="decode">
+                <span class="batch-slot-phase">Decode</span>
+                <strong class="batch-slot-title">Req B</strong>
+                <span class="batch-slot-detail">Chat decode</span>
+              </div>
+              <div class="batch-slot" data-tone="decode">
+                <span class="batch-slot-phase">Decode</span>
+                <strong class="batch-slot-title">Req C</strong>
+                <span class="batch-slot-detail">Chat decode</span>
+              </div>
+              <div class="batch-slot batch-slot--queue" data-tone="wait">
+                <span class="batch-slot-phase">Queued</span>
+                <strong class="batch-slot-title">Req D</strong>
+                <span class="batch-slot-detail">Waiting to enter</span>
+              </div>
+            </div>
+            <div class="batch-metrics" id="static-metrics"></div>
+          </div>
+
+          <div class="batch-vs"><span>vs</span></div>
+
+          <div class="batch-panel batch-panel--continuous">
+            <div class="batch-panel-head">
+              <h4>Continuous Batching</h4>
+              <span class="batch-panel-tag batch-tag--continuous">Iteration-level</span>
+            </div>
+            <div class="batch-slots" id="continuous-slots">
+              <div class="batch-slot" data-tone="prefill">
+                <span class="batch-slot-phase">Prefill</span>
+                <strong class="batch-slot-title">Req A</strong>
+                <span class="batch-slot-detail">Long prompt prefill</span>
+              </div>
+              <div class="batch-slot" data-tone="decode">
+                <span class="batch-slot-phase">Decode</span>
+                <strong class="batch-slot-title">Req B</strong>
+                <span class="batch-slot-detail">Chat decode</span>
+              </div>
+              <div class="batch-slot" data-tone="decode">
+                <span class="batch-slot-phase">Decode</span>
+                <strong class="batch-slot-title">Req C</strong>
+                <span class="batch-slot-detail">Chat decode</span>
+              </div>
+              <div class="batch-slot batch-slot--queue" data-tone="wait">
+                <span class="batch-slot-phase">Queued</span>
+                <strong class="batch-slot-title">Req D</strong>
+                <span class="batch-slot-detail">Ready next step</span>
+              </div>
+            </div>
+            <div class="batch-metrics" id="continuous-metrics"></div>
+          </div>
+        </div>
+
+        <div class="batch-takeaway" id="batch-takeaway">
+          Both systems start full, but only continuous batching is ready to admit the next request as soon as a slot frees.
+        </div>
+      </div>
+
+      <p class="biz-caption reveal">See how vLLM keeps streaming responses smooth even when large new requests arrive. No user gets a frozen screen.</p>
+      <div class="chunked-section reveal">
+        <div class="chunked-header">
+          <div>
+            <span class="mini-label">Budget-sharing explainer</span>
+            <h3>Chunked Prefill</h3>
+            <p>Split the big prompt, protect the streaming users.</p>
+          </div>
+          <div class="chunk-phase-bar" id="chunk-phase-bar" role="tablist" aria-label="Chunked prefill steps">
+            <button class="chunk-phase-btn active" data-step="0" type="button" role="tab" aria-selected="true" tabindex="0">Step 1</button>
+            <button class="chunk-phase-btn" data-step="1" type="button" role="tab" aria-selected="false" tabindex="-1">Step 2</button>
+            <button class="chunk-phase-btn" data-step="2" type="button" role="tab" aria-selected="false" tabindex="-1">Step 3</button>
+            <button class="chunk-phase-btn" data-step="3" type="button" role="tab" aria-selected="false" tabindex="-1">Step 4</button>
+            <button class="chunk-phase-btn" data-step="4" type="button" role="tab" aria-selected="false" tabindex="-1">Step 5</button>
+          </div>
+        </div>
+
+        <p class="chunk-caption crossfade-container" id="chunk-caption">Req A has a 256-token prompt, but the scheduler only processes 64 tokens of it this step, leaving room for Reqs B and C to keep streaming their responses.</p>
+
+        <div class="chunk-legend">
+          <span class="chunk-legend-item"><span class="chunk-legend-dot" data-tone="prefill"></span> Prefilling</span>
+          <span class="chunk-legend-item"><span class="chunk-legend-dot" data-tone="decode"></span> Decoding (streaming)</span>
+          <span class="chunk-legend-item"><span class="chunk-legend-dot" data-tone="admit"></span> Just admitted</span>
+          <span class="chunk-legend-item"><span class="chunk-legend-dot" data-tone="wait"></span> Queued</span>
+          <span class="chunk-legend-item"><span class="chunk-legend-dot" data-tone="idle"></span> Complete</span>
+        </div>
+
+        <div class="chunk-lanes" id="chunk-lanes">
+          <div class="chunk-lane" id="chunk-lane-0">
+            <div class="chunk-lane-label">
+              <strong class="chunk-lane-name">Req A</strong>
+              <span class="chunk-lane-meta">Chunk 1 / 4 &middot; long doc summary</span>
+            </div>
+            <div class="chunk-lane-track">
+              <div class="chunk-lane-bar" data-tone="prefill" style="width: 50%">
+                <span class="chunk-lane-bar-label">64 tok</span>
+              </div>
+            </div>
+          </div>
+          <div class="chunk-lane" id="chunk-lane-1">
+            <div class="chunk-lane-label">
+              <strong class="chunk-lane-name">Req B</strong>
+              <span class="chunk-lane-meta">Streaming &middot; chat reply</span>
+            </div>
+            <div class="chunk-lane-track">
+              <div class="chunk-lane-bar" data-tone="decode" style="width: 15.6%">
+                <span class="chunk-lane-bar-label">20 tok</span>
+              </div>
+            </div>
+          </div>
+          <div class="chunk-lane" id="chunk-lane-2">
+            <div class="chunk-lane-label">
+              <strong class="chunk-lane-name">Req C</strong>
+              <span class="chunk-lane-meta">Streaming &middot; chat reply</span>
+            </div>
+            <div class="chunk-lane-track">
+              <div class="chunk-lane-bar" data-tone="decode" style="width: 15.6%">
+                <span class="chunk-lane-bar-label">20 tok</span>
+              </div>
+            </div>
+          </div>
+          <div class="chunk-lane" id="chunk-lane-3">
+            <div class="chunk-lane-label">
+              <strong class="chunk-lane-name">Req D</strong>
+              <span class="chunk-lane-meta">Queued &middot; new question</span>
+            </div>
+            <div class="chunk-lane-track">
+              <div class="chunk-lane-bar" data-tone="wait" style="width: 0%">
+                <span class="chunk-lane-bar-label"></span>
+              </div>
+            </div>
+          </div>
+          <div class="chunk-lane" id="chunk-lane-4">
+            <div class="chunk-lane-label">
+              <strong class="chunk-lane-name">Req E</strong>
+              <span class="chunk-lane-meta">Queued &middot; code completion</span>
+            </div>
+            <div class="chunk-lane-track">
+              <div class="chunk-lane-bar" data-tone="wait" style="width: 0%">
+                <span class="chunk-lane-bar-label"></span>
+              </div>
+            </div>
+          </div>
+          <div class="chunk-lane" id="chunk-lane-5">
+            <div class="chunk-lane-label">
+              <strong class="chunk-lane-name">Req F</strong>
+              <span class="chunk-lane-meta">Queued &middot; translation</span>
+            </div>
+            <div class="chunk-lane-track">
+              <div class="chunk-lane-bar" data-tone="wait" style="width: 0%">
+                <span class="chunk-lane-bar-label"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chunk-budget-meter">
+          <span class="chunk-budget-text" id="chunk-budget-label">104 / 128 tokens</span>
+          <div class="budget-bar"><div class="budget-fill" id="chunk-budget-fill" style="width: 81%"></div></div>
+        </div>
+        <p class="chunk-budget-note">Each scheduler step has a fixed <strong>token budget</strong> (here 128). The scheduler fills it with a mix of prefill and decode work so no single request monopolizes the GPU. <a href="#source-8">[8]</a></p>
+
+        <div class="chunk-counterfactual">
+          <strong>Without chunking:</strong> Req A&rsquo;s 256-token prompt would consume the entire 128-token budget for 2 consecutive steps. Reqs B and C would stall mid-stream, and D&ndash;F would wait even longer, spiking Time to First Token (TTFT) for everyone in the queue.
+        </div>
+
+        <p class="chunk-benefit">Chunked prefill keeps the big prompt moving without bulldozing TTFT, the time a user waits before seeing any response. When prompt pressure dominates, <strong>disaggregated prefill/decode</strong> becomes the next design conversation. <a href="#source-2">[2]</a> <a href="#source-4">[4]</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== ARCHITECTURE ========== -->
+  <section id="architecture" class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-num">07</span>
+        <h2>Architecture Deep Dive <span class="section-tier tier-3">Technical deep-dive</span></h2>
+        <p class="section-lead">From "what happens when I send a prompt?" to the V1 engine internals. Built for people new to inference.</p>
+      </div>
+
+      <!-- LAYER 1 — Conceptual on-ramp -->
+      <div class="arch-onramp reveal">
+        <div class="arch-onramp-head">
+          <span class="mini-label">Start here</span>
+          <h3>What happens when you send a prompt?</h3>
+        </div>
+        <p class="arch-onramp-text">Three things need to happen: <strong>understand the input</strong> (turn text into numbers the model can read), <strong>run the model on the GPU</strong> (the hard part), and <strong>stream back an answer</strong> (one token at a time). The rest of the vLLM architecture makes those three steps fast and concurrent.</p>
+        <div class="arch-three-steps">
+          <div class="arch-step-card">
+            <span class="arch-step-num">1</span>
+            <h4>Prepare</h4>
+            <p>Text &rarr; tokens. The tokenizer converts your prompt into numbers. Images and audio get encoded too.</p>
+          </div>
+          <div class="arch-step-arrow" aria-hidden="true">&rarr;</div>
+          <div class="arch-step-card arch-step-card--loop">
+            <span class="arch-step-num">2</span>
+            <h4>Generate</h4>
+            <p>The model runs <strong>once per output token</strong>. This is a loop: every new token depends on the one before it. The <strong>KV cache</strong> stores past computations so only the new token needs processing.</p>
+            <svg class="arch-step-loop-svg" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="13" fill="none" stroke="var(--red)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="70 12" transform="rotate(-35 24 24)"/><path d="M21 7.5 L25 11 L21 14.5" fill="none" stroke="var(--red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="arch-step-loop-badge">loop</span>
+          </div>
+          <div class="arch-step-arrow" aria-hidden="true">&rarr;</div>
+          <div class="arch-step-card">
+            <span class="arch-step-num">3</span>
+            <h4>Stream</h4>
+            <p>Each new token is converted back to text and streamed to the user in real time.</p>
+          </div>
+        </div>
+        <p class="arch-onramp-callout">Step 2 is the entire challenge. A 500-token reply means 500 sequential GPU round-trips, and the <a href="#why">KV cache</a> is what keeps this loop affordable by storing past computations. The architecture below shows how vLLM makes this fast and concurrent.</p>
+      </div>
+
+      <!-- LAYER 2 — The Autoregressive Decode Loop (interactive) -->
+      <div class="decode-loop-section reveal" id="decode-loop">
+        <div class="decode-loop-head">
+          <div>
+            <span class="mini-label">Interactive walkthrough</span>
+            <h3 id="decode-loop-title">A prompt arrives</h3>
+          </div>
+          <button class="decode-loop-play" id="decode-loop-play" type="button" aria-label="Pause animation">Pause</button>
+        </div>
+
+        <div class="decode-text-area">
+          <p class="decode-loop-caption" id="decode-loop-caption">The user sends "The quick brown fox," four tokens. The model needs to continue this sequence, but it can't just look at the text. It must process every token through the full neural network to build an internal representation.</p>
+          <div class="decode-loop-insight-wrap" id="decode-loop-insight-wrap">
+            <p class="decode-loop-insight" id="decode-loop-insight"></p>
+          </div>
+        </div>
+
+        <div class="decode-loop-stage">
+          <div class="decode-token-row">
+            <span class="decode-row-label">Tokens</span>
+            <div class="decode-tokens" id="decode-tokens"></div>
+          </div>
+
+          <div class="decode-flow">
+            <div class="decode-arrow-down" aria-hidden="true">
+              <svg width="24" height="40" viewBox="0 0 24 40"><path d="M12 0 V32 M4 24 L12 34 L20 24" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+              <span>Feed to model</span>
+            </div>
+            <div class="decode-model-box" id="decode-model-box">
+              <strong id="decode-model-title">Forward Pass</strong>
+              <span id="decode-model-detail">Waiting for input…</span>
+              <span class="decode-model-kv" id="decode-model-kv"></span>
+            </div>
+            <div class="decode-arrow-up" aria-hidden="true">
+              <svg width="24" height="40" viewBox="0 0 24 40"><path d="M12 40 V8 M4 16 L12 6 L20 16" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+              <span>New token</span>
+            </div>
+          </div>
+
+          <div class="decode-loop-arrow-wrap" id="decode-loop-arrow" aria-hidden="true">
+            <svg class="decode-loop-svg" viewBox="0 -8 200 58">
+              <path class="decode-loop-path" d="M15 5 C15 42, 185 42, 185 5" stroke="var(--red)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-dasharray="8 5"/>
+              <path d="M179 8 L185 -6 L191 8" stroke="var(--red)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="decode-loop-label" id="decode-loop-label">loop: feed token back</span>
+          </div>
+
+          <div class="decode-candidates" id="decode-candidates"></div>
+
+          <div class="decode-kv-row">
+            <span class="decode-row-label">KV Cache</span>
+            <div class="decode-kv-blocks" id="decode-kv-blocks"></div>
+            <span class="decode-kv-count" id="decode-kv-count">0 entries</span>
+          </div>
+        </div>
+
+        <div class="decode-loop-stats">
+          <div class="decode-stat"><span>Prompt tokens</span><strong>4</strong></div>
+          <div class="decode-stat"><span>Generated</span><strong id="decode-stat-gen">0</strong></div>
+          <div class="decode-stat"><span>Forward passes</span><strong id="decode-stat-passes">0</strong></div>
+          <div class="decode-stat"><span>KV entries</span><strong id="decode-stat-kv">0</strong></div>
+          <div class="decode-stat decode-stat--highlight"><span>Recomputations avoided</span><strong id="decode-stat-saved">0</strong></div>
+        </div>
+
+        <div class="decode-phase-bar" id="decode-phase-bar" role="tablist" aria-label="Decode loop phases"></div>
+      </div>
+
+      <!-- LAYER 3 — The Engine Core Loop -->
+      <div class="engine-loop-section reveal">
+        <div class="engine-loop-head">
+          <span class="mini-label">Inside vLLM V1</span>
+          <h3>The Engine Core Loop</h3>
+          <p>The autoregressive loop above is the problem. The engine core is the solution: a tight three-step cycle, thousands of times per second: <a href="#source-11">[11]</a></p>
+        </div>
+
+        <div class="engine-loop-diagram" id="diagram-engine-loop" role="img" aria-label="Engine core loop diagram: Schedule, Execute, Update cycle"></div>
+
+        <div class="engine-loop-cards">
+          <div class="engine-loop-card">
+            <span class="engine-loop-card-num">1</span>
+            <h4>Schedule</h4>
+            <p>Picks which requests get GPU time this step and assigns a token budget. Each request tracks how many tokens it has computed vs. how many it needs. No rigid prefill/decode split. <a href="#source-8">[8]</a></p>
+            <code class="code-path">vllm/v1/core/sched/scheduler.py</code>
+          </div>
+          <div class="engine-loop-card">
+            <span class="engine-loop-card-num">2</span>
+            <h4>Execute</h4>
+            <p>Sends the scheduled batch to GPU workers via the executor. Each worker runs the model&rsquo;s forward pass using FlashAttention and CUDA graphs against the paged KV cache.</p>
+            <code class="code-path">vllm/v1/worker/gpu_model_runner.py</code>
+          </div>
+          <div class="engine-loop-card">
+            <span class="engine-loop-card-num">3</span>
+            <h4>Update</h4>
+            <p>Samples new tokens from model output, records progress in the scheduler, frees finished requests, and streams detokenized text to the user. Then the loop repeats.</p>
+            <code class="code-path">vllm/v1/engine/core.py</code>
+          </div>
+        </div>
+
+        <div class="engine-loop-code reveal">
+          <span class="mini-label">Actual source: EngineCore.step()</span>
+          <pre><code class="language-python">scheduler_output = self.scheduler.schedule()
+future = self.model_executor.execute_model(scheduler_output, non_block=True)
+model_output = future.result()
+engine_core_outputs = self.scheduler.update_from_output(
+    scheduler_output, model_output
+)</code></pre>
+          <p class="engine-loop-code-note">That is the core loop. The <code>non_block=True</code> lets the scheduler prepare grammar bitmasks while the GPU works. Everything else in the codebase makes this loop run faster or serve more users.</p>
+        </div>
+      </div>
+
+      <!-- LAYER 4 — V1 Architecture Map -->
+      <div class="arch-map-section reveal">
+        <div class="arch-map-head">
+          <span class="mini-label">Full picture</span>
+          <h3>V1 Multi-Process Architecture</h3>
+          <p>vLLM uses separate OS processes so tokenization never blocks the GPU and crashes in one component don't take down the whole server. <a href="#source-11">[11]</a></p>
+        </div>
+        <div class="arch-map-diagram" id="diagram-v1-arch" role="img" aria-label="vLLM V1 architecture diagram: API edge, engine core, and GPU execution layers"></div>
+        <div class="arch-map-legend">
+          <span class="legend-pill edge">API Edge</span>
+          <span class="legend-pill control">Engine Core</span>
+          <span class="legend-pill gpu">GPU Execution</span>
+        </div>
+      </div>
+
+      <!-- LAYER 5 — Component cards (refactored) -->
+      <div class="component-cards reveal">
+        <h3>The Cast of Characters</h3>
+        <p class="component-cards-lead">Each component has a specific job in the engine loop. Click to expand.</p>
+        <div class="cards-grid">
+          <article class="comp-card" data-expanded="false">
+            <button type="button" class="comp-card-header" aria-expanded="false">
+              <div>
+                <span class="mini-label">The translators</span>
+                <h4>Input / Output Processors</h4>
+              </div>
+              <span class="expand-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="comp-card-body">
+              <div>
+                <p>The Input Processor tokenizes text (and encodes images/audio) before handing off to the engine core via ZMQ. The Output Processor detokenizes new tokens and streams them back as SSE events. Both run in the API process so the engine core never stalls on string operations.</p>
+                <p class="comp-card-why"><strong>Why it matters:</strong> Tokenization and detokenization are CPU-bound. Running them in a separate process from the GPU scheduler prevents them from adding latency to the critical engine loop.</p>
+                <code class="code-path">vllm/v1/engine/output_processor.py</code>
+              </div>
+            </div>
+          </article>
+          <article class="comp-card" data-expanded="false">
+            <button type="button" class="comp-card-header" aria-expanded="false">
+              <div>
+                <span class="mini-label">The traffic controller</span>
+                <h4>Scheduler</h4>
+              </div>
+              <span class="expand-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="comp-card-body">
+              <div>
+                <p>Decides which requests get GPU time each step. Tracks <code>num_computed_tokens</code> vs <code>num_tokens</code> per request. There is no rigid prefill/decode split. <a href="#source-8">[8]</a> This unified approach is why chunked prefill, prefix caching, and speculative decoding can share one scheduler.</p>
+                <p class="comp-card-why"><strong>Why it matters:</strong> A bad scheduler starves interactive chat to serve long prefills. This is where the TTFT vs. ITL trade-off lives, and why vLLM&rsquo;s unified approach enables chunked prefill and speculative decoding to coexist.</p>
+                <code class="code-path">vllm/v1/core/sched/scheduler.py</code>
+              </div>
+            </div>
+          </article>
+          <article class="comp-card" data-expanded="false">
+            <button type="button" class="comp-card-header" aria-expanded="false">
+              <div>
+                <span class="mini-label">The memory librarian</span>
+                <h4>KV Cache Manager</h4>
+              </div>
+              <span class="expand-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="comp-card-body">
+              <div>
+                <p>Manages the block pool you saw in the PagedAttention section. Allocates and frees fixed-size blocks, enables prefix caching by hashing block contents, and supports FP8/INT8 quantized KV storage. <a href="#source-13">[13]</a></p>
+                <p class="comp-card-why"><strong>Why it matters:</strong> KV cache is the #1 memory consumer. This manager is why vLLM can serve more concurrent requests than naive implementations.</p>
+                <code class="code-path">vllm/v1/core/kv_cache_manager.py</code>
+              </div>
+            </div>
+          </article>
+          <article class="comp-card" data-expanded="false">
+            <button type="button" class="comp-card-header" aria-expanded="false">
+              <div>
+                <span class="mini-label">The GPU assembly line</span>
+                <h4>Model Runner</h4>
+              </div>
+              <span class="expand-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="comp-card-body">
+              <div>
+                <p>Runs the actual <code>torch.nn.Module</code> forward pass on each GPU. Prepares input tensors, replays CUDA graphs for speed, and coordinates with attention backends (FlashAttention, FlashInfer) to read/write the paged KV cache.</p>
+                <p class="comp-card-why"><strong>Why it matters:</strong> This is where GPU time is spent. CUDA graph capture eliminates CPU launch overhead, making each decode step faster.</p>
+                <code class="code-path">vllm/v1/worker/gpu_model_runner.py</code>
+              </div>
+            </div>
+          </article>
+          <article class="comp-card" data-expanded="false">
+            <button type="button" class="comp-card-header" aria-expanded="false">
+              <div>
+                <span class="mini-label">The distributed glue</span>
+                <h4>Executor</h4>
+              </div>
+              <span class="expand-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="comp-card-body">
+              <div>
+                <p>Abstracts how work reaches GPUs. <strong>UniProc</strong> for single-GPU, <strong>Multiproc</strong> for multi-GPU on one node, <strong>Ray</strong> for multi-node clusters. Spawns workers and broadcasts <code>execute_model</code> calls.</p>
+                <p class="comp-card-why"><strong>Why it matters:</strong> Switching from 1 GPU to 8 or from 1 node to 4 doesn't change the engine loop. Only the executor changes.</p>
+                <code class="code-path">vllm/v1/executor/</code>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- Scheduling & Memory Management (merged from standalone section) -->
+      <div class="sched-concept reveal">
+        <h3>Scheduling &amp; Memory Management</h3>
+        <div class="sched-cards">
+          <div class="sched-card">
+            <h4>Unified Scheduling</h4>
+            <p>V1 has no separate "prefill queue" and "decode queue." Each request has a <strong>num_computed_tokens</strong> and a target token count (<strong>num_tokens</strong>). The scheduler assigns tokens from a per-step budget to close the gap. This supports:</p>
+            <ul>
+              <li>Chunked prefills (large prompts processed in pieces)</li>
+              <li>Prefix caching (skip already-cached tokens)</li>
+              <li>Speculative decoding (advance by multiple tokens)</li>
+              <li>Mixed prefill + decode in the same batch</li>
+            </ul>
+          </div>
+          <div class="sched-card">
+            <h4>Preemption</h4>
+            <p>When KV cache space is exhausted, the scheduler <strong>preempts</strong> the lowest-priority running request to free blocks for higher-priority work.</p>
+            <p>V1 default strategy: <strong>Recompute</strong> (discard KV, re-prefill when resumed). <a href="#source-8">[8]</a> Tuning levers:</p>
+            <ul>
+              <li><code>--gpu-memory-utilization</code> (0.0-1.0)</li>
+              <li><code>--max-num-seqs</code></li>
+              <li><code>--scheduling-policy</code> (fcfs / priority)</li>
+              <li>Tensor/pipeline parallelism to add more KV capacity</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="prefix-cache-section reveal">
+        <h3>Automatic Prefix Caching</h3>
+        <p>vLLM hashes KV blocks using the token content + parent block hash. <a href="#source-13">[13]</a> When a new request shares a prefix with a previous one, the cached physical blocks are reused instead of recomputed.</p>
+        <div class="prefix-diagram">
+          <div class="prefix-row">
+            <span class="prefix-label">Request 1</span>
+            <div class="prefix-block cached">System Prompt</div>
+            <div class="prefix-block cached">Shared Context</div>
+            <div class="prefix-block unique">User Query A</div>
+          </div>
+          <div class="prefix-row">
+            <span class="prefix-label">Request 2</span>
+            <div class="prefix-block cached">System Prompt</div>
+            <div class="prefix-block cached">Shared Context</div>
+            <div class="prefix-block unique">User Query B</div>
+          </div>
+          <div class="prefix-note">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Shared prefix blocks point to the same physical memory. No recomputation needed.
+          </div>
+        </div>
+      </div>
+
+      <!-- LAYER 6 — Process calculator (moved to bottom with context) -->
+      <div class="process-calc reveal">
+        <h3>Process Count Calculator</h3>
+        <p>The architecture diagram above maps to real OS processes. Adjust the parallelism settings to see how many processes vLLM spawns for your setup.</p>
+        <div class="calc-grid">
+          <div class="calc-input">
+            <label for="tp-size">Tensor Parallel (TP)</label>
+            <span class="calc-hint">Splits each layer across GPUs. Use when a single model layer doesn&rsquo;t fit on one GPU.</span>
+            <input type="number" id="tp-size" value="4" min="1" max="16">
+          </div>
+          <div class="calc-input">
+            <label for="pp-size">Pipeline Parallel (PP)</label>
+            <span class="calc-hint">Splits layers into stages across GPUs. Use to scale beyond one node&rsquo;s GPU interconnect.</span>
+            <input type="number" id="pp-size" value="1" min="1" max="8">
+          </div>
+          <div class="calc-input">
+            <label for="dp-size">Data Parallel (DP)</label>
+            <span class="calc-hint">Runs independent model replicas for higher throughput. Each replica handles its own requests.</span>
+            <input type="number" id="dp-size" value="1" min="1" max="16">
+          </div>
+          <div class="calc-result" id="calc-result">
+            <div class="result-row"><span>API Servers</span><span id="res-api">1</span></div>
+            <div class="result-row"><span>Engine Cores</span><span id="res-engine">1</span></div>
+            <div class="result-row"><span>GPU Workers</span><span id="res-workers">4</span></div>
+            <div class="result-row" id="coord-row" style="display:none"><span>DP Coordinator</span><span id="res-coord">1</span></div>
+            <div class="result-row result-total"><span>Total Processes</span><span id="res-total">6</span></div>
+            <div class="result-row result-gpus"><span>Total GPUs</span><span id="res-gpus">4</span></div>
+          </div>
+        </div>
+        <div class="calc-formula" id="calc-formula"></div>
+        <div class="calc-tree" id="calc-tree"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========== TUNING ========== -->
+  <section id="tuning" class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-num">08</span>
+        <h2>Performance Tuning <span class="section-tier tier-3">Technical deep-dive</span></h2>
+        <p class="section-lead">Use the tuning lab to explain how concurrency, token budget, and KV pressure change throughput, latency, and operational risk.</p>
+      </div>
+
+      <p class="biz-caption reveal">Explore the trade-offs operators face when tuning for cost vs speed vs capacity. Every deployment balances these differently.</p>
+      <div class="tuning-lab reveal">
+        <h3>Latency vs Throughput Lab</h3>
+        <p class="tuning-lab-lead">These controls are intentionally qualitative. They help you explain which levers usually improve throughput, which ones smooth streaming, and which ones raise preemption or OOM risk.</p>
+        <div class="tuning-lab-grid">
+          <div class="tuning-controls">
+            <div class="tuning-control">
+              <label for="tune-concurrency">Concurrent requests <span id="tune-concurrency-value">128</span></label>
+              <input type="range" id="tune-concurrency" min="32" max="512" step="32" value="128">
+            </div>
+            <div class="tuning-control">
+              <label for="tune-budget">Token budget per step <span id="tune-budget-value">4096</span></label>
+              <input type="range" id="tune-budget" min="1024" max="8192" step="512" value="4096">
+            </div>
+            <div class="tuning-control">
+              <label for="tune-memory">GPU memory utilization <span id="tune-memory-value">90%</span></label>
+              <input type="range" id="tune-memory" min="70" max="98" step="1" value="90">
+            </div>
+            <div class="tuning-control">
+              <label for="tune-prefix">Shared prefix hit rate <span id="tune-prefix-value">35%</span></label>
+              <input type="range" id="tune-prefix" min="0" max="90" step="5" value="35">
+            </div>
+          </div>
+          <div class="tuning-results">
+            <div class="tuning-score-grid">
+              <div class="tuning-score-card">
+                <span class="score-label">Throughput</span>
+                <span class="score-pill" id="score-throughput">High</span>
+                <div class="score-bar"><div class="score-fill" id="score-throughput-fill"></div></div>
+              </div>
+              <div class="tuning-score-card">
+                <span class="score-label">TTFT</span>
+                <span class="score-pill" id="score-ttft">Medium</span>
+                <div class="score-bar"><div class="score-fill" id="score-ttft-fill"></div></div>
+              </div>
+              <div class="tuning-score-card">
+                <span class="score-label">Streaming ITL</span>
+                <span class="score-pill" id="score-itl">Medium</span>
+                <div class="score-bar"><div class="score-fill" id="score-itl-fill"></div></div>
+              </div>
+              <div class="tuning-score-card">
+                <span class="score-label">KV Pressure</span>
+                <span class="score-pill" id="score-risk">Controlled</span>
+                <div class="score-bar"><div class="score-fill" id="score-risk-fill"></div></div>
+              </div>
+            </div>
+            <div class="tuning-summary-card">
+              <h4 id="tuning-summary-title">Balanced shared cluster</h4>
+              <p id="tuning-summary-text">This profile is tuned for a shared chat service: enough token budget to keep throughput healthy, enough headroom to avoid constant preemption, and enough prefix reuse to reward repeated scaffolding.</p>
+              <ul class="tuning-bullets" id="tuning-bullets">
+                <li>Raise concurrency when requests are short and similar.</li>
+                <li>Lower token budget if chat streaming feels sticky or TTFT drifts.</li>
+                <li>Protect memory headroom when context length or multimodal assets vary.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tuning-params reveal">
+        <h3>Key Tuning Parameters</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Lever</th>
+                <th>Primary Effect</th>
+                <th>Tradeoff</th>
+                <th>How to explain it</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>--gpu-memory-utilization</code></td>
+                <td>More room for KV cache <a href="#source-8">[8]</a></td>
+                <td>Less memory headroom for spikes and variability</td>
+                <td>Raise only when the workload is stable and OOM risk is well understood.</td>
+              </tr>
+              <tr>
+                <td><code>--max-num-seqs</code></td>
+                <td>Higher concurrency ceiling</td>
+                <td>More contention for KV capacity and scheduler budget</td>
+                <td>Best for short requests; lower it when contexts are long or heterogeneous.</td>
+              </tr>
+              <tr>
+                <td><code>--max-num-batched-tokens</code></td>
+                <td>More work per scheduler step</td>
+                <td>Better throughput, but potentially worse TTFT and ITL</td>
+                <td>This is the classic throughput-vs-responsiveness dial.</td>
+              </tr>
+              <tr>
+                <td><code>--max-model-len</code></td>
+                <td>Advertised context window</td>
+                <td>Larger caps consume KV capacity even if rarely used</td>
+                <td>Set it to real business need, not the largest number marketing can claim.</td>
+              </tr>
+              <tr>
+                <td><code>--tensor-parallel-size</code></td>
+                <td>Fits larger models across GPUs</td>
+                <td>More inter-GPU communication</td>
+                <td>Use the smallest TP value that fits comfortably on the available hardware.</td>
+              </tr>
+              <tr>
+                <td><code>--quantization</code></td>
+                <td>Lower memory footprint and cost</td>
+                <td>Model-specific accuracy and compatibility tradeoffs</td>
+                <td>A quality-cost trade that should be validated with the target workload.</td>
+              </tr>
+              <tr>
+                <td><code>--no-enable-prefix-caching</code></td>
+                <td>On by default for supported models; disable when prompts are unique <a href="#source-8">[8]</a></td>
+                <td>Extra cache bookkeeping with little value when prompts are unique</td>
+                <td>V1 enables this automatically. Disable it only when prefix reuse is rare.</td>
+              </tr>
+              <tr>
+                <td><code>--scheduling-policy</code></td>
+                <td>Admission fairness and priority behavior</td>
+                <td>Different tail-latency profiles under contention</td>
+                <td>Bring this up when one class of request must stay responsive under load.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="parallelism-ref reveal">
+        <h3>Parallelism Strategy</h3>
+        <p>For guidance on choosing between TP, PP, DP, EP, and CP, see the <a href="#parallelism-chooser">interactive parallelism chooser</a> in the Deployment section. The <code>--tensor-parallel-size</code> row above is the most common tuning entry point. <a href="#source-4">[4]</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== REFERENCE ========== -->
+  <section id="reference" class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-num">09</span>
+        <h2>Quick Reference</h2>
+        <p class="section-lead">Practical commands, endpoints, and the sources behind the guide.</p>
+      </div>
+
+      <div class="ref-grid reveal">
+        <div class="ref-card ref-card-code">
+          <h3>Common CLI Commands</h3>
+          <pre class="code-block"><code class="language-bash"># Serve a model
+vllm serve &lt;model&gt;
+
+# Serve with options
+vllm serve &lt;model&gt; \
+  --host 0.0.0.0 \
+  --port 8000 \
+  --tensor-parallel-size 4 \
+  --max-model-len 4096
+
+# Run benchmarks
+vllm bench serve --model &lt;model&gt;
+
+# Check version
+vllm --version</code></pre>
+        </div>
+
+        <div class="ref-card ref-card-code">
+          <h3>OpenAI-Compatible Endpoints</h3>
+          <pre class="code-block"><code class="language-bash"># Chat completions
+curl http://localhost:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "meta-llama/Llama-3.1-8B-Instruct",
+    "messages": [
+      {"role": "user", "content": "Hello!"}
+    ]
+  }'
+
+# List models
+curl http://localhost:8000/v1/models</code></pre>
+        </div>
+
+        <div class="ref-card ref-card-env">
+          <h3>Key Environment Variables</h3>
+          <div class="env-list">
+            <div class="env-item">
+              <code>VLLM_USE_PRECOMPILED=1</code>
+              <span>Use precompiled wheels (faster install)</span>
+            </div>
+            <div class="env-item">
+              <code>CUDA_VISIBLE_DEVICES=0,1</code>
+              <span>Control which GPUs are visible</span>
+            </div>
+            <div class="env-item">
+              <code>VLLM_NO_USAGE_STATS=1</code>
+              <span>Disable anonymous usage reporting</span>
+            </div>
+            <div class="env-item">
+              <code>VLLM_LOGGING_LEVEL=DEBUG</code>
+              <span>Set logging verbosity</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="links-section reveal">
+        <h3>Further Reading</h3>
+        <div class="links-grid">
+          <a href="https://docs.vllm.ai" target="_blank" rel="noopener" class="link-card">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            <span>Official Documentation</span>
+            <small>docs.vllm.ai</small>
+          </a>
+          <a href="https://vllm.ai/blog/anatomy-of-vllm" target="_blank" rel="noopener" class="link-card">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            <span>Inside vLLM</span>
+            <small>Architecture blog</small>
+          </a>
+          <a href="https://docs.vllm.ai/en/latest/examples/online_serving/disaggregated_prefill.html" target="_blank" rel="noopener" class="link-card">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16v16H4z"/><path d="M8 8h8"/><path d="M8 12h8"/><path d="M8 16h5"/></svg>
+            <span>Disaggregated Prefill</span>
+            <small>vLLM example docs</small>
+          </a>
+          <a href="https://github.com/vllm-project/vllm" target="_blank" rel="noopener" class="link-card">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            <span>GitHub Repository</span>
+            <small>vllm-project/vllm</small>
+          </a>
+          <a href="https://developer.nvidia.com/blog/introducing-new-kv-cache-reuse-optimizations-in-nvidia-tensorrt-llm/" target="_blank" rel="noopener" class="link-card">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19h16"/><path d="M5 15V5l7 4 7-4v10"/></svg>
+            <span>TensorRT-LLM KV Reuse</span>
+            <small>NVIDIA technical blog</small>
+          </a>
+          <a href="https://engineering.fb.com/2025/10/17/ai-research/scaling-llm-inference-innovations-tensor-parallelism-context-parallelism-expert-parallelism/" target="_blank" rel="noopener" class="link-card">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12h18"/><path d="M7 8l-4 4 4 4"/><path d="M17 8l4 4-4 4"/></svg>
+            <span>Meta Parallelism</span>
+            <small>TTFT, TTIT, TP, CP, EP</small>
+          </a>
+          <a href="https://opentelemetry.io/docs/specs/semconv/gen-ai/" target="_blank" rel="noopener" class="link-card">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3v18"/><path d="M3 12h18"/><circle cx="12" cy="12" r="9"/></svg>
+            <span>OpenTelemetry GenAI</span>
+            <small>Semantic conventions</small>
+          </a>
+          <a href="https://platform.openai.com/docs/guides/structured-outputs/" target="_blank" rel="noopener" class="link-card">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 4h10"/><path d="M7 8h10"/><path d="M7 12h6"/><path d="M7 16h10"/><path d="M7 20h10"/></svg>
+            <span>Structured Outputs</span>
+            <small>JSON schema as product feature</small>
+          </a>
+          <a href="https://www.ietf.org/archive/id/draft-gaikwad-llm-benchmarking-methodology-00.html" target="_blank" rel="noopener" class="link-card">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 4h12v16H6z"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg>
+            <span>Benchmark Methodology</span>
+            <small>IETF Internet-Draft</small>
+          </a>
+        </div>
+      </div>
+
+      <div class="sources-section reveal">
+        <h3>Source Notes</h3>
+        <ol class="source-list">
+          <li id="source-1">vLLM team, <a href="https://vllm.ai/blog/anatomy-of-vllm" target="_blank" rel="noopener">Inside vLLM: Anatomy of a High-Throughput LLM Inference System</a>.</li>
+          <li id="source-2">vLLM docs, <a href="https://docs.vllm.ai/en/latest/examples/online_serving/disaggregated_prefill.html" target="_blank" rel="noopener">Disaggregated Prefill</a>.</li>
+          <li id="source-3">NVIDIA, <a href="https://developer.nvidia.com/blog/introducing-new-kv-cache-reuse-optimizations-in-nvidia-tensorrt-llm/" target="_blank" rel="noopener">Introducing New KV Cache Reuse Optimizations in NVIDIA TensorRT-LLM</a>.</li>
+          <li id="source-4">Engineering at Meta, <a href="https://engineering.fb.com/2025/10/17/ai-research/scaling-llm-inference-innovations-tensor-parallelism-context-parallelism-expert-parallelism/" target="_blank" rel="noopener">Scaling LLM Inference: Innovations in Tensor Parallelism, Context Parallelism, and Expert Parallelism</a>.</li>
+          <li id="source-5">OpenTelemetry, <a href="https://opentelemetry.io/docs/specs/semconv/gen-ai/" target="_blank" rel="noopener">Semantic conventions for generative AI systems</a>.</li>
+          <li id="source-6">OpenAI API docs, <a href="https://platform.openai.com/docs/guides/structured-outputs/" target="_blank" rel="noopener">Structured model outputs</a>.</li>
+          <li id="source-7">IETF Internet-Draft, <a href="https://www.ietf.org/archive/id/draft-gaikwad-llm-benchmarking-methodology-00.html" target="_blank" rel="noopener">Benchmarking Methodology for Large Language Model Serving</a>.</li>
+          <li id="source-8">vLLM docs, <a href="https://docs.vllm.ai/en/latest/configuration/optimization.html" target="_blank" rel="noopener">Optimization and Tuning</a> (chunked prefill defaults, preemption, tuning parameters).</li>
+          <li id="source-9">Kwon et al., <a href="https://arxiv.org/abs/2309.06180" target="_blank" rel="noopener">Efficient Memory Management for Large Language Model Serving with PagedAttention</a>, SOSP 2023 (2&ndash;4&times; throughput improvement, PagedAttention design).</li>
+          <li id="source-10">vLLM project, <a href="https://github.com/vllm-project/vllm" target="_blank" rel="noopener">GitHub repository and README</a> (contributor count, hardware support, feature list, model coverage).</li>
+          <li id="source-11">vLLM docs, <a href="https://docs.vllm.ai/en/latest/design/arch_overview.html" target="_blank" rel="noopener">Architecture Overview</a> (V1 multi-process architecture, process counts, entrypoints).</li>
+          <li id="source-12">vLLM docs, <a href="https://docs.vllm.ai/en/latest/serving/parallelism_scaling.html" target="_blank" rel="noopener">Parallelism and Scaling</a> (TP, PP, DP, EP guidance and distributed inference strategies).</li>
+          <li id="source-13">vLLM docs, <a href="https://docs.vllm.ai/en/latest/design/prefix_caching.html" target="_blank" rel="noopener">Automatic Prefix Caching</a> (hash-based block caching design, LRU eviction).</li>
+          <li id="source-14">vLLM docs, <a href="https://docs.vllm.ai/en/latest/models/supported_models.html" target="_blank" rel="noopener">Supported Models</a> (200+ model architectures across decoder, MoE, multimodal, embedding).</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <button class="back-to-top" id="back-to-top" aria-label="Back to top" type="button">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 15l-6-6-6 6"/></svg>
+  </button>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="site-footer">
+    <div class="container">
+      <p>
+        <strong><span class="logo-v">v</span>LLM Inference Guide</strong> &middot;
+        An open community resource.
+        Content grounded in vLLM open-source documentation plus selected April 2026 public references.
+        <br><small class="footer-updated">Last updated: April 2026</small>
+      </p>
+      <p class="footer-sub">
+        <a href="https://github.com/vllm-project/vllm" target="_blank" rel="noopener">GitHub</a> &middot;
+        <a href="https://docs.vllm.ai" target="_blank" rel="noopener">Docs</a> &middot;
+        <a href="#source-1">Sources</a>
+      </p>
+    </div>
+  </footer>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

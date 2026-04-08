@@ -1,0 +1,317 @@
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 900px) {
+  .two-col,
+  .sched-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .calc-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .calc-result {
+    grid-column: 1 / -1;
+  }
+
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: var(--nav-height);
+    left: 0;
+    right: 0;
+    background: var(--nav-bg);
+    backdrop-filter: blur(20px);
+    flex-direction: column;
+    padding: 16px;
+    border-bottom: 1px solid var(--card-border);
+  }
+
+  .nav-links.open {
+    display: flex;
+  }
+
+  .nav-divider {
+    display: none;
+  }
+
+  .nav-toggle {
+    display: flex;
+  }
+
+  .hero-stats {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .stat-card {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .deploy-modes {
+    grid-template-columns: 1fr;
+  }
+
+  .tree-branch {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .section {
+    padding: 64px 0;
+  }
+
+  .quickstart-toggle,
+  .quickstart-body {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .quickstart-toggle h2,
+  .quickstart-toggle h3 {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 980px) {
+  .quickstart-pillars,
+  .battle-cards-grid,
+  .qualification-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lab-toolbar,
+  .modern-summary,
+  .modern-topic-grid,
+  .modern-topic-footer,
+  .tuning-lab-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tuning-score-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .batching-comparison {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .batch-vs {
+    padding: 8px 0;
+    justify-content: center;
+  }
+
+  .batch-panel {
+    min-height: auto;
+  }
+
+  .chunk-lane {
+    grid-template-columns: 120px 1fr;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .modern-topic-buttons,
+  .segmented-control {
+    flex-direction: column;
+  }
+
+  .scheduler-lab,
+  .tuning-lab,
+  .modern-topic-panel,
+  .benchmark-callout {
+    padding: 24px;
+  }
+
+  .tuning-score-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+@media (max-width: 1180px) {
+  .parallelism-shell,
+  .deploy-card-grid,
+  .two-col {
+    grid-template-columns: 1fr;
+  }
+
+  .lab-heading,
+  .arch-overview-head,
+  .chunked-header,
+  .lifecycle-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .arch-legend,
+  .batch-legend,
+  .chunk-phase-bar {
+    justify-content: flex-start;
+  }
+
+  .coverage-grid,
+  .hw-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .env-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-stats,
+  .coverage-grid,
+  .hw-grid,
+  .engine-loop-cards,
+  .ref-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .arch-three-steps {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .arch-step-arrow {
+    transform: rotate(90deg);
+    padding: 0;
+  }
+
+  .stat-card {
+    max-width: none;
+  }
+
+  .cards-grid {
+    flex-direction: column;
+  }
+
+  .ref-card-env {
+    grid-column: auto;
+  }
+
+  .env-list {
+    grid-template-columns: 1fr;
+  }
+
+  .pa-strip {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .pa-cinema {
+    padding: 22px 20px;
+  }
+
+  .pa-cinema-stats {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .pa-util-wrap {
+    width: 100%;
+  }
+
+  .decode-loop-stats {
+    flex-direction: column;
+  }
+
+  .decode-flow {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .chunked-section,
+  .arch-overview,
+  .arch-onramp,
+  .decode-loop-section,
+  .engine-loop-code,
+  .process-calc,
+  .parallelism-panel,
+  .parallelism-detail,
+  .deploy-card,
+  .ref-card {
+    padding: 24px;
+  }
+
+  .parallelism-tabs,
+  .chunk-phase-bar,
+  .decode-phase-bar {
+    justify-content: flex-start;
+  }
+
+  .chunk-lane {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .pa-strip {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .pa-cell {
+    aspect-ratio: auto;
+    min-height: 56px;
+    padding: 8px 6px;
+  }
+}
+
+
+/* ---------- PRINT ---------- */
+@media print {
+  #main-nav,
+  #hero-canvas,
+  .scroll-progress,
+  .back-to-top,
+  .theme-toggle,
+  .skip-link,
+  .nav-toggle {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+    color: #111;
+    font-size: 11pt;
+  }
+
+  .section {
+    padding: 24px 0;
+    break-inside: avoid;
+  }
+
+  .comp-card-body {
+    grid-template-rows: 1fr !important;
+    padding: 0 24px 24px !important;
+    opacity: 1 !important;
+  }
+
+  .objection-body {
+    display: block !important;
+  }
+
+  .showdown,
+  .pa-cinema,
+  .scheduler-lab,
+  .tuning-lab,
+  .decode-loop-section,
+  .chunked-section {
+    break-inside: avoid;
+  }
+
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.75em;
+    color: #555;
+    word-break: break-all;
+  }
+}
