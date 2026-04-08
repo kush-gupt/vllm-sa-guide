@@ -9,7 +9,7 @@
     "type": "git",
     "url": "https://github.com/kush-gupt/vllm-sa-guide.git"
   },
-  "homepage": "https://vllm-sa-guide.pages.dev",
+  "homepage": "https://vllm-sa-guide.kushalgupta.workers.dev",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
