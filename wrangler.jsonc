@@ -1,0 +1,7 @@
+{
+  "name": "vllm-sa-guide",
+  "compatibility_date": "2026-04-08",
+  "assets": {
+    "directory": "./dist"
+  }
+}
