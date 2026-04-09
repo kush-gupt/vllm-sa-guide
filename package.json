@@ -14,7 +14,10 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "check": "node --check src/main.js src/features/*.js src/utils/*.js src/data/*.js"
+    "check": "node --check src/main.js src/features/*.js src/utils/*.js src/data/*.js",
+    "container:build": "podman build -t vllm-guide -f Containerfile .",
+    "container:run": "podman run --rm -p 8080:8080 vllm-guide",
+    "container:dev": "podman build -t vllm-guide-dev -f Containerfile.dev . && podman run --rm -p 5173:5173 -v .:/app:Z -v /app/node_modules vllm-guide-dev"
   },
   "devDependencies": {
     "vite": "^6"

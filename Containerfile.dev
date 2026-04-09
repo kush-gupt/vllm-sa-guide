@@ -1,0 +1,6 @@
+FROM quay.io/hummingbird/nodejs:22-builder
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+EXPOSE 5173
+CMD ["npx", "vite", "--host", "0.0.0.0"]

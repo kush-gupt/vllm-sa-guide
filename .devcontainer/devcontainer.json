@@ -1,0 +1,14 @@
+{
+  "name": "vllm-sa-guide",
+  "image": "quay.io/hummingbird/nodejs:22-builder",
+  "forwardPorts": [5173],
+  "postCreateCommand": "npm ci",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  }
+}
