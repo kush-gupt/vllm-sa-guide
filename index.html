@@ -19,6 +19,7 @@
   <meta name="twitter:description" content="Interactive guide to modern LLM inference with vLLM.">
   <meta name="twitter:image" content="https://vllm-sa-guide.kushalgupta.workers.dev/og-image.jpg">
 
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <link rel="icon" type="image/svg+xml" href="/logos/vllm-compact.svg">
 
   <!-- Preload critical above-fold fonts so download starts before CSS parse -->
@@ -298,7 +299,7 @@
             </div>
             <div class="modern-topic-foot">
               <span class="modern-topic-kicker">Reference</span>
-              <p id="modern-topic-source"><a href="https://docs.vllm.ai/en/latest/examples/online_serving/disaggregated_prefill.html" target="_blank" rel="noopener">vLLM docs: Disaggregated Prefill</a></p>
+              <p id="modern-topic-source"><a href="https://docs.vllm.ai/en/latest/examples/online_serving/disaggregated_prefill.html" target="_blank" rel="noopener noreferrer">vLLM docs: Disaggregated Prefill</a></p>
             </div>
           </div>
         </div>
@@ -505,37 +506,37 @@
                 <div class="hw-icon hw-nvidia">Core</div>
                 <h4>NVIDIA <abbr data-tip="Compute Unified Device Architecture. NVIDIA's platform for general-purpose GPU computation.">CUDA</abbr></h4>
                 <p>Mainline GPU path for high-throughput serving across common enterprise and hyperscaler fleets.</p>
-                <a href="https://docs.vllm.ai/en/latest/getting_started/installation/gpu/#nvidia-cuda" target="_blank" rel="noopener"><code class="code-path">repo: vllm</code></a>
+                <a href="https://docs.vllm.ai/en/latest/getting_started/installation/gpu/#nvidia-cuda" target="_blank" rel="noopener noreferrer"><code class="code-path">repo: vllm</code></a>
               </div>
               <div class="hw-card">
                 <div class="hw-icon hw-amd">Core</div>
                 <h4>AMD <abbr data-tip="AMD's open GPU compute stack for Radeon and Instinct hardware.">ROCm</abbr></h4>
                 <p>ROCm-backed deployments for AMD accelerator fleets, including MI-series hardware.</p>
-                <a href="https://docs.vllm.ai/en/latest/getting_started/installation/gpu/#amd-rocm" target="_blank" rel="noopener"><code class="code-path">repo: vllm</code></a>
+                <a href="https://docs.vllm.ai/en/latest/getting_started/installation/gpu/#amd-rocm" target="_blank" rel="noopener noreferrer"><code class="code-path">repo: vllm</code></a>
               </div>
               <div class="hw-card">
                 <div class="hw-icon hw-intel">Core</div>
                 <h4>Intel <abbr data-tip="Intel's unified GPU programming interface for Data Center and Arc GPUs.">XPU</abbr></h4>
                 <p>Intel Data Center and Arc GPUs through the XPU backend in the main repo plus <code>vllm-xpu-kernels</code>; typical installs use a source build (Intel publishes Docker images).</p>
-                <a href="https://docs.vllm.ai/en/latest/getting_started/installation/gpu/#intel-xpu" target="_blank" rel="noopener"><code class="code-path">repo: vllm</code></a>
+                <a href="https://docs.vllm.ai/en/latest/getting_started/installation/gpu/#intel-xpu" target="_blank" rel="noopener noreferrer"><code class="code-path">repo: vllm</code></a>
               </div>
               <div class="hw-card">
                 <div class="hw-icon hw-cpu">Core</div>
                 <h4>CPU Family</h4>
                 <p>Linux x86_64 and Arm AArch64 ship prebuilt CPU wheels. Apple Silicon and IBM Z CPU targets are experimental and need source builds; Apple GPU inference uses the <code>vllm-metal</code> plugin in the grid below.</p>
-                <a href="https://docs.vllm.ai/en/latest/getting_started/installation/cpu/" target="_blank" rel="noopener"><code class="code-path">repo: vllm</code></a>
+                <a href="https://docs.vllm.ai/en/latest/getting_started/installation/cpu/" target="_blank" rel="noopener noreferrer"><code class="code-path">repo: vllm</code></a>
               </div>
               <div class="hw-card">
                 <div class="hw-icon hw-google">Plugin</div>
                 <h4>Google <abbr data-tip="Google's ML ASIC for training and inference on cloud TPU.">TPU</abbr></h4>
                 <p>Cloud TPU support via the <code>tpu-inference</code> / <code>vllm-tpu</code> plugin package, integrated with the main vLLM install.</p>
-                <a href="https://github.com/vllm-project/tpu-inference" target="_blank" rel="noopener"><code class="code-path">repo: tpu-inference</code></a>
+                <a href="https://github.com/vllm-project/tpu-inference" target="_blank" rel="noopener noreferrer"><code class="code-path">repo: tpu-inference</code></a>
               </div>
               <div class="hw-card">
                 <div class="hw-icon hw-aws">Plugin</div>
                 <h4>AWS <abbr data-tip="Amazon's SDK and runtime for Trainium and Inferentia accelerators.">Neuron</abbr></h4>
                 <p><abbr data-tip="Amazon's accelerator aimed at training workloads.">Trainium</abbr> and <abbr data-tip="Amazon's accelerator aimed at inference workloads.">Inferentia</abbr> support via a dedicated vLLM organization plugin for AWS deployments.</p>
-                <a href="https://github.com/vllm-project/vllm-neuron" target="_blank" rel="noopener"><code class="code-path">repo: vllm-neuron</code></a>
+                <a href="https://github.com/vllm-project/vllm-neuron" target="_blank" rel="noopener noreferrer"><code class="code-path">repo: vllm-neuron</code></a>
               </div>
             </div>
           </div>
@@ -546,25 +547,25 @@
                 <div class="hw-icon hw-huawei">Plugin</div>
                 <h4>Ascend <abbr data-tip="Neural Processing Unit: dedicated AI accelerator (Huawei Ascend here).">NPU</abbr></h4>
                 <p>Community-maintained vLLM organization plugin for Huawei Ascend deployments.</p>
-                <a href="https://github.com/vllm-project/vllm-ascend" target="_blank" rel="noopener"><code class="code-path">repo: vllm-ascend</code></a>
+                <a href="https://github.com/vllm-project/vllm-ascend" target="_blank" rel="noopener noreferrer"><code class="code-path">repo: vllm-ascend</code></a>
               </div>
               <div class="hw-card">
                 <div class="hw-icon hw-gaudi">Plugin</div>
                 <h4>Intel Gaudi</h4>
                 <p>Dedicated org plugin for Gaudi/HPU environments and their operator + runtime differences.</p>
-                <a href="https://github.com/vllm-project/vllm-gaudi" target="_blank" rel="noopener"><code class="code-path">repo: vllm-gaudi</code></a>
+                <a href="https://github.com/vllm-project/vllm-gaudi" target="_blank" rel="noopener noreferrer"><code class="code-path">repo: vllm-gaudi</code></a>
               </div>
               <div class="hw-card">
                 <div class="hw-icon hw-ibm">Plugin</div>
                 <h4>IBM Spyre</h4>
                 <p>Community-maintained vLLM organization plugin for IBM Spyre AIU acceleration.</p>
-                <a href="https://github.com/vllm-project/vllm-spyre" target="_blank" rel="noopener"><code class="code-path">repo: vllm-spyre</code></a>
+                <a href="https://github.com/vllm-project/vllm-spyre" target="_blank" rel="noopener noreferrer"><code class="code-path">repo: vllm-spyre</code></a>
               </div>
               <div class="hw-card">
                 <div class="hw-icon hw-apple">Plugin</div>
                 <h4>Apple Silicon / Metal</h4>
                 <p>Community-maintained Metal plugin for Mac workflows and Apple unified-memory serving experiments.</p>
-                <a href="https://github.com/vllm-project/vllm-metal" target="_blank" rel="noopener"><code class="code-path">repo: vllm-metal</code></a>
+                <a href="https://github.com/vllm-project/vllm-metal" target="_blank" rel="noopener noreferrer"><code class="code-path">repo: vllm-metal</code></a>
               </div>
             </div>
           </div>
@@ -872,7 +873,7 @@ spec:
           </div>
         <div>
           <strong>Research Paper:</strong> Kwon et al., <em>"Efficient Memory Management for Large Language Model Serving with PagedAttention"</em>, <abbr data-tip="Symposium on Operating Systems Principles. The PagedAttention paper appeared here in 2023.">SOSP</abbr> 2023.
-          <a href="https://arxiv.org/abs/2309.06180" target="_blank" rel="noopener">arXiv:2309.06180</a>
+          <a href="https://arxiv.org/abs/2309.06180" target="_blank" rel="noopener noreferrer">arXiv:2309.06180</a>
         </div>
       </div>
     </div>
@@ -1653,47 +1654,47 @@ curl http://localhost:8000/v1/models</code></pre>
       <div class="links-section reveal">
         <h3>Further Reading</h3>
         <div class="links-grid">
-          <a href="https://docs.vllm.ai" target="_blank" rel="noopener" class="link-card">
+          <a href="https://docs.vllm.ai" target="_blank" rel="noopener noreferrer" class="link-card">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#icon-book"/></svg>
             <span>Official Documentation</span>
             <small>docs.vllm.ai</small>
           </a>
-          <a href="https://vllm.ai/blog/anatomy-of-vllm" target="_blank" rel="noopener" class="link-card">
+          <a href="https://vllm.ai/blog/anatomy-of-vllm" target="_blank" rel="noopener noreferrer" class="link-card">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#icon-pen"/></svg>
             <span>Inside vLLM</span>
             <small>Architecture blog</small>
           </a>
-          <a href="https://docs.vllm.ai/en/latest/examples/online_serving/disaggregated_prefill.html" target="_blank" rel="noopener" class="link-card">
+          <a href="https://docs.vllm.ai/en/latest/examples/online_serving/disaggregated_prefill.html" target="_blank" rel="noopener noreferrer" class="link-card">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#icon-page"/></svg>
             <span>Disaggregated Prefill</span>
             <small>vLLM example docs</small>
           </a>
-          <a href="https://github.com/vllm-project/vllm" target="_blank" rel="noopener" class="link-card">
+          <a href="https://github.com/vllm-project/vllm" target="_blank" rel="noopener noreferrer" class="link-card">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#icon-github"/></svg>
             <span>GitHub Repository</span>
             <small>vllm-project/vllm</small>
           </a>
-          <a href="https://developer.nvidia.com/blog/introducing-new-kv-cache-reuse-optimizations-in-nvidia-tensorrt-llm/" target="_blank" rel="noopener" class="link-card">
+          <a href="https://developer.nvidia.com/blog/introducing-new-kv-cache-reuse-optimizations-in-nvidia-tensorrt-llm/" target="_blank" rel="noopener noreferrer" class="link-card">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#icon-crown"/></svg>
             <span>TensorRT-LLM KV Reuse</span>
             <small>NVIDIA technical blog</small>
           </a>
-          <a href="https://engineering.fb.com/2025/10/17/ai-research/scaling-llm-inference-innovations-tensor-parallelism-context-parallelism-expert-parallelism/" target="_blank" rel="noopener" class="link-card">
+          <a href="https://engineering.fb.com/2025/10/17/ai-research/scaling-llm-inference-innovations-tensor-parallelism-context-parallelism-expert-parallelism/" target="_blank" rel="noopener noreferrer" class="link-card">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#icon-arrows-lr"/></svg>
             <span>Meta Parallelism</span>
             <small>TTFT, TTIT, TP, CP, EP</small>
           </a>
-          <a href="https://opentelemetry.io/docs/specs/semconv/gen-ai/" target="_blank" rel="noopener" class="link-card">
+          <a href="https://opentelemetry.io/docs/specs/semconv/gen-ai/" target="_blank" rel="noopener noreferrer" class="link-card">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#icon-crosshair"/></svg>
             <span><abbr data-tip="Vendor-neutral APIs and data model for traces, metrics, and logs.">OpenTelemetry</abbr> GenAI</span>
             <small><abbr data-tip="Standard names for span and metric fields so backends and UIs agree on what each value means.">Semantic conventions</abbr></small>
           </a>
-          <a href="https://platform.openai.com/docs/guides/structured-outputs" target="_blank" rel="noopener" class="link-card">
+          <a href="https://platform.openai.com/docs/guides/structured-outputs" target="_blank" rel="noopener noreferrer" class="link-card">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#icon-list"/></svg>
             <span>Structured Outputs</span>
             <small>JSON schema as product feature</small>
           </a>
-          <a href="https://www.ietf.org/archive/id/draft-gaikwad-llm-benchmarking-methodology-00.html" target="_blank" rel="noopener" class="link-card">
+          <a href="https://www.ietf.org/archive/id/draft-gaikwad-llm-benchmarking-methodology-00.html" target="_blank" rel="noopener noreferrer" class="link-card">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#icon-doc-lines"/></svg>
             <span>Benchmark Methodology</span>
             <small>IETF Internet-Draft</small>
@@ -1704,23 +1705,23 @@ curl http://localhost:8000/v1/models</code></pre>
       <div class="sources-section reveal">
         <h3>Source Notes</h3>
         <ol class="source-list">
-          <li id="source-1">Aleksa Gordic (vLLM Blog), <a href="https://vllm.ai/blog/anatomy-of-vllm" target="_blank" rel="noopener">Inside vLLM: Anatomy of a High-Throughput LLM Inference System</a>.</li>
-          <li id="source-2">vLLM docs, <a href="https://docs.vllm.ai/en/latest/examples/online_serving/disaggregated_prefill.html" target="_blank" rel="noopener">Disaggregated Prefill</a>.</li>
-          <li id="source-3">NVIDIA, <a href="https://developer.nvidia.com/blog/introducing-new-kv-cache-reuse-optimizations-in-nvidia-tensorrt-llm/" target="_blank" rel="noopener">Introducing New KV Cache Reuse Optimizations in NVIDIA TensorRT-LLM</a>.</li>
-          <li id="source-4">Engineering at Meta, <a href="https://engineering.fb.com/2025/10/17/ai-research/scaling-llm-inference-innovations-tensor-parallelism-context-parallelism-expert-parallelism/" target="_blank" rel="noopener">Scaling LLM Inference: Innovations in Tensor Parallelism, Context Parallelism, and Expert Parallelism</a>.</li>
-          <li id="source-5">OpenTelemetry, <a href="https://opentelemetry.io/docs/specs/semconv/gen-ai/" target="_blank" rel="noopener">Semantic conventions for generative AI systems</a>.</li>
-          <li id="source-6">OpenAI API docs, <a href="https://platform.openai.com/docs/guides/structured-outputs/" target="_blank" rel="noopener">Structured model outputs</a>.</li>
-          <li id="source-7">IETF Internet-Draft, <a href="https://www.ietf.org/archive/id/draft-gaikwad-llm-benchmarking-methodology-00.html" target="_blank" rel="noopener">Benchmarking Methodology for Large Language Model Serving</a>.</li>
-          <li id="source-8">vLLM docs, <a href="https://docs.vllm.ai/en/latest/configuration/optimization.html" target="_blank" rel="noopener">Optimization and Tuning</a> (chunked prefill defaults, preemption, tuning parameters).</li>
-          <li id="source-9">Kwon et al., <a href="https://arxiv.org/abs/2309.06180" target="_blank" rel="noopener">Efficient Memory Management for Large Language Model Serving with PagedAttention</a>, SOSP 2023 (2&ndash;4&times; throughput improvement, PagedAttention design).</li>
-          <li id="source-10">vLLM project, <a href="https://github.com/vllm-project/vllm" target="_blank" rel="noopener">GitHub repository and README</a> (contributor count, hardware support, feature list, model coverage).</li>
-          <li id="source-11">vLLM docs, <a href="https://github.com/vllm-project/vllm/blob/main/docs/design/arch_overview.md" target="_blank" rel="noopener">Architecture Overview</a> (V1 multi-process architecture, process counts, entrypoints).</li>
-          <li id="source-12">vLLM docs, <a href="https://docs.vllm.ai/en/latest/serving/parallelism_scaling.html" target="_blank" rel="noopener">Parallelism and Scaling</a> (TP, PP overview); see also <a href="https://docs.vllm.ai/en/latest/serving/data_parallel_deployment.html" target="_blank" rel="noopener">Data Parallel Deployment</a> (DP + MoE), <a href="https://docs.vllm.ai/en/latest/serving/expert_parallel_deployment.html" target="_blank" rel="noopener">Expert Parallel Deployment</a> (EP), and <a href="https://docs.vllm.ai/en/latest/serving/context_parallel_deployment.html" target="_blank" rel="noopener">Context Parallel Deployment</a> (CP).</li>
-          <li id="source-13">vLLM docs, <a href="https://github.com/vllm-project/vllm/blob/main/docs/design/prefix_caching.md" target="_blank" rel="noopener">Automatic Prefix Caching</a> (hash-based block caching design, <abbr data-tip="Least Recently Used eviction. When memory is full, the longest-untouched blocks go first.">LRU eviction</abbr>).</li>
-          <li id="source-14">vLLM docs, <a href="https://docs.vllm.ai/en/latest/models/supported_models.html" target="_blank" rel="noopener">Supported Models</a> (200+ model architectures across decoder, MoE, multimodal, embedding).</li>
-          <li id="source-15">vLLM project, <a href="https://github.com/vllm-project/media-kit" target="_blank" rel="noopener">Media Kit</a> (official logo assets and brand colors).</li>
-          <li id="source-16">vLLM docs, <a href="https://docs.vllm.ai/en/latest/deployment/integrations/kserve.html" target="_blank" rel="noopener">Deploying with KServe</a> (Kubernetes-native serving integration).</li>
-          <li id="source-17">Yu et al., <a href="https://www.usenix.org/conference/osdi22/presentation/yu" target="_blank" rel="noopener">Orca: A Distributed Serving System for Transformer-Based Generative Models</a>, OSDI 2022 (iteration-level scheduling / continuous batching).</li>
+          <li id="source-1">Aleksa Gordic (vLLM Blog), <a href="https://vllm.ai/blog/anatomy-of-vllm" target="_blank" rel="noopener noreferrer">Inside vLLM: Anatomy of a High-Throughput LLM Inference System</a>.</li>
+          <li id="source-2">vLLM docs, <a href="https://docs.vllm.ai/en/latest/examples/online_serving/disaggregated_prefill.html" target="_blank" rel="noopener noreferrer">Disaggregated Prefill</a>.</li>
+          <li id="source-3">NVIDIA, <a href="https://developer.nvidia.com/blog/introducing-new-kv-cache-reuse-optimizations-in-nvidia-tensorrt-llm/" target="_blank" rel="noopener noreferrer">Introducing New KV Cache Reuse Optimizations in NVIDIA TensorRT-LLM</a>.</li>
+          <li id="source-4">Engineering at Meta, <a href="https://engineering.fb.com/2025/10/17/ai-research/scaling-llm-inference-innovations-tensor-parallelism-context-parallelism-expert-parallelism/" target="_blank" rel="noopener noreferrer">Scaling LLM Inference: Innovations in Tensor Parallelism, Context Parallelism, and Expert Parallelism</a>.</li>
+          <li id="source-5">OpenTelemetry, <a href="https://opentelemetry.io/docs/specs/semconv/gen-ai/" target="_blank" rel="noopener noreferrer">Semantic conventions for generative AI systems</a>.</li>
+          <li id="source-6">OpenAI API docs, <a href="https://platform.openai.com/docs/guides/structured-outputs/" target="_blank" rel="noopener noreferrer">Structured model outputs</a>.</li>
+          <li id="source-7">IETF Internet-Draft, <a href="https://www.ietf.org/archive/id/draft-gaikwad-llm-benchmarking-methodology-00.html" target="_blank" rel="noopener noreferrer">Benchmarking Methodology for Large Language Model Serving</a>.</li>
+          <li id="source-8">vLLM docs, <a href="https://docs.vllm.ai/en/latest/configuration/optimization.html" target="_blank" rel="noopener noreferrer">Optimization and Tuning</a> (chunked prefill defaults, preemption, tuning parameters).</li>
+          <li id="source-9">Kwon et al., <a href="https://arxiv.org/abs/2309.06180" target="_blank" rel="noopener noreferrer">Efficient Memory Management for Large Language Model Serving with PagedAttention</a>, SOSP 2023 (2&ndash;4&times; throughput improvement, PagedAttention design).</li>
+          <li id="source-10">vLLM project, <a href="https://github.com/vllm-project/vllm" target="_blank" rel="noopener noreferrer">GitHub repository and README</a> (contributor count, hardware support, feature list, model coverage).</li>
+          <li id="source-11">vLLM docs, <a href="https://github.com/vllm-project/vllm/blob/main/docs/design/arch_overview.md" target="_blank" rel="noopener noreferrer">Architecture Overview</a> (V1 multi-process architecture, process counts, entrypoints).</li>
+          <li id="source-12">vLLM docs, <a href="https://docs.vllm.ai/en/latest/serving/parallelism_scaling.html" target="_blank" rel="noopener noreferrer">Parallelism and Scaling</a> (TP, PP overview); see also <a href="https://docs.vllm.ai/en/latest/serving/data_parallel_deployment.html" target="_blank" rel="noopener noreferrer">Data Parallel Deployment</a> (DP + MoE), <a href="https://docs.vllm.ai/en/latest/serving/expert_parallel_deployment.html" target="_blank" rel="noopener noreferrer">Expert Parallel Deployment</a> (EP), and <a href="https://docs.vllm.ai/en/latest/serving/context_parallel_deployment.html" target="_blank" rel="noopener noreferrer">Context Parallel Deployment</a> (CP).</li>
+          <li id="source-13">vLLM docs, <a href="https://github.com/vllm-project/vllm/blob/main/docs/design/prefix_caching.md" target="_blank" rel="noopener noreferrer">Automatic Prefix Caching</a> (hash-based block caching design, <abbr data-tip="Least Recently Used eviction. When memory is full, the longest-untouched blocks go first.">LRU eviction</abbr>).</li>
+          <li id="source-14">vLLM docs, <a href="https://docs.vllm.ai/en/latest/models/supported_models.html" target="_blank" rel="noopener noreferrer">Supported Models</a> (200+ model architectures across decoder, MoE, multimodal, embedding).</li>
+          <li id="source-15">vLLM project, <a href="https://github.com/vllm-project/media-kit" target="_blank" rel="noopener noreferrer">Media Kit</a> (official logo assets and brand colors).</li>
+          <li id="source-16">vLLM docs, <a href="https://docs.vllm.ai/en/latest/deployment/integrations/kserve.html" target="_blank" rel="noopener noreferrer">Deploying with KServe</a> (Kubernetes-native serving integration).</li>
+          <li id="source-17">Yu et al., <a href="https://www.usenix.org/conference/osdi22/presentation/yu" target="_blank" rel="noopener noreferrer">Orca: A Distributed Serving System for Transformer-Based Generative Models</a>, OSDI 2022 (iteration-level scheduling / continuous batching).</li>
         </ol>
       </div>
     </div>
@@ -1746,8 +1747,8 @@ curl http://localhost:8000/v1/models</code></pre>
         <br><small class="footer-updated">Last updated: April 2026</small>
       </p>
       <p class="footer-sub">
-        <a href="https://github.com/vllm-project/vllm" target="_blank" rel="noopener">GitHub</a> &middot;
-        <a href="https://docs.vllm.ai" target="_blank" rel="noopener">Docs</a> &middot;
+        <a href="https://github.com/vllm-project/vllm" target="_blank" rel="noopener noreferrer">GitHub</a> &middot;
+        <a href="https://docs.vllm.ai" target="_blank" rel="noopener noreferrer">Docs</a> &middot;
         <a href="#source-1">Sources</a>
       </p>
     </div>
