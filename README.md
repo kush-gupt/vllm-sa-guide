@@ -2,7 +2,7 @@
 
 An interactive, single-page guide covering modern LLM inference engines — with vLLM as the anchor. A vendor-neutral educational resource for practitioners, engineers, and anyone evaluating inference serving options. Built with vanilla JavaScript and CSS, bundled with Vite.
 
-**[Live site](https://vllm-sa-guide.kushalgupta.workers.dev)** · [Source](https://github.com/kush-gupt/vllm-sa-guide)
+**[Live site](https://learnvllm.com)** · [Source](https://github.com/kush-gupt/vllm-sa-guide)
 
 ## Quick start
 
