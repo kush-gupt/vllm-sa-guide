@@ -66,9 +66,9 @@
   opacity: var(--pill-opacity, 0);
   width: var(--pill-w, 0px);
   transform: translateX(var(--pill-x, 0px));
-  transition: transform 0.35s var(--ease-out-expo),
-              width 0.25s var(--ease-out-expo),
-              opacity 0.25s var(--ease-out-expo);
+  transition: transform 0.32s var(--ease-spring),
+              width 0.32s var(--ease-out-expo),
+              opacity 0.2s var(--ease-out-expo);
 }
 
 .nav-links a {
@@ -128,6 +128,11 @@
 .theme-toggle:hover {
   color: var(--text);
   border-color: var(--red);
+}
+
+.theme-toggle:active {
+  transform: scale(0.9);
+  transition: transform 0.08s var(--ease-out-expo);
 }
 
 .theme-toggle .icon-sun,
@@ -258,13 +263,14 @@
   border-radius: var(--radius);
   padding: 24px 32px;
   min-width: 180px;
-  transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+  transition: border-color 0.4s var(--ease-out-expo), transform 0.4s var(--ease-out-expo), box-shadow 0.4s var(--ease-out-expo);
 }
 
 .stat-card:hover {
   border-color: var(--red);
   transform: translateY(-6px) scale(1.015);
   box-shadow: 0 4px 12px rgba(238, 0, 0, 0.08), 0 16px 40px rgba(238, 0, 0, 0.12), 0 0 0 1px rgba(238, 0, 0, 0.15);
+  transition-duration: 0.2s;
 }
 
 .stat-icon {
@@ -296,6 +302,13 @@
   color: #fff;
   transform: translateY(-3px) scale(1.02);
   box-shadow: 0 6px 16px var(--red-glow), 0 16px 40px rgba(238, 0, 0, 0.18);
+  transition-duration: 0.18s;
+}
+
+.hero-cta:active {
+  transform: translateY(0) scale(0.97);
+  box-shadow: 0 2px 8px var(--red-glow);
+  transition-duration: 0.08s;
 }
 
 .cta-arrow {
@@ -392,7 +405,7 @@
   pointer-events: none;
   transform-origin: left;
   transform: scaleX(0);
-  transition: transform 0.1s linear;
+  will-change: transform;
 }
 
 /* ---------- BACK TO TOP ---------- */
@@ -412,15 +425,19 @@
   align-items: center;
   justify-content: center;
   opacity: 0;
-  transform: translateY(12px);
+  transform: translateY(12px) scale(0.8);
   pointer-events: none;
-  transition: opacity var(--transition-fast), transform var(--transition-fast), background var(--transition-fast);
+  transition: opacity 0.3s var(--ease-out-expo),
+              transform 0.4s var(--ease-spring),
+              background 0.2s var(--ease-out-expo),
+              border-color 0.2s var(--ease-out-expo),
+              color 0.2s var(--ease-out-expo);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
 }
 
 .back-to-top.visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
   pointer-events: auto;
 }
 
@@ -428,4 +445,9 @@
   background: var(--red);
   color: #fff;
   border-color: var(--red);
+}
+
+.back-to-top:active {
+  transform: translateY(0) scale(0.9);
+  transition-duration: 0.08s;
 }

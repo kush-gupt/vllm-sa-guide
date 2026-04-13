@@ -31,12 +31,13 @@
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
   padding: 28px;
-  transition: transform var(--transition), box-shadow var(--transition);
+  transition: transform 0.4s var(--ease-out-expo), box-shadow 0.4s var(--ease-out-expo), border-color 0.4s var(--ease-out-expo);
 }
 
 .reading-path-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  transition-duration: 0.18s;
 }
 
 .reading-path-business:hover { border-color: var(--green); }
@@ -270,13 +271,14 @@ details.plain-english p {
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
   padding: 32px;
-  transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+  transition: border-color 0.4s var(--ease-out-expo), transform 0.4s var(--ease-out-expo), box-shadow 0.4s var(--ease-out-expo);
 }
 
 .problem-card:hover {
   border-color: var(--red);
   transform: translateY(-6px) scale(1.01);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 16px 40px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(238, 0, 0, 0.15);
+  transition-duration: 0.18s;
 }
 
 .problem-icon {
@@ -353,13 +355,14 @@ details.plain-english p {
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
   overflow: hidden;
-  transition: box-shadow var(--transition), transform var(--transition);
+  transition: box-shadow 0.4s var(--ease-out-expo), transform 0.4s var(--ease-out-expo), border-color 0.4s var(--ease-out-expo);
 }
 
 .comp-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 20px 40px rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(238, 0, 0, 0.12);
   transform: translateY(-3px) scale(1.008);
   border-color: var(--red);
+  transition-duration: 0.18s;
 }
 
 .comp-card-header {
@@ -716,13 +719,14 @@ td.col-plain {
   border-radius: var(--radius);
   padding: 24px;
   text-align: center;
-  transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+  transition: border-color 0.4s var(--ease-out-expo), transform 0.4s var(--ease-out-expo), box-shadow 0.4s var(--ease-out-expo);
 }
 
 .hw-card:hover {
   border-color: var(--red);
   transform: translateY(-5px) scale(1.01);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06), 0 16px 36px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(238, 0, 0, 0.12);
+  transition-duration: 0.18s;
 }
 
 .hw-icon {
@@ -1034,7 +1038,7 @@ td.col-plain {
   padding: 28px;
   text-align: center;
   color: var(--text);
-  transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+  transition: border-color 0.4s var(--ease-out-expo), transform 0.4s var(--ease-out-expo), box-shadow 0.4s var(--ease-out-expo);
 }
 
 .link-card:hover {
@@ -1042,6 +1046,7 @@ td.col-plain {
   transform: translateY(-6px) scale(1.015);
   color: var(--text);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 16px 40px rgba(0, 0, 0, 0.14), 0 0 0 1px rgba(238, 0, 0, 0.12);
+  transition-duration: 0.18s;
 }
 
 .link-card svg {
@@ -1364,13 +1369,14 @@ td.col-plain {
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
   padding: 24px;
-  transition: border-color var(--transition), transform var(--transition);
+  transition: border-color 0.4s var(--ease-out-expo), transform 0.4s var(--ease-out-expo), box-shadow 0.4s var(--ease-out-expo);
 }
 
 .quickstart-card:hover {
   border-color: rgba(62, 134, 53, 0.5);
   transform: translateY(-4px);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  transition-duration: 0.18s;
 }
 
 .quickstart-card-icon {

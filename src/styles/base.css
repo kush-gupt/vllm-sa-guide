@@ -1,7 +1,7 @@
 /* ---------- ANIMATION KEYFRAMES ---------- */
 @keyframes revealUp {
-  from { opacity: 0; transform: translateY(32px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  from { opacity: 0; transform: translateY(32px) scale(0.97); filter: blur(4px); }
+  to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
 }
 
 @keyframes fadeInUp {
@@ -79,10 +79,13 @@ html {
 .theme-transitioning *::before,
 .theme-transitioning *::after {
   transition: background-color 0.4s var(--ease-out-expo),
+              background-image 0.4s var(--ease-out-expo),
               color 0.4s var(--ease-out-expo),
               border-color 0.4s var(--ease-out-expo),
+              outline-color 0.4s var(--ease-out-expo),
               box-shadow 0.4s var(--ease-out-expo),
-              fill 0.4s var(--ease-out-expo) !important;
+              fill 0.4s var(--ease-out-expo),
+              filter 0.4s var(--ease-out-expo) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -118,6 +121,15 @@ body {
   line-height: 1.75;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(238, 0, 0, 0.25);
+  color: inherit;
+}
+
+[data-theme="light"] ::selection {
+  background: rgba(238, 0, 0, 0.18);
 }
 
 h1, h2, h3, h4 {
@@ -159,6 +171,17 @@ strong { font-weight: 700; }
 .section:not(.hero-section) {
   content-visibility: auto;
   contain-intrinsic-block-size: auto 800px;
+}
+
+.section:not(.hero-section)::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--card-border), transparent);
+  pointer-events: none;
 }
 
 .section:nth-child(even) {
@@ -204,8 +227,8 @@ strong { font-weight: 700; }
 }
 
 .reveal.visible {
-  will-change: opacity, transform;
-  animation: revealUp 0.8s var(--ease-out-expo) forwards;
+  will-change: opacity, transform, filter;
+  animation: revealUp 0.65s var(--ease-out-expo) forwards;
 }
 
 .reveal.done {
@@ -223,16 +246,16 @@ strong { font-weight: 700; }
   animation: fadeInUp 0.55s var(--ease-out-expo) forwards;
 }
 
-.stagger-children.visible > *:nth-child(1) { animation-delay: 0.05s; }
-.stagger-children.visible > *:nth-child(2) { animation-delay: 0.11s; }
-.stagger-children.visible > *:nth-child(3) { animation-delay: 0.17s; }
-.stagger-children.visible > *:nth-child(4) { animation-delay: 0.23s; }
-.stagger-children.visible > *:nth-child(5) { animation-delay: 0.29s; }
-.stagger-children.visible > *:nth-child(6) { animation-delay: 0.35s; }
-.stagger-children.visible > *:nth-child(7) { animation-delay: 0.41s; }
-.stagger-children.visible > *:nth-child(8) { animation-delay: 0.47s; }
-.stagger-children.visible > *:nth-child(9) { animation-delay: 0.52s; }
-.stagger-children.visible > *:nth-child(10) { animation-delay: 0.55s; }
+.stagger-children.visible > *:nth-child(1) { animation-delay: 0.04s; }
+.stagger-children.visible > *:nth-child(2) { animation-delay: 0.09s; }
+.stagger-children.visible > *:nth-child(3) { animation-delay: 0.14s; }
+.stagger-children.visible > *:nth-child(4) { animation-delay: 0.19s; }
+.stagger-children.visible > *:nth-child(5) { animation-delay: 0.24s; }
+.stagger-children.visible > *:nth-child(6) { animation-delay: 0.29s; }
+.stagger-children.visible > *:nth-child(7) { animation-delay: 0.34s; }
+.stagger-children.visible > *:nth-child(8) { animation-delay: 0.39s; }
+.stagger-children.visible > *:nth-child(9) { animation-delay: 0.43s; }
+.stagger-children.visible > *:nth-child(10) { animation-delay: 0.46s; }
 
 /* ---------- CROSSFADE UTILITY ---------- */
 .crossfade-container {
