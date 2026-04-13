@@ -40,6 +40,7 @@ export function init() {
         return;
       }
       wordSpans[i].classList.add('tw-visible');
+      wordSpans[i].after(cursor);
       i++;
 
       const prev = wordSpans[i - 1].textContent;

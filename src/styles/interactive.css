@@ -2188,28 +2188,6 @@
   align-items: start;
 }
 
-.ref-card-env {
-  grid-column: 1 / -1;
-}
-
-.env-list {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.env-item {
-  background: var(--bg);
-  border: 1px solid var(--card-border);
-  border-radius: 12px;
-  padding: 14px;
-  overflow: hidden;
-}
-
-.env-item code {
-  overflow-wrap: break-word;
-  word-break: break-all;
-}
 
 .parallelism-shell {
   display: grid;

@@ -45,11 +45,11 @@ export const comparisonFaq = [
   {
     id: 'enterprise-support',
     question: 'We need enterprise support',
-    response: 'vLLM has multiple enterprise support options. The community publishes container images with vulnerability management, configurable hashing (including FIPS-friendly algorithms for multimodal inputs), and hardening guidance. Vendors like Red Hat ship certified images, support contracts, and production accountability on top of the open-source project.<a href="#source-10">[10]</a>',
+    response: 'vLLM has multiple enterprise support options. The community publishes container images with vulnerability management, FIPS-aware crypto paths (configurable multimodal hashing, TLS cipher control, FIPS-tolerant internal hashing), and hardening guidance. Production deployments need a reverse proxy, network segmentation, and secrets management around the engine. Vendors like Red Hat ship certified images, support contracts, and production accountability on top of the open-source project.<a href="#source-10">[10]</a> <a href="#source-20">[20]</a>',
     keyPoints: [
       'Community container images with vulnerability management; vendor-certified images available (e.g. Red Hat AI Inference Server)',
-      'FIPS-friendly hashing options (for example SHA-256 for multimodal content) and hardening guidance <a href="#source-10">[10]</a>',
-      'Vulnerability management and security patching',
+      'FIPS support: SHA-256/512 multimodal hashing, <code>--ssl-ciphers</code> for TLS, <code>usedforsecurity=False</code> on internal MD5 for FIPS-enabled hosts <a href="#source-10">[10]</a>',
+      'Reverse proxy with endpoint allowlisting required; <code>--api-key</code> alone does not secure all endpoints <a href="#source-20">[20]</a>',
       'Dedicated support contacts for production issues'
     ]
   },

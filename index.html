@@ -181,13 +181,10 @@
       </div>
 
       <div id="quickstart" class="quickstart-banner reveal">
-        <button class="quickstart-toggle" aria-expanded="true" type="button">
-          <div>
-            <span class="section-tier tier-overview">Quick overview</span>
-            <h3>vLLM at a Glance</h3>
-          </div>
-          <span class="expand-icon" aria-hidden="true">&times;</span>
-        </button>
+        <div class="quickstart-header">
+          <span class="section-tier tier-overview">Quick overview</span>
+          <h3>vLLM at a Glance</h3>
+        </div>
         <div class="quickstart-body">
           <p class="quickstart-pitch">vLLM is an <strong>open-source engine for fast, cost-effective AI inference at scale</strong>. <strong><abbr data-tip="vLLM maps logical KV blocks to GPU pages as sequences grow, like virtual memory. That cuts reserved-but-empty space versus one contiguous buffer per request.">PagedAttention</abbr></strong> tightens KV memory use. <a href="#source-9">[9]</a> <strong><abbr data-tip="The scheduler admits and finishes requests every iteration instead of waiting for a fixed batch to empty.">Continuous batching</abbr></strong> keeps accelerators busy under mixed load. The runtime also ships <abbr data-tip="Reuses KV blocks when different prompts share an opening token sequence.">prefix caching</abbr>, structured and multimodal paths, multi-GPU <abbr data-tip="Spreads tensors or layers across GPUs so one deployment fits a larger model or more load.">parallelism</abbr>, and production-oriented APIs. <a href="#source-10">[10]</a></p>
 
@@ -235,7 +232,7 @@
       <div class="modern-summary reveal">
         <div class="modern-summary-card">
           <h3>Applying the mental model</h3>
-          <p>Building on the <a href="#why">prefill/decode tradeoff above</a>, prompt length, concurrency, prefix reuse, multimodal inputs, and latency targets usually decide whether batching, KV memory, parallelism, or disaggregated serving matter most.</p>
+          <p>Building on the <a href="#why">prefill/decode tradeoff above</a>, prompt length, concurrency, prefix reuse, multimodal inputs, and latency targets usually decide whether batching, KV memory, parallelism, or disaggregated serving matter most. Use the topic tabs below to explore each technique and when it applies to your workload.</p>
         </div>
       </div>
 
@@ -569,12 +566,37 @@
             <h4>Optimized Models</h4>
             <p>Multiple organizations publish optimized, quantized models on Hugging Face that are tested and ready for production with vLLM.</p>
           </div>
-          <div class="ecosystem-card">
-            <div class="ecosystem-card-icon">
-              <svg width="36" height="36" fill="none" stroke="var(--red)" stroke-width="1.5"><use href="#icon-shield"/></svg>
-            </div>
+        </div>
+
+        <div class="security-callout">
+          <div class="security-callout-header">
+            <svg width="28" height="28" fill="none" stroke="var(--red)" stroke-width="1.5"><use href="#icon-shield"/></svg>
             <h4>Security and Compliance</h4>
-            <p>Set <code>VLLM_MM_HASHER_ALGORITHM</code> to <code>sha256</code> or <code>sha512</code> for <abbr data-tip="Federal Information Processing Standards. US government cryptographic requirements for regulated environments.">FIPS</abbr> 140-3 compliant multimodal hashing (default <code>blake3</code> is not). The project docs cover vulnerability handling and reverse-proxy / Gateway hardening. <a href="#source-10">[10]</a></p>
+          </div>
+          <p class="security-callout-lead">vLLM is built for throughput; production security requires layers around it. <a href="#source-20">[20]</a></p>
+          <div class="security-grid">
+            <div class="security-item">
+              <strong>Reverse proxy</strong>
+              <span><code>--api-key</code> protects only <code>/v1</code> endpoints. Use a gateway with endpoint allowlisting. <a href="#source-20">[20]</a></span>
+            </div>
+            <div class="security-item">
+              <strong>Network isolation</strong>
+              <span>Multi-node ZeroMQ traffic is unencrypted. Isolate with NetworkPolicies.</span>
+            </div>
+            <div class="security-item">
+              <strong>Secrets management</strong>
+              <span>HF tokens and API keys belong in Kubernetes Secrets or a vault, not pod specs.</span>
+            </div>
+            <div class="security-item">
+              <strong>Patch cadence</strong>
+              <span>Multiple high-severity CVEs since 2025. Pin versions, scan images, track <a href="https://github.com/vllm-project/vllm/security/advisories" target="_blank" rel="noopener noreferrer">advisories</a>.</span>
+            </div>
+          </div>
+          <div class="security-fips">
+            <strong><abbr data-tip="Federal Information Processing Standards. US government cryptographic requirements for regulated environments.">FIPS</abbr> 140-3:</strong>
+            Multimodal hashing defaults to non-approved <code>blake3</code>; switch via <code>VLLM_MM_HASHER_ALGORITHM</code> env var to <code>sha256</code> or <code>sha512</code>.
+            Restrict TLS cipher suites with <code>--ssl-ciphers</code>.
+            Internal MD5 calls use <code>usedforsecurity=False</code> for FIPS-enabled hosts (tolerance, not full compliance). <a href="#source-10">[10]</a>
           </div>
         </div>
       </div>
@@ -1502,6 +1524,17 @@ engine_core_outputs = self.scheduler.update_from_output(
         </ul>
       </details>
 
+      <div class="sched-concept reveal">
+        <h3 style="margin-bottom: 12px; color: var(--text);">Practical Benchmarking with GuideLLM</h3>
+        <p>The test dataset is the most overlooked tuning variable. Synthetic or toy prompts lead to misleading conclusions because vLLM performance depends on incoming request shapes and arrival patterns. <a href="#source-21">[21]</a></p>
+        <ul class="benchmark-list" style="margin-top: 14px;">
+          <li><strong>Start with representative data.</strong> Build test datasets that match your production input/output token distributions, prompt variability, and repeated text patterns (vLLM optimizes recurring prefixes).</li>
+          <li><strong>Use <a href="https://github.com/neuralmagic/guidellm" target="_blank" rel="noopener noreferrer">GuideLLM</a></strong> to move from synthetic load testing to production reality: configurable request shapes, varying concurrency patterns, and captured TTFT / ITL / throughput metrics. <a href="#source-21">[21]</a></li>
+          <li><strong>Establish SLOs first.</strong> Define P95 and P99 targets for TTFT and ITL before tuning, then sweep concurrency to find where those targets break.</li>
+          <li><strong>Iterate.</strong> Performance tuning is not a single pass. Adjust one lever at a time and re-measure against your SLO targets.</li>
+        </ul>
+      </div>
+
       <div class="parallelism-ref reveal">
         <h3>Parallelism Strategy</h3>
         <p>For guidance on choosing between TP, PP, DP, EP, and CP, see the <a href="#parallelism-chooser">interactive parallelism chooser</a> in the Deployment section. The <code>--tensor-parallel-size</code> row above is the most common tuning entry point. <a href="#source-4">[4]</a></p>
@@ -1520,60 +1553,30 @@ engine_core_outputs = self.scheduler.update_from_output(
 
       <div class="ref-grid reveal">
         <div class="ref-card ref-card-code">
-          <h3>Common CLI Commands</h3>
+          <h3>CLI</h3>
           <pre class="code-block"><code class="language-bash"># Serve a model
 vllm serve &lt;model&gt;
 
-# Serve with options
+# Common options
 vllm serve &lt;model&gt; \
-  --host 0.0.0.0 \
-  --port 8000 \
   --tensor-parallel-size 4 \
   --max-model-len 4096
 
-# Run benchmarks
-vllm bench serve --model &lt;model&gt;
-
-# Check version
-vllm --version</code></pre>
+# Benchmark
+vllm bench serve --model &lt;model&gt;</code></pre>
         </div>
 
         <div class="ref-card ref-card-code">
-          <h3>OpenAI-Compatible Endpoints</h3>
+          <h3>OpenAI-Compatible API</h3>
           <pre class="code-block"><code class="language-bash"># Chat completions
 curl http://localhost:8000/v1/chat/completions \
   -H "Content-Type: application/json" \
-  -d '{
-    "model": "meta-llama/Llama-3.1-8B-Instruct",
-    "messages": [
-      {"role": "user", "content": "Hello!"}
-    ]
-  }'
+  -d '{"model": "&lt;model&gt;", "messages": [
+    {"role": "user", "content": "Hello!"}
+  ]}'
 
 # List models
 curl http://localhost:8000/v1/models</code></pre>
-        </div>
-
-        <div class="ref-card ref-card-env">
-          <h3>Key Environment Variables</h3>
-          <div class="env-list">
-            <div class="env-item">
-              <code>VLLM_USE_PRECOMPILED=1</code>
-              <span>Use precompiled wheels (faster install)</span>
-            </div>
-            <div class="env-item">
-              <code>CUDA_VISIBLE_DEVICES=0,1</code>
-              <span>Control which GPUs are visible</span>
-            </div>
-            <div class="env-item">
-              <code>VLLM_NO_USAGE_STATS=1</code>
-              <span>Disable anonymous usage reporting</span>
-            </div>
-            <div class="env-item">
-              <code>VLLM_LOGGING_LEVEL=DEBUG</code>
-              <span>Set logging verbosity</span>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -1650,6 +1653,8 @@ curl http://localhost:8000/v1/models</code></pre>
           <li id="source-17">Yu et al., <a href="https://www.usenix.org/conference/osdi22/presentation/yu" target="_blank" rel="noopener noreferrer">Orca: A Distributed Serving System for Transformer-Based Generative Models</a>, OSDI 2022 (iteration-level scheduling / continuous batching).</li>
           <li id="source-18">SGLang project, <a href="https://github.com/sgl-project/sglang" target="_blank" rel="noopener noreferrer">GitHub repository</a>; see also Techsy.io, <a href="https://techsy.io/blog/vllm-vs-sglang" target="_blank" rel="noopener noreferrer">vLLM vs SGLang: Picking the Right LLM Inference Server in 2026</a> (throughput benchmarks, feature comparison).</li>
           <li id="source-19">Artificial Analysis, <a href="https://artificialanalysis.ai/trends#open-source" target="_blank" rel="noopener noreferrer">Open Source Models: Progress in Open Weights vs. Proprietary Intelligence</a> (Intelligence Index trend data).</li>
+          <li id="source-20">Michael Hannecke, <a href="https://medium.com/@michael.hannecke/vllm-in-production-a-security-hardening-guide-for-enterprise-deployments-56a9c2c213dd" target="_blank" rel="noopener noreferrer">vLLM in Production: A Security Hardening Guide for Enterprise Deployments</a> (reverse proxy, network segmentation, secrets management, CVE tracking).</li>
+          <li id="source-21">Trevor Royer (Red Hat Developer), <a href="https://developers.redhat.com/articles/2026/03/03/practical-strategies-vllm-performance-tuning" target="_blank" rel="noopener noreferrer">Practical strategies for vLLM performance tuning</a> (GuideLLM, representative datasets, SLO-driven benchmarking).</li>
         </ol>
       </div>
     </div>
