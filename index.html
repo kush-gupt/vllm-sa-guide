@@ -76,9 +76,9 @@
         <span></span><span></span><span></span>
       </button>
       <ul class="nav-links">
-        <li><a href="#why">The Problem</a></li>
-        <li><a href="#modern-inference">Modern Requirements</a></li>
-        <li><a href="#models">Capabilities</a></li>
+        <li><a href="#why">Why It Matters</a></li>
+        <li><a href="#modern-inference">What Production Needs</a></li>
+        <li><a href="#models">What vLLM Does</a></li>
         <li><a href="#deployment">Deployment</a></li>
         <li class="nav-divider" aria-hidden="true"></li>
         <li><a href="#paged-attention">PagedAttention</a></li>
@@ -114,7 +114,6 @@
         feels slow; your cluster stalls after a handful of users. This guide
         covers <abbr data-tip="Large Language Model. A neural network trained on text to predict and generate language.">LLM</abbr> <abbr data-tip="Running a trained model to produce outputs, not training it.">inference</abbr> mechanics and where vLLM changes the picture.
       </p>
-      <p class="hero-proof">vLLM is one of the most active open-source AI projects, with broad hardware support and over 2,000 contributors. The content below spell out the serving mechanics.</p>
       <div class="hero-stats stagger-children">
         <div class="stat-card">
           <svg class="stat-icon" width="28" height="28" fill="none" stroke="var(--red)" stroke-width="1.5" aria-hidden="true"><use href="#icon-clock"/></svg>
@@ -134,10 +133,6 @@
         </div>
       </div>
       <a href="#why" class="hero-cta">Explore Modern Serving <span class="cta-arrow">&darr;</span></a>
-      <p class="hero-audience-hint">
-        New to inference? Start at <a href="#why">Section 01</a>.
-        Already running vLLM? Jump to <a href="#tuning">Tuning</a>.
-      </p>
       <p class="hero-footnote">
         Source snapshot: public docs and engineering posts reviewed in April 2026.
         <a href="#source-1">[1]</a>
@@ -185,16 +180,6 @@
         </div>
       </div>
 
-      <div class="solution-banner reveal">
-        <div class="solution-icon">
-          <svg width="56" height="56" fill="none" stroke="var(--green)" stroke-width="1.5"><use href="#icon-check-circle"/></svg>
-        </div>
-        <div class="solution-text">
-          <h3>vLLM targets each of these pressure points.</h3>
-          <p><strong><abbr data-tip="vLLM maps logical KV blocks to GPU pages as sequences grow, like virtual memory. That cuts reserved-but-empty space versus one contiguous buffer per request.">PagedAttention</abbr></strong> tightens KV memory use. <a href="#source-9">[9]</a> <strong><abbr data-tip="The scheduler admits and finishes requests every iteration instead of waiting for a fixed batch to empty.">Continuous batching</abbr></strong> keeps accelerators busy under mixed load. Beyond those pieces, the runtime ships <abbr data-tip="Reuses KV blocks when different prompts share an opening token sequence.">prefix caching</abbr> plus structured and multimodal paths, multi-GPU <abbr data-tip="Spreads tensors or layers across GPUs so one deployment fits a larger model or more load.">parallelism</abbr>, and production-oriented APIs.</p>
-        </div>
-      </div>
-
       <div id="quickstart" class="quickstart-banner reveal">
         <button class="quickstart-toggle" aria-expanded="true" type="button">
           <div>
@@ -204,7 +189,7 @@
           <span class="expand-icon" aria-hidden="true">&times;</span>
         </button>
         <div class="quickstart-body">
-          <p class="quickstart-pitch">vLLM is an <strong>open-source engine for fast, cost-effective AI inference at scale</strong>. It has over 2,000 contributors from many institutions and companies, alongside wide accelerator support <a href="#source-10">[10]</a></p>
+          <p class="quickstart-pitch">vLLM is an <strong>open-source engine for fast, cost-effective AI inference at scale</strong>. <strong><abbr data-tip="vLLM maps logical KV blocks to GPU pages as sequences grow, like virtual memory. That cuts reserved-but-empty space versus one contiguous buffer per request.">PagedAttention</abbr></strong> tightens KV memory use. <a href="#source-9">[9]</a> <strong><abbr data-tip="The scheduler admits and finishes requests every iteration instead of waiting for a fixed batch to empty.">Continuous batching</abbr></strong> keeps accelerators busy under mixed load. The runtime also ships <abbr data-tip="Reuses KV blocks when different prompts share an opening token sequence.">prefix caching</abbr>, structured and multimodal paths, multi-GPU <abbr data-tip="Spreads tensors or layers across GPUs so one deployment fits a larger model or more load.">parallelism</abbr>, and production-oriented APIs. <a href="#source-10">[10]</a></p>
 
           <div class="quickstart-pillars">
             <div class="quickstart-card">
@@ -219,31 +204,19 @@
                 <svg width="36" height="36" fill="none" stroke="var(--green)" stroke-width="1.5"><use href="#icon-monitor"/></svg>
               </div>
               <h3>More Users, Same Hardware</h3>
-              <p>In the PagedAttention paper, vLLM reported roughly 2&ndash;4&times; higher throughput than <abbr data-tip="NVIDIA's earlier C++ inference library for transformers. TensorRT-LLM supersedes it for new deployments.">FasterTransformer</abbr> and <abbr data-tip="Yu et al.'s OSDI 2022 serving stack. It introduced iteration-level batching for transformers, the pattern continuous batching extends.">Orca</abbr> at similar latency <a href="#source-9">[9]</a>, which can mean serving the same traffic on fewer GPUs.</p>
+              <p>PagedAttention and continuous batching serve more concurrent requests from the same GPU budget, which can mean the same traffic on fewer GPUs. <a href="#source-9">[9]</a></p>
             </div>
             <div class="quickstart-card">
               <div class="quickstart-card-icon">
                 <svg width="36" height="36" fill="none" stroke="var(--green)" stroke-width="1.5"><use href="#icon-shield-check"/></svg>
               </div>
               <h3>Production-Ready</h3>
-              <p>You can run it on <abbr data-tip="Orchestrates containers: schedules pods, scales replicas, and rolls out updates across a cluster.">Kubernetes</abbr> using community images, follow published security guidance, and buy enterprise support from vendors such as Red Hat.</p>
+              <p>Run on <abbr data-tip="Orchestrates containers: schedules pods, scales replicas, and rolls out updates across a cluster.">Kubernetes</abbr> with community images, follow published security guidance, and buy enterprise support from vendors such as Red Hat.</p>
             </div>
           </div>
 
           <div class="quickstart-cost-callout">
             <strong>Cost impact:</strong> Cloud GPU list prices often land from a few dollars to tens of dollars per GPU-hour, depending on chip, region, and contract. Cutting the GPU count for the same traffic can trim that bill by a significant amount.
-          </div>
-
-          <div class="quickstart-triggers">
-            <h4>vLLM is a good fit when you need to&hellip;</h4>
-            <div class="quickstart-trigger-pills">
-              <span class="trigger-pill">Reduce AI response latency</span>
-              <span class="trigger-pill">Control GPU costs at scale</span>
-              <span class="trigger-pill">Keep data on-prem or in your own cloud</span>
-              <span class="trigger-pill">Move off proprietary API providers</span>
-              <span class="trigger-pill">Handle many concurrent users</span>
-              <span class="trigger-pill">Serve multiple models from shared infrastructure</span>
-            </div>
           </div>
         </div>
       </div>
@@ -261,12 +234,8 @@
 
       <div class="modern-summary reveal">
         <div class="modern-summary-card">
-          <h3>The modern mental model</h3>
-          <p>Prefill is usually compute-bound; decode is often memory-bandwidth-bound. Scheduling, caching, and routing then target each phase separately. <a href="#source-2">[2]</a> <a href="#source-4">[4]</a></p>
-        </div>
-        <div class="modern-summary-card">
-          <h3>How to apply this in practice</h3>
-          <p>Prompt length, concurrency, prefix reuse, multimodal inputs, and latency targets usually decide whether batching, KV memory, parallelism, or disaggregated serving matter most.</p>
+          <h3>Applying the mental model</h3>
+          <p>Building on the <a href="#why">prefill/decode tradeoff above</a>, prompt length, concurrency, prefix reuse, multimodal inputs, and latency targets usually decide whether batching, KV memory, parallelism, or disaggregated serving matter most.</p>
         </div>
       </div>
 
@@ -327,17 +296,10 @@
         </div>
       </div>
 
-      <div class="battle-section-wrap reveal">
-        <h3>Detailed Comparison</h3>
-        <p class="battle-intro">Side-by-side notes on latency, throughput, packaging, and feature gaps versus common alternatives.</p>
-        <div class="battle-cards-grid" id="battle-cards-grid"></div>
-      </div>
-
       <div class="discovery-section reveal">
         <h3>Is vLLM Right for You?</h3>
         <p class="section-lead">These questions cover most vLLM fit and sizing reviews.</p>
 
-        <h4>Questions to Ask Yourself</h4>
         <div class="discovery-grid">
           <div class="discovery-card">
             <h4>Latency target</h4>
@@ -359,20 +321,11 @@
       </div>
 
       <div class="objection-section reveal">
-        <h3>Frequently Asked Questions</h3>
+        <h3>Common Questions</h3>
         <p class="objection-intro">Expand a card for the full answer.</p>
         <div class="objection-cards" id="objection-cards"></div>
       </div>
 
-      <div class="benchmark-callout reveal">
-        <h3>Benchmarking Caveats</h3>
-        <ul class="benchmark-list">
-          <li>Separate <abbr data-tip="Time to First Token: delay until the first output token is ready.">TTFT</abbr>, <abbr data-tip="Time between consecutive streamed output tokens. People also say TPOT or ITL.">inter-token latency</abbr>, and total throughput instead of reporting only one aggregate score.</li>
-          <li>Warmup, cache state, and request arrival pattern materially change results for <abbr data-tip="Runs requests together on the GPU for a step; the batch roster changes each step as work arrives or finishes.">dynamic batching</abbr> systems.</li>
-          <li>Use a real prompt-length distribution, not a single toy prompt, when comparing engines.</li>
-          <li>Always record hardware, <abbr data-tip="Number format for weights and activations (FP16, BF16, FP8). Smaller formats use less memory and can shift accuracy slightly.">precision</abbr>, <abbr data-tip="Maximum input tokens per request; you reserve KV cache out to this length.">context limit</abbr>, and key <abbr data-tip="Chooses which requests run each GPU step, caps per-step tokens, and decides when to admit, pause, or preempt work.">scheduler</abbr> settings alongside the results. <a href="#source-7">[7]</a></li>
-        </ul>
-      </div>
     </div>
   </section>
 
@@ -442,11 +395,6 @@
             </thead>
             <tbody>
               <tr>
-                <td><strong><abbr data-tip="A draft source proposes tokens; the target model verifies with rejection sampling so outputs match the base distribution. You spend more forward passes to cut wall-clock decode when acceptance stays high.">Speculative Decoding</abbr></strong></td>
-                <td><abbr data-tip="Early-exit speculative method that predicts draft tokens from intermediate hidden states instead of running a separate model.">EAGLE</abbr>, <abbr data-tip="Multi-Token Prediction. Trains or uses extra heads to propose several tokens at once for speculative verification.">MTP</abbr>, draft, n-gram, <abbr data-tip="Parallel Auto-Regressive Decoding. Generates multiple candidate continuations in parallel for verification.">PARD</abbr>, suffix, and MLP-style speculators (rejection-style verification)</td>
-                <td>Lower wall-clock latency when acceptance rate is healthy</td>
-              </tr>
-              <tr>
                 <td><strong><abbr data-tip="Stores weights in fewer bits (e.g. 16 to 8 or 4) to cut memory and often lift throughput.">Quantization</abbr></strong></td>
                 <td><abbr data-tip="Post-training weight quantization fit with calibration data to a target bit width.">GPTQ</abbr>, <abbr data-tip="Activation-aware Weight Quantization scales or protects weights that matter most under real activations.">AWQ</abbr>, <abbr data-tip="8-bit floating point for weights or activations; about half the memory of FP16 with small accuracy drift in many models.">FP8</abbr>, <abbr data-tip="PyTorch library for 4-bit and 8-bit weights with small code changes, aimed at memory savings.">BitsAndBytes</abbr>, <abbr data-tip="Binary file format for quantized weights, used by llama.cpp and compatible runtimes.">GGUF</abbr>, <abbr data-tip="PyTorch toolkit for post-training quantization and sparsity.">TorchAO</abbr>, and more <a href="#source-10">[10]</a></td>
                 <td>Run larger models on fewer GPUs</td>
@@ -467,19 +415,9 @@
                 <td>Better TTFT for repeated system prompts and shared context</td>
               </tr>
               <tr>
-                <td><strong>Expert / MoE Support</strong></td>
-                <td>Serve sparse MoE architectures such as Mixtral and DeepSeek families</td>
-                <td>Use hardware more efficiently for large sparse models</td>
-              </tr>
-              <tr>
-                <td><strong>Disaggregated Prefill</strong> <span class="tag">experimental</span></td>
-                <td>Separate prompt-ingest and decode pools when workloads justify it</td>
-                <td>Protect TTFT-sensitive traffic under prompt-heavy load</td>
-              </tr>
-              <tr>
                 <td><strong>Multimodal</strong></td>
                 <td>Vision-language and audio-capable models</td>
-                <td>Multimodal and text paths in one serving stack when backends match</td>
+                <td>Multimodal and text paths in one serving stack</td>
               </tr>
               <tr>
                 <td><strong><abbr data-tip="Captures a GPU kernel sequence once and replays it to skip repeated CPU launch work each step.">CUDA Graphs</abbr></strong></td>
@@ -489,6 +427,37 @@
             </tbody>
           </table>
         </div>
+        <details class="feature-matrix-advanced">
+          <summary>Advanced features</summary>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Feature</th>
+                  <th>Description</th>
+                  <th>Key Benefit</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong><abbr data-tip="A draft source proposes tokens; the target model verifies with rejection sampling so outputs match the base distribution. You spend more forward passes to cut wall-clock decode when acceptance stays high.">Speculative Decoding</abbr></strong></td>
+                  <td><abbr data-tip="Early-exit speculative method that predicts draft tokens from intermediate hidden states instead of running a separate model.">EAGLE</abbr>, <abbr data-tip="Multi-Token Prediction. Trains or uses extra heads to propose several tokens at once for speculative verification.">MTP</abbr>, draft, n-gram, <abbr data-tip="Parallel Auto-Regressive Decoding. Generates multiple candidate continuations in parallel for verification.">PARD</abbr>, suffix, and MLP-style speculators</td>
+                  <td>Lower wall-clock latency when acceptance rate is healthy</td>
+                </tr>
+                <tr>
+                  <td><strong>Expert / MoE Support</strong></td>
+                  <td>Serve sparse MoE architectures such as Mixtral and DeepSeek families</td>
+                  <td>Use hardware more efficiently for large sparse models</td>
+                </tr>
+                <tr>
+                  <td><strong>Disaggregated Prefill</strong> <span class="tag">experimental</span></td>
+                  <td>Separate prompt-ingest and decode pools when workloads justify it</td>
+                  <td>Protect TTFT-sensitive traffic under prompt-heavy load</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
       </div>
 
       <div class="hw-support reveal">
@@ -761,7 +730,6 @@ spec:
         <p class="section-lead">The core idea: manage KV cache with the same block-and-table structure as <abbr data-tip="The OS maps contiguous logical ranges onto physical pages that may be scattered. PagedAttention uses the same pattern for KV cache blocks on the GPU.">virtual memory</abbr>, so variable-length sequences and concurrent requests use a fixed GPU memory budget more efficiently.</p>
       </div>
 
-      <p class="biz-caption reveal">Reserving one contiguous KV region per request leaves empty space when lengths differ; block pools pack many sequences into the same memory by allocating only the blocks each one needs.</p>
       <div id="allocator-showdown" class="showdown reveal">
         <div class="showdown-header">
           <span class="mini-label">Allocator showdown</span>
@@ -809,7 +777,7 @@ spec:
       </div>
 
       <div class="pa-intro reveal">
-        <p>Operating systems map logical <abbr data-tip="Fixed-size chunks of a process address space. The OS maps each to a RAM frame or leaves it unmapped.">virtual pages</abbr> to <abbr data-tip="A RAM slot sized to hold one virtual page.">physical frames</abbr>; PagedAttention maps each request's <strong>logical KV blocks</strong> into a shared <strong>physical block pool</strong> on the GPU. <a href="#source-9">[9]</a> A per-request <abbr data-tip="Maps logical block order to slots in the physical pool. Sequences grow, share prefixes, and return blocks without copying KV tensors.">block table</abbr> stores that mapping so sequences can grow, share prefix storage, and release blocks when a request ends without copying KV tensors to new addresses.</p>
+        <p>Each request's <strong>logical KV blocks</strong> map into a shared <strong>physical block pool</strong> on the GPU, just as an OS maps virtual pages to RAM frames. <a href="#source-9">[9]</a> Sequences grow, share prefix storage, and release blocks on completion without copying KV tensors.</p>
         <div class="pa-benefit-pills">
           <span class="pa-pill">Grow without relocating</span>
           <span class="pa-pill">Share prefix KV blocks</span>
@@ -817,8 +785,6 @@ spec:
           <span class="pa-pill">Near-zero KV cache waste</span>
         </div>
       </div>
-
-      <p class="biz-caption reveal">The walkthrough shows blocks claimed from a <abbr data-tip="Tracks blocks not in use. The allocator assigns from this set before claiming new space.">free list</abbr>, prefix blocks referenced by more than one request, and blocks returned to the pool when work finishes.</p>
       <div class="pa-cinema reveal" id="pa-cinema" data-phase="0">
         <div class="pa-cinema-head">
           <div>
@@ -888,7 +854,6 @@ spec:
         <p class="section-lead">Iteration-level schedulers run one <abbr data-tip="Single inference pass from inputs through the model to outputs for that step.">forward pass</abbr> per round and can change which requests are in the batch, instead of holding a fixed batch until every request finishes. <a href="#source-17">[17]</a> <a href="#source-8">[8]</a></p>
       </div>
 
-      <p class="biz-caption reveal">vLLM admits new requests when the next scheduler step has capacity.</p>
       <div class="scheduler-lab reveal">
         <div class="lab-heading">
           <div>
@@ -989,7 +954,6 @@ spec:
         </div>
       </div>
 
-      <p class="biz-caption reveal">Chunked prefill splits long prefills across scheduler steps so decode tokens can share the same batch and token budget.</p>
       <div class="chunked-section reveal">
         <div class="chunked-header">
           <div>
@@ -1095,7 +1059,7 @@ spec:
           <strong>Without chunking:</strong> Req A&rsquo;s 256-token prompt would consume the entire 128-token budget for 2 consecutive steps. Reqs B and C would not decode during those steps, and Reqs D through F would wait longer, increasing Time to First Token (TTFT) for queued work.
         </div>
 
-        <p class="chunk-benefit">Chunking caps how much prefill runs per step, so decode is less likely to sit idle behind a long prompt. When prefill dominates load, operators often split prefill and decode across separate pools (<strong><abbr data-tip="Prefill and decode use separate GPU pools so long prompts do not block interactive decode.">disaggregated prefill/decode</abbr></strong>). <a href="#source-2">[2]</a> <a href="#source-4">[4]</a></p>
+        <p class="chunk-benefit">Chunking caps how much prefill runs per step, so decode is less likely to sit idle behind a long prompt. When prefill dominates load, operators can split the two phases across separate pools&mdash;see <a href="#modern-inference">Disaggregated Prefill</a> in the Modern Requirements section.</p>
       </div>
     </div>
   </section>
@@ -1137,7 +1101,7 @@ spec:
             <p>Each new token is converted back to text and streamed to the user in real time.</p>
           </div>
         </div>
-        <p class="arch-onramp-callout">Most serving cost and latency sit in step 2: a 500-token reply needs on the order of 500 decode forwards after prefill for that sequence, and the <a href="#why">KV cache</a> stores past key/value state so each step does not recompute the full prefix. The architecture below shows how vLLM runs that loop efficiently under concurrency.</p>
+        <p class="arch-onramp-callout">Most serving cost and latency sit in step 2. The architecture below shows how vLLM runs that loop efficiently under concurrency, building on the <a href="#why">KV cache</a> and <a href="#paged-attention">PagedAttention</a> concepts covered earlier.</p>
       </div>
 
       <!-- LAYER 2 — The Autoregressive Decode Loop (interactive) -->
@@ -1298,8 +1262,8 @@ engine_core_outputs = self.scheduler.update_from_output(
             </button>
             <div class="comp-card-body">
               <div>
-                <p>Decides which requests get GPU time each step. Tracks <code>num_computed_tokens</code> vs <code>num_tokens</code> per request. There is no rigid prefill/decode split. <a href="#source-8">[8]</a> This unified approach is why chunked prefill, prefix caching, and speculative decoding can share one scheduler.</p>
-                <p class="comp-card-why"><strong>Why it matters:</strong> Scheduling policy and token budgets set how much prefill versus decode runs each step, which shapes TTFT and inter-token latency together. The unified token view is what lets chunked prefill and speculative decoding share one scheduler.</p>
+                <p>Decides which requests get GPU time each step. Tracks <code>num_computed_tokens</code> vs <code>num_tokens</code> per request with no rigid prefill/decode split, so chunked prefill, prefix caching, and speculative decoding share one scheduler. <a href="#source-8">[8]</a></p>
+                <p class="comp-card-why"><strong>Why it matters:</strong> Scheduling policy and token budgets shape both TTFT and inter-token latency.</p>
                 <code class="code-path">vllm/v1/core/sched/scheduler.py</code>
               </div>
             </div>
@@ -1355,55 +1319,8 @@ engine_core_outputs = self.scheduler.update_from_output(
         </div>
       </div>
 
-      <!-- Scheduling & Memory Management (merged from standalone section) -->
       <div class="sched-concept reveal">
-        <h3>Scheduling &amp; Memory Management</h3>
-        <div class="sched-cards">
-          <div class="sched-card">
-            <h4>Unified Scheduling</h4>
-            <p>V1 has no separate "prefill queue" and "decode queue." Each request has a <strong>num_computed_tokens</strong> and a target token count (<strong>num_tokens</strong>). The scheduler assigns tokens from a per-step budget to close the gap. This supports:</p>
-            <ul>
-              <li>Chunked prefills (large prompts processed in pieces)</li>
-              <li>Prefix caching (skip already-cached tokens)</li>
-              <li>Speculative decoding (advance by multiple tokens)</li>
-              <li>Mixed prefill + decode in the same batch</li>
-            </ul>
-          </div>
-          <div class="sched-card">
-            <h4>Preemption</h4>
-            <p>When KV cache space is exhausted, the scheduler <strong>preempts</strong> the lowest-priority running request to free blocks for higher-priority work.</p>
-            <p>V1 default strategy: <strong>Recompute</strong> (discard KV, re-prefill when resumed). <a href="#source-8">[8]</a> Tuning levers:</p>
-            <ul>
-              <li><code>--gpu-memory-utilization</code> (0.0-1.0)</li>
-              <li><code>--max-num-seqs</code></li>
-              <li><code>--scheduling-policy</code> (fcfs / priority)</li>
-              <li>Tensor/pipeline parallelism to add more KV capacity</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div class="prefix-cache-section reveal">
-        <h3>Automatic Prefix Caching</h3>
-        <p>vLLM <abbr data-tip="Each block gets a fingerprint from its tokens (and parent hash). Identical fingerprints mean identical bytes, so physical KV blocks can be shared.">hashes</abbr> each full KV block from the tokens in that block, the parent block&rsquo;s hash, and optional extra inputs (LoRA id, multimodal hashes, cache salt) as in the prefix caching design doc. <a href="#source-13">[13]</a> When a new request shares a prefix with a prior one, matching hashes map to the same physical blocks so those positions are not recomputed.</p>
-        <div class="prefix-diagram">
-          <div class="prefix-row">
-            <span class="prefix-label">Request 1</span>
-            <div class="prefix-block cached">System Prompt</div>
-            <div class="prefix-block cached">Shared Context</div>
-            <div class="prefix-block unique">User Query A</div>
-          </div>
-          <div class="prefix-row">
-            <span class="prefix-label">Request 2</span>
-            <div class="prefix-block cached">System Prompt</div>
-            <div class="prefix-block cached">Shared Context</div>
-            <div class="prefix-block unique">User Query B</div>
-          </div>
-          <div class="prefix-note">
-            <svg width="20" height="20" fill="none" stroke="var(--green)" stroke-width="2"><use href="#icon-checkmark"/></svg>
-            Shared prefix blocks point to the same physical memory. No recomputation needed.
-          </div>
-        </div>
+        <p>The scheduler orchestrates the concepts from the <a href="#paged-attention">PagedAttention</a> and <a href="#batching">Batching</a> sections: it assigns tokens from a per-step budget with no rigid prefill/decode split, enabling chunked prefills, prefix caching, speculative decoding, and mixed batches in one loop. When KV cache space is exhausted, the scheduler <strong>preempts</strong> the lowest-priority request (V1 default: recompute). <a href="#source-8">[8]</a> For prefix caching details, see the <a href="#source-13">design doc</a>.</p>
       </div>
 
       <!-- LAYER 6 — Process calculator (moved to bottom with context) -->
@@ -1451,7 +1368,6 @@ engine_core_outputs = self.scheduler.update_from_output(
         <p class="section-lead">The tuning lab maps concurrency, token budget, and <abbr data-tip="KV cache fill level. When it rises, schedulers queue or preempt work.">KV pressure</abbr> to throughput, latency, and operational risk.</p>
       </div>
 
-      <p class="biz-caption reveal">Cost, latency, and capacity pull in different directions; concrete targets come from workload mix and <abbr data-tip="Service Level Objectives. Quantitative targets for latency, availability, or throughput that a team commits to meeting.">SLOs</abbr>.</p>
       <div class="tuning-lab reveal">
         <h3>Latency vs Throughput Lab</h3>
         <p class="tuning-lab-lead">Sliders are illustrative: they show which levers usually lift throughput, which smooth streaming, and which add preemption or <abbr data-tip="Out of memory: the GPU cannot satisfy a new allocation, so the run often aborts.">OOM</abbr> risk.</p>
@@ -1575,6 +1491,16 @@ engine_core_outputs = self.scheduler.update_from_output(
           </table>
         </div>
       </div>
+
+      <details class="benchmark-callout reveal">
+        <summary><h3>Measurement Tips</h3></summary>
+        <ul class="benchmark-list">
+          <li>Separate <abbr data-tip="Time to First Token: delay until the first output token is ready.">TTFT</abbr>, <abbr data-tip="Time between consecutive streamed output tokens. People also say TPOT or ITL.">inter-token latency</abbr>, and total throughput instead of reporting only one aggregate score.</li>
+          <li>Warmup, cache state, and request arrival pattern materially change results for <abbr data-tip="Runs requests together on the GPU for a step; the batch roster changes each step as work arrives or finishes.">dynamic batching</abbr> systems.</li>
+          <li>Use a real prompt-length distribution, not a single toy prompt, when comparing engines.</li>
+          <li>Always record hardware, <abbr data-tip="Number format for weights and activations (FP16, BF16, FP8). Smaller formats use less memory and can shift accuracy slightly.">precision</abbr>, <abbr data-tip="Maximum input tokens per request; you reserve KV cache out to this length.">context limit</abbr>, and key <abbr data-tip="Chooses which requests run each GPU step, caps per-step tokens, and decides when to admit, pause, or preempt work.">scheduler</abbr> settings alongside the results. <a href="#source-7">[7]</a></li>
+        </ul>
+      </details>
 
       <div class="parallelism-ref reveal">
         <h3>Parallelism Strategy</h3>

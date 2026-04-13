@@ -1,19 +1,19 @@
-import { objections } from '../data/objection-data.js';
+import { comparisonFaq } from '../data/comparison-faq.js';
 
 export function init() {
   const container = document.getElementById('objection-cards');
   if (!container) return;
 
-  container.innerHTML = objections.map(obj => `
+  container.innerHTML = comparisonFaq.map(item => `
     <article class="objection-card">
       <button type="button" class="objection-header" aria-expanded="false">
-        <h4>&ldquo;${obj.objection}&rdquo;</h4>
+        <h4>&ldquo;${item.question}&rdquo;</h4>
         <span class="expand-icon" aria-hidden="true">+</span>
       </button>
       <div class="objection-body" hidden>
-        <p class="objection-response">${obj.response}</p>
+        <p class="objection-response">${item.response}</p>
         <ul class="objection-points">
-          ${obj.keyPoints.map(pt => `<li>${pt}</li>`).join('')}
+          ${item.keyPoints.map(pt => `<li>${pt}</li>`).join('')}
         </ul>
       </div>
     </article>

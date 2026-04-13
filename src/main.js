@@ -70,7 +70,6 @@ lazySection('why', [
 
 lazySection('modern-inference', [
   () => import('./features/modern-topics.js'),
-  () => import('./features/battle-cards.js'),
   () => import('./features/objections.js'),
 ]);
 
