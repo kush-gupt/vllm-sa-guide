@@ -14,7 +14,7 @@ export function init() {
   revealEls.forEach(el => revealObserver.observe(el));
 
   const staggerGridSelectors = [
-    '.problem-grid', '.coverage-grid', '.hw-grid', '.landscape-grid',
+    '.coverage-grid', '.hw-grid', '.landscape-grid',
     '.discovery-grid', '.links-grid',
   ];
 

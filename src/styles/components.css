@@ -2,6 +2,8 @@
 .reading-paths-section {
   padding-top: 32px;
   padding-bottom: 32px;
+  content-visibility: visible;
+  contain-intrinsic-block-size: auto;
 }
 
 .reading-paths-title {
@@ -1190,6 +1192,10 @@ td.col-plain {
 .sources-section h3 {
   text-align: center;
   margin-bottom: 24px;
+}
+
+.discovery-section > .section-lead {
+  text-align: center;
 }
 
 .benchmark-callout {
