@@ -4,12 +4,6 @@ import { crossfadeMulti } from '../utils/crossfade.js';
 import { initRovingTabindex } from '../utils/roving-tabindex.js';
 import { activateTabButton } from '../utils/tab-utils.js';
 
-let syncChunkCallback = () => {};
-
-export function onBatchSync(fn) {
-  syncChunkCallback = fn;
-}
-
 export function init() {
   const workloadBtns = document.querySelectorAll('.workload-btn');
   const batchStepInput = document.getElementById('batch-step');
@@ -66,10 +60,6 @@ export function init() {
       renderMetrics(staticMetrics, scenario.staticMetrics[step]);
       renderMetrics(continuousMetrics, scenario.continuousMetrics[step]);
       batchTakeaway.textContent = scenario.takeaways[step];
-
-      if (activeWorkload === 'prompt') {
-        syncChunkCallback(step);
-      }
     }
 
     let workloadInitialized = false;

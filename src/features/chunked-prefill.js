@@ -2,8 +2,6 @@ import { chunkFrames } from '../data/chunk-frames.js';
 import { clamp } from '../utils/helpers.js';
 import { crossfade } from '../utils/crossfade.js';
 import { initRovingTabindex } from '../utils/roving-tabindex.js';
-import { onBatchSync } from './batching-lab.js';
-
 export function init() {
   const phaseBar = document.getElementById('chunk-phase-bar');
   const caption = document.getElementById('chunk-caption');
@@ -108,6 +106,5 @@ export function init() {
 
   initRovingTabindex(phaseBar, phaseBtns, btn => activateChunkTab(btn));
 
-  onBatchSync(setStep);
   renderStep(activeStep);
 }
