@@ -609,26 +609,19 @@
                 <span class="deploy-badge offline">Offline</span>
                 <h3><abbr data-tip="Processing requests offline without a live server. Used for data pipelines and evaluation jobs.">Batch Inference</abbr></h3>
               </div>
-              <p>Use the <code>LLM</code> Python class for batch processing. No server, no HTTP overhead. Ideal for data pipelines, evaluation jobs, and controlled offline generation.</p>
+              <p>The <code>LLM</code> class runs generation in-process with no server overhead.</p>
               <ul class="deploy-points">
-                <li>Lowest operational overhead</li>
-                <li>Great for <abbr data-tip="Extract, transform, load. Move and reshape data between systems.">ETL</abbr>, backfills, and eval loops</li>
-                <li>No network hop between caller and runtime</li>
+                <li>Ideal for <abbr data-tip="Extract, transform, load. Move and reshape data between systems.">ETL</abbr>, evals, and backfills</li>
+                <li>No network hop between caller and engine</li>
               </ul>
             </div>
             <pre class="code-block"><code class="language-python">from vllm import LLM, SamplingParams
 
-llm = LLM(model="meta-llama/Llama-3.1-8B-Instruct")
-params = SamplingParams(temperature=0.7, max_tokens=256)
+llm = LLM(model="RedHatAI/gemma-4-31B-it-FP8-block")
+params = SamplingParams(temperature=0.8, top_p=0.95)
 
-outputs = llm.generate(
-    ["Explain Kubernetes in one paragraph.",
-     "What is Kubernetes?"],
-    params
-)
-
-for output in outputs:
-    print(output.outputs[0].text)</code></pre>
+outputs = llm.generate(["Explain Kubernetes in one paragraph."], params)
+print(outputs[0].outputs[0].text)</code></pre>
           </div>
         </div>
 
@@ -639,24 +632,13 @@ for output in outputs:
                 <span class="deploy-badge online">Online</span>
                 <h3>API Server</h3>
               </div>
-              <p>Launch an <abbr data-tip="Uses OpenAI-shaped requests and responses. Many OpenAI clients work unchanged.">OpenAI-compatible</abbr> HTTP server with a single command. Supports chat, completions, embeddings, and more.</p>
+              <p>One command starts an <abbr data-tip="Uses OpenAI-shaped requests and responses. Many OpenAI clients work unchanged.">OpenAI-compatible</abbr> HTTP server with chat, completions, and embeddings.</p>
               <ul class="deploy-points">
-                <li>Fastest path to app integration</li>
-                <li>Best for TTFT / <abbr data-tip="Inter-token latency: gap between consecutive streamed tokens.">ITL</abbr> conversations</li>
-                <li>Natural home for continuous batching</li>
+                <li>Drop-in for any OpenAI client</li>
+                <li>Continuous batching with streaming</li>
               </ul>
             </div>
-            <pre class="code-block"><code class="language-bash"># Single GPU
-vllm serve meta-llama/Llama-3.1-8B-Instruct
-
-# Multi-GPU with tensor parallelism
-vllm serve meta-llama/Llama-3.1-70B-Instruct \
-  --tensor-parallel-size 4
-
-# With quantization
-vllm serve meta-llama/Llama-3.1-70B-Instruct \
-  --quantization awq \
-  --dtype float16</code></pre>
+            <pre class="code-block"><code class="language-bash">vllm serve RedHatAI/gemma-4-31B-it-FP8-block</code></pre>
           </div>
         </div>
 
@@ -685,14 +667,11 @@ spec:
       containers:
       - name: vllm
         image: vllm/vllm-openai:latest
-        args:
-        - "--model"
-        - "meta-llama/Llama-3.1-8B-Instruct"
-        - "--tensor-parallel-size"
-        - "2"
+        command: ["vllm", "serve",
+          "RedHatAI/gemma-4-31B-it-FP8-block"]
         resources:
           limits:
-            nvidia.com/gpu: 2</code></pre>
+            nvidia.com/gpu: 1</code></pre>
           </div>
         </div>
       </div>
