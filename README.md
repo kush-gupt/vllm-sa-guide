@@ -2,6 +2,8 @@
 
 An interactive, single-page guide covering modern LLM inference engines — with vLLM as the anchor. A vendor-neutral educational resource for practitioners, engineers, and anyone evaluating inference serving options. Built with vanilla JavaScript and CSS, bundled with Vite.
 
+**[Live site](https://vllm-sa-guide.kushalgupta.workers.dev)** · [Source](https://github.com/kush-gupt/vllm-sa-guide)
+
 ## Quick start
 
 ```bash
@@ -9,7 +11,7 @@ npm install
 npm run dev       # http://localhost:5173
 ```
 
-## Build for deployment
+## Build for production
 
 ```bash
 npm run build     # outputs to dist/
@@ -18,24 +20,64 @@ npm run preview   # preview the production build locally
 
 The `dist/` folder is a fully static site — serve it from any HTTP server, S3 bucket, or GitHub Pages.
 
+## Deployment
+
+### Cloudflare Workers (default)
+
+The site is configured to deploy as a Cloudflare Workers static asset via `wrangler.jsonc`:
+
+```bash
+npm run build
+npx wrangler deploy
+```
+
+### Container (production)
+
+A multi-stage `Containerfile` builds the site with Node 22 and serves it with Caddy on port 8080:
+
+```bash
+npm run container:build   # podman build -t vllm-guide
+npm run container:run     # podman run --rm -p 8080:8080
+```
+
+### Container (development)
+
+`Containerfile.dev` runs the Vite dev server inside a container with your source bind-mounted:
+
+```bash
+npm run container:dev     # builds image, runs on port 5173 with live reload
+```
+
 ## Project structure
 
 ```
-index.html                  Single-page HTML (all 10 content sections)
-vite.config.js              Minimal Vite config
+index.html                  Single-page HTML (all content sections)
+vite.config.js              Vite config (output dir, manual chunks for vendors)
+package.json                Scripts, dependencies, metadata
+wrangler.jsonc              Cloudflare Workers static-asset deployment config
+Containerfile               Multi-stage production image (Node builder → Caddy)
+Containerfile.dev           Dev image running Vite with hot reload
+Caddyfile                   Security headers and cache rules for the Caddy server
+.containerignore            Build-context exclusions for container builds
+CONTRIBUTING.md             Contribution workflow and local dev instructions
+public/
+  _headers                  Cloudflare Pages/Workers response headers (CSP, caching)
+  fonts/                    Self-hosted Red Hat font files (woff2) + LICENSE
+  og-image.png              Open Graph preview image
 src/
-  main.js                   Entry point — imports and initializes all features
+  main.js                   Entry point — initializes globals, lazy-loads sections
   styles/
-    main.css                @import aggregator
+    main.css                @import aggregator (order matters — see AGENTS.md)
+    fonts.css               @font-face declarations for Red Hat typefaces
     tokens.css              CSS custom properties (design tokens, dark/light themes)
     base.css                Reset, typography, keyframes, reveal animations
     layout.css              Nav, hero, footer
     components.css          Cards, pills, badges, tables, code blocks, model coverage
-    interactive.css         Allocator showdown, PA cinema, batching lab, tuning lab, etc.
+    interactive.css         Allocator showdown, PA cinema, batching lab, tuning lab
     responsive.css          All media queries
   features/
     theme.js                Dark/light toggle with localStorage persistence
-    nav.js                  Mobile hamburger menu, scroll-based active link highlight, focus trap
+    nav.js                  Mobile hamburger menu, scroll-based active link, focus trap
     reveal.js               IntersectionObserver scroll reveal + stagger animations
     tooltips.js             Keyboard-accessible jargon tooltips for abbr[data-tip]
     quickstart.js           Collapsible quickstart panel toggle
@@ -51,6 +93,7 @@ src/
     parallelism.js          Parallelism strategy tabs (TP/PP/DP/EP/CP)
     allocator-showdown.js   Naive vs PagedAttention allocator comparison
     hero-canvas.js          Particle network canvas animation (reduced-motion aware)
+    hero-typewriter.js      Word-by-word hero description reveal animation
     arch-diagrams.js        Architecture diagrams via beautiful-mermaid
     decode-loop.js          Autoregressive decode walkthrough
     scroll-progress.js      Scroll progress bar at top of viewport
@@ -61,6 +104,9 @@ src/
     crossfade.js            crossfade / crossfadeMulti transition helpers
     helpers.js              clamp and other shared utilities
     render-diagram.js       Lazy Mermaid rendering with retry on failure
+    roving-tabindex.js      Arrow-key focus management for tab groups
+    autoplay.js             Play/pause + IntersectionObserver auto-stop for animations
+    tab-utils.js            Shared tab-button activation with ARIA and URL hash sync
   data/
     batching-scenarios.js   Balanced / prompt-heavy / bursty frame data
     chunk-frames.js         Chunked prefill step definitions
@@ -75,16 +121,35 @@ src/
 
 ## Conventions
 
-Architecture decisions, module patterns, CSS organization, and pitfalls are documented in [`AGENTS.md`](AGENTS.md). Read that file before making changes.
+Architecture decisions, module patterns, CSS organization, and pitfalls are documented in [AGENTS.md](AGENTS.md). Read that file before making changes.
+
+## Dev Container
+
+The project includes a [Dev Container](.devcontainer/devcontainer.json) configuration (Node 22, auto `npm ci`, port 5173 forwarded). Open the repo in VS Code or any Dev Container-compatible editor to get a ready-to-go environment.
+
+## CI / CD
+
+A [GitHub Actions workflow](.github/workflows/container.yml) builds and pushes container images to `ghcr.io`:
+
+- **Production image** — built from `Containerfile` on pushes to `main` and version tags.
+- **Dev image** — built from `Containerfile.dev` alongside the production image.
+
+Pull requests trigger builds but do not push to the registry.
 
 ## External dependencies
 
-| Dependency | Loaded via | Purpose |
-|---|---|---|
-| [Vite](https://vite.dev) | npm (dev only) | Dev server + production build |
-| [Prism.js](https://prismjs.com) | npm | Syntax highlighting for code blocks |
-| [beautiful-mermaid](https://www.npmjs.com/package/beautiful-mermaid) | npm | Architecture and flow diagrams (lazy-loaded) |
-| [Red Hat fonts](https://github.com/RedHatOfficial/RedHatFont) | Self-hosted (`public/fonts/`) | Display, Text, and Mono typefaces (SIL OFL) |
+
+| Dependency                                                           | Loaded via                    | Purpose                                      |
+| -------------------------------------------------------------------- | ----------------------------- | -------------------------------------------- |
+| [Vite](https://vite.dev)                                             | npm (dev only)                | Dev server + production build                |
+| [Prism.js](https://prismjs.com)                                      | npm                           | Syntax highlighting for code blocks          |
+| [beautiful-mermaid](https://www.npmjs.com/package/beautiful-mermaid) | npm                           | Architecture and flow diagrams (lazy-loaded) |
+| [Red Hat fonts](https://github.com/RedHatOfficial/RedHatFont)        | Self-hosted (`public/fonts/`) | Display, Text, and Mono typefaces (SIL OFL)  |
+
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for local development setup, project conventions, and how to submit changes.
 
 ## License
 
