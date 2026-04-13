@@ -4,6 +4,64 @@ export function init() {
 
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
+  const isMobile = window.innerWidth < 768;
+
+  if (typeof canvas.transferControlToOffscreen === 'function') {
+    initOffscreen(canvas, isMobile);
+  } else {
+    initMainThread(canvas, isMobile);
+  }
+}
+
+function getTheme() {
+  return document.documentElement.getAttribute('data-theme') === 'dark';
+}
+
+function initOffscreen(canvas, isMobile) {
+  const offscreen = canvas.transferControlToOffscreen();
+  const worker = new Worker(
+    new URL('./hero-canvas-worker.js', import.meta.url),
+    { type: 'module' }
+  );
+
+  worker.postMessage({
+    type: 'init',
+    canvas: offscreen,
+    width: canvas.offsetWidth,
+    height: canvas.offsetHeight,
+    dpr: window.devicePixelRatio || 1,
+    isMobile,
+    isDark: getTheme(),
+  }, [offscreen]);
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      worker.postMessage({
+        type: 'resize',
+        width: canvas.offsetWidth,
+        height: canvas.offsetHeight,
+        dpr: window.devicePixelRatio || 1,
+      });
+    }, 150);
+  });
+
+  new MutationObserver(() => {
+    worker.postMessage({ type: 'theme', isDark: getTheme() });
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+  new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        worker.postMessage({ type: entry.isIntersecting ? 'resume' : 'pause' });
+      });
+    },
+    { threshold: 0 },
+  ).observe(canvas);
+}
+
+function initMainThread(canvas, isMobile) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
 
@@ -20,7 +78,6 @@ export function init() {
     'self', 'data', 'config', 'norm', 'softmax', 'linear',
   ];
 
-  const isMobile = window.innerWidth < 768;
   const LANE_COUNT = isMobile ? 5 : 8;
   const FONT_SIZE = isMobile ? 10 : 12;
   const LANE_GAP = isMobile ? 32 : 38;
@@ -31,6 +88,8 @@ export function init() {
   const SPAWN_MS = isMobile ? 220 : 160;
 
   const fontStr = `500 ${FONT_SIZE}px "Red Hat Mono", "SF Mono", "Fira Code", monospace`;
+
+  let cachedW = 0, cachedH = 0;
 
   const widthCache = new Map();
   function tokenWidth(text) {
@@ -43,8 +102,10 @@ export function init() {
 
   function resize() {
     const dpr = window.devicePixelRatio || 1;
-    canvas.width = canvas.offsetWidth * dpr;
-    canvas.height = canvas.offsetHeight * dpr;
+    cachedW = canvas.offsetWidth;
+    cachedH = canvas.offsetHeight;
+    canvas.width = cachedW * dpr;
+    canvas.height = cachedH * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     widthCache.clear();
   }
@@ -76,7 +137,7 @@ export function init() {
 
   function initLanes() {
     lanes = [];
-    const h = canvas.offsetHeight;
+    const h = cachedH;
     const margin = LANE_GAP;
     const usable = h - margin * 2;
     const gap = LANE_COUNT > 1 ? usable / (LANE_COUNT - 1) : 0;
@@ -101,11 +162,11 @@ export function init() {
   }
 
   function draw(now) {
-    const w = canvas.offsetWidth;
-    const h = canvas.offsetHeight;
+    const w = cachedW;
+    const h = cachedH;
     ctx.clearRect(0, 0, w, h);
 
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const isDark = getTheme();
     ctx.font = fontStr;
     ctx.textBaseline = 'middle';
 
@@ -126,7 +187,6 @@ export function init() {
       }
       if (laneAlpha < 0.01) continue;
 
-      // Prefill phase — shimmering bar
       if (elapsed < lane.prefillDur) {
         const progress = elapsed / lane.prefillDur;
         const shimmer = 0.2 + 0.12 * Math.sin(elapsed * 0.01);
@@ -138,7 +198,6 @@ export function init() {
         continue;
       }
 
-      // Decode phase — tokens appear one by one
       const decodeMs = elapsed - lane.prefillDur;
       lane.revealed = Math.min(lane.tokens.length, Math.floor(decodeMs / SPAWN_MS) + 1);
 
@@ -173,7 +232,6 @@ export function init() {
         x += tw + TOKEN_GAP;
       }
 
-      // Blinking cursor at stream head
       if (lane.revealed < lane.tokens.length && !lane.done) {
         if (Math.sin(now * 0.005) > 0) {
           const ca = (isDark ? 0.5 : 0.35) * laneAlpha;

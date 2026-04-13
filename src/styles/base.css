@@ -1,7 +1,7 @@
 /* ---------- ANIMATION KEYFRAMES ---------- */
 @keyframes revealUp {
-  from { opacity: 0; transform: translateY(32px) scale(0.97); filter: blur(4px); }
-  to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  from { opacity: 0; transform: translateY(32px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 @keyframes fadeInUp {
@@ -74,6 +74,7 @@ html {
   color-scheme: light;
 }
 
+/* Fallback for browsers without View Transitions API */
 .theme-transitioning,
 .theme-transitioning *,
 .theme-transitioning *::before,
@@ -86,6 +87,12 @@ html {
               box-shadow 0.4s var(--ease-out-expo),
               fill 0.4s var(--ease-out-expo),
               filter 0.4s var(--ease-out-expo) !important;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.35s;
+  animation-timing-function: var(--ease-out-expo);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -227,7 +234,7 @@ strong { font-weight: 700; }
 }
 
 .reveal.visible {
-  will-change: opacity, transform, filter;
+  will-change: opacity, transform;
   animation: revealUp 0.65s var(--ease-out-expo) forwards;
 }
 

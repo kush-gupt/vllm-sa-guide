@@ -10,11 +10,13 @@ export function init() {
         <h4>&ldquo;${item.question}&rdquo;</h4>
         <span class="expand-icon" aria-hidden="true">+</span>
       </button>
-      <div class="objection-body" hidden>
-        <p class="objection-response">${item.response}</p>
-        <ul class="objection-points">
-          ${item.keyPoints.map(pt => `<li>${pt}</li>`).join('')}
-        </ul>
+      <div class="objection-body" aria-hidden="true">
+        <div class="objection-body-inner">
+          <p class="objection-response">${item.response}</p>
+          <ul class="objection-points">
+            ${item.keyPoints.map(pt => `<li>${pt}</li>`).join('')}
+          </ul>
+        </div>
       </div>
     </article>
   `).join('');
@@ -29,7 +31,7 @@ export function init() {
     const expanded = header.getAttribute('aria-expanded') === 'true';
 
     header.setAttribute('aria-expanded', String(!expanded));
-    body.hidden = expanded;
+    body.setAttribute('aria-hidden', String(expanded));
     icon.textContent = expanded ? '+' : '\u00d7';
   });
 }

@@ -11,6 +11,8 @@
   border-bottom: 1px solid var(--card-border);
   height: var(--nav-height);
   transition: background var(--transition);
+  will-change: transform;
+  contain: layout style;
 }
 
 .nav-inner {
@@ -263,13 +265,29 @@
   border-radius: var(--radius);
   padding: 24px 32px;
   min-width: 180px;
-  transition: border-color 0.4s var(--ease-out-expo), transform 0.4s var(--ease-out-expo), box-shadow 0.4s var(--ease-out-expo);
+  position: relative;
+  transition: border-color 0.4s var(--ease-out-expo), transform 0.4s var(--ease-out-expo);
+}
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 4px 12px rgba(238, 0, 0, 0.08), 0 16px 40px rgba(238, 0, 0, 0.12), 0 0 0 1px rgba(238, 0, 0, 0.15);
+  opacity: 0;
+  transition: opacity 0.4s var(--ease-out-expo);
+  pointer-events: none;
 }
 
 .stat-card:hover {
   border-color: var(--red);
   transform: translateY(-6px) scale(1.015);
-  box-shadow: 0 4px 12px rgba(238, 0, 0, 0.08), 0 16px 40px rgba(238, 0, 0, 0.12), 0 0 0 1px rgba(238, 0, 0, 0.15);
+  transition-duration: 0.2s;
+}
+
+.stat-card:hover::after {
+  opacity: 1;
   transition-duration: 0.2s;
 }
 
@@ -294,20 +312,40 @@
   background: var(--red);
   padding: 14px 36px;
   border-radius: var(--radius-sm);
-  transition: background-color var(--transition), transform var(--transition), box-shadow var(--transition);
+  position: relative;
+  transition: background-color var(--transition), transform var(--transition);
+}
+
+.hero-cta::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 6px 16px var(--red-glow), 0 16px 40px rgba(238, 0, 0, 0.18);
+  opacity: 0;
+  transition: opacity var(--transition);
+  pointer-events: none;
 }
 
 .hero-cta:hover {
   background: var(--red-dark);
   color: #fff;
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 6px 16px var(--red-glow), 0 16px 40px rgba(238, 0, 0, 0.18);
+  transition-duration: 0.18s;
+}
+
+.hero-cta:hover::after {
+  opacity: 1;
   transition-duration: 0.18s;
 }
 
 .hero-cta:active {
   transform: translateY(0) scale(0.97);
-  box-shadow: 0 2px 8px var(--red-glow);
+  transition-duration: 0.08s;
+}
+
+.hero-cta:active::after {
+  opacity: 0.5;
   transition-duration: 0.08s;
 }
 
@@ -406,6 +444,7 @@
   transform-origin: left;
   transform: scaleX(0);
   will-change: transform;
+  contain: strict;
 }
 
 /* ---------- BACK TO TOP ---------- */

@@ -7,6 +7,7 @@
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
   padding: 32px;
+  contain: content;
 }
 
 .showdown-header {
@@ -518,6 +519,7 @@
   margin-bottom: 32px;
   box-shadow: 0 22px 40px rgba(0, 0, 0, 0.14);
   overflow: hidden;
+  contain: content;
 }
 
 .pa-cinema-head {
@@ -985,6 +987,7 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+  contain: content;
 }
 
 .chunked-section h3 { font-size: 1.4rem; margin-bottom: 4px; }
@@ -1551,6 +1554,7 @@
   padding: 32px;
   margin-bottom: 32px;
   overflow: hidden;
+  contain: content;
 }
 
 .lab-heading {
@@ -2434,6 +2438,7 @@
   padding: 32px;
   margin-bottom: 48px;
   box-shadow: 0 22px 40px rgba(0, 0, 0, 0.12);
+  contain: content;
 }
 
 .decode-loop-head {
@@ -3171,6 +3176,8 @@
   display: flex;
   justify-content: center;
   min-height: 200px;
+  content-visibility: auto;
+  contain-intrinsic-block-size: auto 400px;
 }
 
 .arch-map-diagram svg {

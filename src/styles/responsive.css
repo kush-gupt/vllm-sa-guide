@@ -26,17 +26,17 @@
     flex-direction: column;
     padding: 0 16px;
     border-bottom: 1px solid var(--card-border);
-    max-height: 0;
+    height: 0;
     opacity: 0;
     overflow: hidden;
     pointer-events: none;
-    transition: max-height 0.35s var(--ease-out-expo),
+    transition: height 0.35s var(--ease-out-expo),
                 opacity 0.25s var(--ease-out-expo),
                 padding 0.35s var(--ease-out-expo);
   }
 
   .nav-links.open {
-    max-height: 400px;
+    height: auto;
     opacity: 1;
     padding: 16px;
     pointer-events: auto;
@@ -313,13 +313,13 @@
   }
 
   .comp-card-body {
-    grid-template-rows: 1fr !important;
-    padding: 0 24px 24px !important;
+    height: auto !important;
     opacity: 1 !important;
   }
 
   .objection-body {
-    display: block !important;
+    height: auto !important;
+    opacity: 1 !important;
   }
 
   .showdown,
