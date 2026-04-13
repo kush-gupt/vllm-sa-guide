@@ -1,4 +1,6 @@
 import { paPhases } from '../data/pa-phases.js';
+import { initRovingTabindex } from '../utils/roving-tabindex.js';
+import { createAutoplay } from '../utils/autoplay.js';
 
 export function init() {
   const paCinema = document.getElementById('pa-cinema');
@@ -22,8 +24,6 @@ export function init() {
     const cells = Array.from(paStrip.children);
 
     let paActivePhase = 0;
-    let paPlaying = true;
-    let paTimer = null;
 
     function renderPaPhase(phaseIdx) {
       const phase = paPhases[phaseIdx];
@@ -65,31 +65,21 @@ export function init() {
       updatePhaseAria(phaseIdx);
     }
 
-    function restartPaCinema() {
-      if (paTimer) clearInterval(paTimer);
-      if (!paPlaying) return;
-      paTimer = setInterval(function () {
+    const autoplay = createAutoplay(paCinema, paCinemaPlay, {
+      interval: 3500,
+      onTick() {
         paActivePhase = (paActivePhase + 1) % paPhases.length;
         renderPaPhase(paActivePhase);
-      }, 3500);
-    }
+      },
+    });
 
     paPhaseBtns.forEach(function (btn) {
       btn.addEventListener('click', function () {
         paActivePhase = parseInt(btn.dataset.phase, 10) || 0;
         renderPaPhase(paActivePhase);
-        restartPaCinema();
+        autoplay.restart();
       });
     });
-
-    if (paCinemaPlay) {
-      paCinemaPlay.addEventListener('click', function () {
-        paPlaying = !paPlaying;
-        paCinemaPlay.textContent = paPlaying ? 'Pause' : 'Play';
-        paCinemaPlay.setAttribute('aria-label', paPlaying ? 'Pause animation' : 'Play animation');
-        restartPaCinema();
-      });
-    }
 
     function updatePhaseAria(activeIdx) {
       paPhaseBtns.forEach(function (btn) {
@@ -100,33 +90,9 @@ export function init() {
     }
 
     var paPhaseBar = document.getElementById('pa-phase-bar');
-    if (paPhaseBar) {
-      paPhaseBar.addEventListener('keydown', function (e) {
-        var btns = Array.from(paPhaseBtns);
-        var idx = btns.indexOf(document.activeElement);
-        if (idx === -1) return;
-        var next = -1;
-        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (idx + 1) % btns.length;
-        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (idx - 1 + btns.length) % btns.length;
-        if (next !== -1) { e.preventDefault(); btns[next].focus(); btns[next].click(); }
-      });
-    }
+    if (paPhaseBar) initRovingTabindex(paPhaseBar, paPhaseBtns, btn => btn.click());
 
     renderPaPhase(0);
-    restartPaCinema();
-
-    const paVisObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (!entry.isIntersecting) {
-            if (paTimer) { clearInterval(paTimer); paTimer = null; }
-          } else if (paPlaying) {
-            restartPaCinema();
-          }
-        });
-      },
-      { threshold: 0 }
-    );
-    paVisObserver.observe(paCinema);
+    autoplay.start();
   }
 }

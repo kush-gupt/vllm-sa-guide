@@ -1,3 +1,6 @@
+# Security headers and cache rules are duplicated in Caddyfile
+# (for container deployments). Keep both files in sync when editing.
+#
 # ── Security headers (all routes) ──────────────────────────────────────
 /*
   X-Content-Type-Options: nosniff

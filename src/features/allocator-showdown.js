@@ -1,4 +1,5 @@
 import { SHOWDOWN_STEPS } from '../data/showdown-steps.js';
+import { crossfadeText } from '../utils/crossfade.js';
 
 const ROWS = 4;
 const COLS = 16;
@@ -123,26 +124,6 @@ export function init() {
 
   const naivePillRefs = buildPills(naiveMetrics, MAX_NAIVE_PILLS);
   const pagedPillRefs = buildPills(pagedMetrics, MAX_PAGED_PILLS);
-
-  /* ─── Crossfade text helper ─── */
-
-  const fadeTimers = new Map();
-
-  function crossfadeText(el, content, html) {
-    if (!el) return;
-    const cur = html ? el.innerHTML : el.textContent;
-    if (cur === content) return;
-
-    if (fadeTimers.has(el)) clearTimeout(fadeTimers.get(el));
-
-    el.classList.add('fading');
-    fadeTimers.set(el, setTimeout(() => {
-      if (html) el.innerHTML = content;
-      else el.textContent = content;
-      el.classList.remove('fading');
-      fadeTimers.delete(el);
-    }, 150));
-  }
 
   /* ─── In-place update helpers ─── */
 

@@ -1,5 +1,7 @@
 import { modernTopicData } from '../data/modern-topic-data.js';
 import { crossfade } from '../utils/crossfade.js';
+import { initRovingTabindex } from '../utils/roving-tabindex.js';
+import { activateTabButton } from '../utils/tab-utils.js';
 import { bindAbbrTips } from './tooltips.js';
 
 export function init() {
@@ -58,17 +60,11 @@ export function init() {
     }
 
     function activateTab(btn, pushHash) {
-      modernTopicBtns.forEach(other => {
-        other.classList.remove('active');
-        other.setAttribute('aria-selected', 'false');
-        other.tabIndex = -1;
+      activateTabButton(modernTopicBtns, btn, {
+        dataKey: 'topic',
+        hashPrefix: pushHash ? 'topic-' : null,
+        onActivate: updateModernTopic,
       });
-      btn.classList.add('active');
-      btn.setAttribute('aria-selected', 'true');
-      btn.tabIndex = 0;
-      const topic = btn.dataset.topic;
-      updateModernTopic(topic);
-      if (pushHash) history.replaceState(null, '', '#topic-' + topic);
     }
 
     modernTopicBtns.forEach(btn => {
@@ -76,17 +72,7 @@ export function init() {
     });
 
     const tablist = document.querySelector('.modern-topic-buttons');
-    if (tablist) {
-      tablist.addEventListener('keydown', (e) => {
-        const btns = Array.from(modernTopicBtns);
-        const idx = btns.indexOf(document.activeElement);
-        if (idx === -1) return;
-        let next = -1;
-        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (idx + 1) % btns.length;
-        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (idx - 1 + btns.length) % btns.length;
-        if (next !== -1) { e.preventDefault(); btns[next].focus(); activateTab(btns[next], true); }
-      });
-    }
+    if (tablist) initRovingTabindex(tablist, modernTopicBtns, btn => activateTab(btn, true));
 
     const hash = location.hash;
     const hashTopic = hash.startsWith('#topic-') ? hash.slice(7) : null;

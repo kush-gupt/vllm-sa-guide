@@ -73,21 +73,9 @@ src/
     objection-data.js       FAQ objection/response data
 ```
 
-## Architecture decisions
+## Conventions
 
-- **Vanilla JS, no framework.** The guide is a static reference document. Every interactive feature is a self-contained module with a single `init()` export and a DOM-element guard so it only activates when its HTML section is present.
-- **Vite for DX and build.** Enables ES module imports during development and produces a hashed, minified bundle for deployment. No runtime framework cost.
-- **CSS loaded from `<head>`, not JS.** The stylesheet is a `<link>` tag to avoid flash-of-unstyled-content. Vite still processes the `@import` chain during build.
-- **npm for syntax highlighting and diagrams.** [Prism.js](https://prismjs.com) (syntax highlighting) and [beautiful-mermaid](https://www.npmjs.com/package/beautiful-mermaid) (diagrams) are both npm dependencies. Mermaid is lazy-loaded on first render to keep the initial bundle small.
-- **One cross-module dependency.** `batching-lab.js` exposes `onBatchSync(callback)` so `chunked-prefill.js` can synchronize its step display when the batching lab is on the prompt-heavy workload.
-
-## Adding a new interactive feature
-
-1. Create `src/features/my-feature.js` with `export function init() { … }`.
-2. Guard on the presence of its DOM elements so it's a no-op if the HTML section is absent.
-3. If it has large data, put the data in `src/data/my-feature-data.js` as a named export.
-4. Import and call `initMyFeature()` in `src/main.js`.
-5. Add CSS to the appropriate partial under `src/styles/`.
+Architecture decisions, module patterns, CSS organization, and pitfalls are documented in [`AGENTS.md`](AGENTS.md). Read that file before making changes.
 
 ## External dependencies
 

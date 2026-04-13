@@ -1,4 +1,6 @@
 import { phases, PROMPT_TOKENS, GENERATED_TOKENS } from '../data/decode-loop-data.js';
+import { initRovingTabindex } from '../utils/roving-tabindex.js';
+import { createAutoplay } from '../utils/autoplay.js';
 
 const AUTO_INTERVAL = 4500;
 const ALL_TOKENS = [...PROMPT_TOKENS, ...GENERATED_TOKENS];
@@ -31,8 +33,6 @@ export function init() {
   if (!titleEl || !captionEl || !tokensEl || !modelBox || !kvBlocks || !playBtn || !phaseBar) return;
 
   let current = 0;
-  let timer = null;
-  let playing = true;
 
   const isDecodePhase = (id) => id.startsWith('token-') || id === 'pattern';
 
@@ -214,31 +214,9 @@ export function init() {
     renderPhase(next);
   }
 
-  function startAutoPlay() {
-    stopAutoPlay();
-    timer = setInterval(advance, AUTO_INTERVAL);
-  }
+  const autoplay = createAutoplay(root, playBtn, { interval: AUTO_INTERVAL, onTick: advance });
 
-  function stopAutoPlay() {
-    if (timer) { clearInterval(timer); timer = null; }
-  }
-
-  playBtn.addEventListener('click', () => {
-    playing = !playing;
-    playBtn.textContent = playing ? 'Pause' : 'Play';
-    playBtn.setAttribute('aria-label', playing ? 'Pause animation' : 'Play animation');
-    if (playing) startAutoPlay(); else stopAutoPlay();
-  });
-
-  phaseBar.addEventListener('keydown', (e) => {
-    const btns = Array.from(phaseBar.querySelectorAll('.decode-phase-btn'));
-    const idx = btns.indexOf(document.activeElement);
-    if (idx === -1) return;
-    let next = -1;
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (idx + 1) % btns.length;
-    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (idx - 1 + btns.length) % btns.length;
-    if (next !== -1) { e.preventDefault(); btns[next].focus(); btns[next].click(); }
-  });
+  initRovingTabindex(phaseBar, phaseBar.querySelectorAll('.decode-phase-btn'), btn => btn.click());
 
   phases.forEach((p, i) => {
     const btn = document.createElement('button');
@@ -251,25 +229,11 @@ export function init() {
     btn.tabIndex = i === 0 ? 0 : -1;
     btn.addEventListener('click', () => {
       renderPhase(i);
-      if (playing) startAutoPlay();
+      autoplay.restart();
     });
     phaseBar.appendChild(btn);
   });
 
   renderPhase(0);
-  startAutoPlay();
-
-  const decodeVisObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(entry => {
-        if (!entry.isIntersecting) {
-          stopAutoPlay();
-        } else if (playing) {
-          startAutoPlay();
-        }
-      });
-    },
-    { threshold: 0 }
-  );
-  decodeVisObserver.observe(root);
+  autoplay.start();
 }

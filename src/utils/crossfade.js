@@ -23,3 +23,21 @@ export function crossfadeMulti(containers, renderFn) {
     });
   }, 220);
 }
+
+export function crossfadeText(el, content, html = false, duration = 150) {
+  if (!el) return;
+  const cur = html ? el.innerHTML : el.textContent;
+  if (cur === content) return;
+
+  const prev = crossfadeTimers.get(el);
+  if (prev) clearTimeout(prev);
+
+  el.classList.add('fading');
+  const tid = setTimeout(() => {
+    if (html) el.innerHTML = content;
+    else el.textContent = content;
+    el.classList.remove('fading');
+    crossfadeTimers.delete(el);
+  }, duration);
+  crossfadeTimers.set(el, tid);
+}

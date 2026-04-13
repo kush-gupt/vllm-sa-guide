@@ -1,6 +1,7 @@
 import { chunkFrames } from '../data/chunk-frames.js';
 import { clamp } from '../utils/helpers.js';
 import { crossfade } from '../utils/crossfade.js';
+import { initRovingTabindex } from '../utils/roving-tabindex.js';
 import { onBatchSync } from './batching-lab.js';
 
 export function init() {
@@ -105,14 +106,7 @@ export function init() {
     activateChunkTab(btn);
   });
 
-  phaseBar.addEventListener('keydown', (e) => {
-    const idx = phaseBtns.indexOf(document.activeElement);
-    if (idx === -1) return;
-    let next = -1;
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (idx + 1) % phaseBtns.length;
-    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (idx - 1 + phaseBtns.length) % phaseBtns.length;
-    if (next !== -1) { e.preventDefault(); phaseBtns[next].focus(); activateChunkTab(phaseBtns[next]); }
-  });
+  initRovingTabindex(phaseBar, phaseBtns, btn => activateChunkTab(btn));
 
   onBatchSync(setStep);
   renderStep(activeStep);

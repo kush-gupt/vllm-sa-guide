@@ -19,12 +19,7 @@ npm run check     # syntax-check all JS modules
 
 ## Project conventions
 
-- **Vanilla JS only.** Do not introduce React, Vue, Svelte, or any UI framework.
-- **Plain CSS.** No Sass, PostCSS, or Tailwind. Design tokens live in `src/styles/tokens.css`.
-- **Feature modules** go in `src/features/` with a single `export function init()`. Every `init()` must guard on its DOM elements so it's a no-op if the HTML section is absent.
-- **Large data objects** (> ~50 lines) belong in `src/data/` as named exports, not inline in feature modules.
-- **Shared utilities** (crossfade, clamp, etc.) live in `src/utils/`.
-- **CSS partials**: static component styles go in `components.css`, interactive widget styles in `interactive.css`, media queries in `responsive.css`. See `AGENTS.md` for the full breakdown.
+See [`AGENTS.md`](AGENTS.md) for architecture decisions, module patterns, CSS organization, and common pitfalls.
 
 ## Submitting changes
 

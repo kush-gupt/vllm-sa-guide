@@ -1,3 +1,5 @@
+# Security headers and cache rules are duplicated in public/_headers
+# (for Cloudflare Pages). Keep both files in sync when editing.
 :8080 {
 	root * /usr/share/caddy
 	encode gzip zstd

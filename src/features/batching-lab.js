@@ -1,6 +1,8 @@
 import { batchingScenarios } from '../data/batching-scenarios.js';
 import { clamp } from '../utils/helpers.js';
 import { crossfadeMulti } from '../utils/crossfade.js';
+import { initRovingTabindex } from '../utils/roving-tabindex.js';
+import { activateTabButton } from '../utils/tab-utils.js';
 
 let syncChunkCallback = () => {};
 
@@ -73,25 +75,22 @@ export function init() {
     let workloadInitialized = false;
 
     function activateWorkload(btn) {
-      workloadBtns.forEach(other => {
-        other.classList.remove('active');
-        other.setAttribute('aria-selected', 'false');
-        other.tabIndex = -1;
-      });
-      btn.classList.add('active');
-      btn.setAttribute('aria-selected', 'true');
-      btn.tabIndex = 0;
       const prev = activeWorkload;
-      activeWorkload = btn.dataset.workload;
-      if (!workloadInitialized || prev === activeWorkload) {
-        workloadInitialized = true;
-        updateBatchLab();
-      } else {
-        crossfadeMulti(
-          [staticSlots, continuousSlots, staticMetrics, continuousMetrics, batchTakeaway],
-          () => updateBatchLab()
-        );
-      }
+      activateTabButton(workloadBtns, btn, {
+        dataKey: 'workload',
+        onActivate(workload) {
+          activeWorkload = workload;
+          if (!workloadInitialized || prev === workload) {
+            workloadInitialized = true;
+            updateBatchLab();
+          } else {
+            crossfadeMulti(
+              [staticSlots, continuousSlots, staticMetrics, continuousMetrics, batchTakeaway],
+              () => updateBatchLab()
+            );
+          }
+        },
+      });
     }
 
     workloadBtns.forEach(btn => {
@@ -99,17 +98,7 @@ export function init() {
     });
 
     const tablist = document.querySelector('.segmented-control');
-    if (tablist) {
-      tablist.addEventListener('keydown', (e) => {
-        const btns = Array.from(workloadBtns);
-        const idx = btns.indexOf(document.activeElement);
-        if (idx === -1) return;
-        let next = -1;
-        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (idx + 1) % btns.length;
-        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (idx - 1 + btns.length) % btns.length;
-        if (next !== -1) { e.preventDefault(); btns[next].focus(); activateWorkload(btns[next]); }
-      });
-    }
+    if (tablist) initRovingTabindex(tablist, workloadBtns, btn => activateWorkload(btn));
 
     batchStepInput.addEventListener('input', updateBatchLab);
     updateBatchLab();

@@ -1,5 +1,7 @@
 import { strategies } from '../data/parallelism-data.js';
 import { crossfadeMulti } from '../utils/crossfade.js';
+import { initRovingTabindex } from '../utils/roving-tabindex.js';
+import { activateTabButton } from '../utils/tab-utils.js';
 
 export function init() {
   const parTabs = document.querySelectorAll('.par-tab');
@@ -39,10 +41,6 @@ export function init() {
       parFlag.textContent = strategy.flag;
       parCaution.textContent = strategy.caution;
 
-      parTabs.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.strategy === name);
-      });
-
       parallelismVisual.innerHTML = `<div class="par-visual-grid" style="grid-template-columns: repeat(${strategy.visual.length}, minmax(0, 1fr));">
         ${strategy.visual
           .map(col => {
@@ -72,14 +70,11 @@ export function init() {
     }
 
     function activateTab(btn, pushHash) {
-      parTabs.forEach(b => {
-        b.setAttribute('aria-selected', 'false');
-        b.tabIndex = -1;
+      activateTabButton(parTabs, btn, {
+        dataKey: 'strategy',
+        hashPrefix: pushHash ? 'par-' : null,
+        onActivate: renderStrategy,
       });
-      btn.setAttribute('aria-selected', 'true');
-      btn.tabIndex = 0;
-      renderStrategy(btn.dataset.strategy);
-      if (pushHash) history.replaceState(null, '', '#par-' + btn.dataset.strategy);
     }
 
     parTabs.forEach(btn => {
@@ -87,17 +82,7 @@ export function init() {
     });
 
     const tablist = document.querySelector('.parallelism-tabs');
-    if (tablist) {
-      tablist.addEventListener('keydown', (e) => {
-        const btns = Array.from(parTabs);
-        const idx = btns.indexOf(document.activeElement);
-        if (idx === -1) return;
-        let next = -1;
-        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (idx + 1) % btns.length;
-        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (idx - 1 + btns.length) % btns.length;
-        if (next !== -1) { e.preventDefault(); btns[next].focus(); activateTab(btns[next], true); }
-      });
-    }
+    if (tablist) initRovingTabindex(tablist, parTabs, btn => activateTab(btn, true));
 
     const hash = location.hash;
     const hashStrategy = hash.startsWith('#par-') ? hash.slice(5) : null;
