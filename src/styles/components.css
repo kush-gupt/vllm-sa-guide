@@ -1,3 +1,247 @@
+/* ---------- READING PATHS ---------- */
+.reading-paths-section {
+  padding-top: 32px;
+  padding-bottom: 32px;
+}
+
+.reading-paths-title {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.reading-paths-lead {
+  text-align: center;
+  color: var(--text-muted);
+  margin-bottom: 28px;
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.reading-paths-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.reading-path-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 28px;
+  transition: all var(--transition);
+}
+
+.reading-path-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+.reading-path-business:hover { border-color: var(--green); }
+.reading-path-ops:hover { border-color: var(--red); }
+.reading-path-deep:hover { border-color: var(--gold); }
+
+.reading-path-icon {
+  margin-bottom: 14px;
+}
+
+.reading-path-card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+}
+
+.reading-path-card > p {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+.reading-path-steps {
+  list-style: none;
+  counter-reset: path-step;
+  margin: 0;
+  padding: 0;
+}
+
+.reading-path-steps li {
+  counter-increment: path-step;
+  position: relative;
+  padding-left: 28px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.reading-path-steps li::before {
+  content: counter(path-step);
+  position: absolute;
+  left: 0;
+  top: 1px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--card-bg-alt);
+  border: 1px solid var(--card-border);
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+}
+
+.reading-path-steps a {
+  color: var(--text);
+  font-weight: 600;
+}
+
+
+/* ---------- PLAIN ENGLISH SUMMARIES ---------- */
+details.plain-english {
+  background:
+    linear-gradient(135deg, rgba(240, 171, 0, 0.06), transparent 60%),
+    var(--card-bg);
+  border: 1px solid rgba(240, 171, 0, 0.25);
+  border-left: 3px solid var(--gold);
+  border-radius: var(--radius);
+  padding: 0;
+  margin-bottom: 32px;
+  overflow: hidden;
+}
+
+details.plain-english summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 24px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+details.plain-english summary::-webkit-details-marker { display: none; }
+
+details.plain-english summary::before {
+  content: '+';
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid rgba(240, 171, 0, 0.4);
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  color: var(--gold);
+  transition: transform var(--transition);
+}
+
+details.plain-english[open] summary::before {
+  content: '\00d7';
+  transform: rotate(90deg);
+}
+
+details.plain-english p {
+  padding: 0 24px 20px;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin: 0;
+}
+
+
+/* ---------- JOURNEY MAP ---------- */
+.journey-map {
+  margin-bottom: 32px;
+}
+
+.journey-title {
+  text-align: center;
+  margin-bottom: 24px;
+  font-size: 1.2rem;
+}
+
+.journey-flow {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 16px;
+}
+
+.journey-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 20px 18px;
+  flex: 1;
+  max-width: 200px;
+  transition: all var(--transition);
+}
+
+.journey-step-highlight {
+  border-color: rgba(238, 0, 0, 0.35);
+  background:
+    linear-gradient(135deg, rgba(238, 0, 0, 0.06), transparent 60%),
+    var(--card-bg);
+}
+
+.journey-step-icon {
+  margin-bottom: 4px;
+}
+
+.journey-step strong {
+  font-size: 0.85rem;
+  line-height: 1.3;
+}
+
+.journey-step span {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+
+.journey-arrow {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  font-size: 1.4rem;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.journey-caption {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+
+/* ---------- EXECUTIVE SUMMARY ---------- */
+.exec-summary {
+  background:
+    linear-gradient(135deg, rgba(62, 134, 53, 0.06), transparent 60%),
+    var(--card-bg);
+  border: 1px solid rgba(62, 134, 53, 0.25);
+  border-left: 3px solid var(--green);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  margin-bottom: 32px;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+
 /* ---------- WHY vLLM ---------- */
 .problem-grid {
   display: grid;
@@ -428,6 +672,14 @@ tr:last-child td {
 
 tr:hover td {
   background: var(--card-bg);
+}
+
+
+th.col-plain,
+td.col-plain {
+  color: var(--green-light);
+  font-style: italic;
+  font-size: 0.85rem;
 }
 
 
@@ -1126,6 +1378,47 @@ tr:hover td {
   color: var(--text);
   line-height: 1.6;
   margin-bottom: 28px;
+}
+
+.quickstart-biz-outcomes {
+  background: var(--bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  padding: 22px 24px;
+  margin-bottom: 28px;
+}
+
+.quickstart-biz-outcomes h4 {
+  font-size: 0.95rem;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+
+.biz-outcomes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.biz-outcome {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-sm);
+}
+
+.biz-outcome strong {
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.biz-outcome span {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.5;
 }
 
 .quickstart-triggers {

@@ -76,10 +76,10 @@
         <span></span><span></span><span></span>
       </button>
       <ul class="nav-links">
-        <li><a href="#why">Why It Matters</a></li>
-        <li><a href="#modern-inference">What Production Needs</a></li>
-        <li><a href="#models">What vLLM Does</a></li>
-        <li><a href="#deployment">Deployment</a></li>
+        <li><a href="#why">The Problem</a></li>
+        <li><a href="#modern-inference">Key Techniques</a></li>
+        <li><a href="#models">Capabilities</a></li>
+        <li><a href="#deployment">Getting Started</a></li>
         <li class="nav-divider" aria-hidden="true"></li>
         <li><a href="#paged-attention">PagedAttention</a></li>
         <li><a href="#batching">Batching</a></li>
@@ -143,6 +143,57 @@
     </div>
   </section>
 
+  <!-- ========== READING PATHS ========== -->
+  <section id="reading-paths" class="section reading-paths-section">
+    <div class="container">
+      <div class="reading-paths reveal">
+        <h2 class="reading-paths-title">How to read this guide</h2>
+        <p class="reading-paths-lead">Pick the path that fits your role. Every section is self-contained, so you can skip ahead or stop early.</p>
+        <div class="reading-paths-grid">
+          <div class="reading-path-card reading-path-business">
+            <div class="reading-path-icon">
+              <svg width="32" height="32" fill="none" stroke="var(--green)" stroke-width="1.5"><use href="#icon-target"/></svg>
+            </div>
+            <h3>Business &amp; Decision-Makers</h3>
+            <p>Understand costs, capabilities, and when vLLM fits.</p>
+            <ol class="reading-path-steps">
+              <li><a href="#why">The Problem</a> &mdash; why inference is hard</li>
+              <li><a href="#modern-inference">Key Techniques</a> &mdash; what production requires</li>
+              <li><a href="#models">Capabilities</a> &mdash; models, features, hardware</li>
+              <li><a href="#modern-inference">Common Questions</a> &mdash; cost, security, migration</li>
+            </ol>
+          </div>
+          <div class="reading-path-card reading-path-ops">
+            <div class="reading-path-icon">
+              <svg width="32" height="32" fill="none" stroke="var(--red)" stroke-width="1.5"><use href="#icon-gear"/></svg>
+            </div>
+            <h3>Platform &amp; Ops Engineers</h3>
+            <p>Deploy, tune, and operate vLLM in production.</p>
+            <ol class="reading-path-steps">
+              <li>Read the full guide top to bottom</li>
+              <li><a href="#deployment">Deployment</a> &mdash; Kubernetes, parallelism</li>
+              <li><a href="#tuning">Tuning</a> &mdash; performance knobs and benchmarking</li>
+              <li><a href="#reference">Reference</a> &mdash; CLI, API, and sources</li>
+            </ol>
+          </div>
+          <div class="reading-path-card reading-path-deep">
+            <div class="reading-path-icon">
+              <svg width="32" height="32" fill="none" stroke="var(--gold)" stroke-width="1.5"><use href="#icon-chip"/></svg>
+            </div>
+            <h3>Deep-Dive &amp; Research</h3>
+            <p>Understand the engine internals and scheduling.</p>
+            <ol class="reading-path-steps">
+              <li><a href="#paged-attention">PagedAttention</a> &mdash; memory management</li>
+              <li><a href="#batching">Batching</a> &mdash; scheduler mechanics</li>
+              <li><a href="#architecture">Architecture</a> &mdash; V1 engine internals</li>
+              <li><a href="#tuning">Tuning</a> &mdash; latency vs throughput tradeoffs</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- =====================================================================
        TIER 1 — START HERE: FOUNDATIONS
        ===================================================================== -->
@@ -154,6 +205,48 @@
         <span class="section-num">01</span>
         <h2>The Inference Challenge <span class="section-tier tier-1">Start here</span></h2>
         <p class="section-lead">Organizations buy expensive GPU hardware. Apps still feel slow and top out after a small number of concurrent users. Fast responses and efficient GPU use pull on the same memory and compute budget. This section names that tradeoff and how vLLM addresses it.</p>
+      </div>
+
+      <div class="exec-summary reveal">
+        <p>When your application uses an AI model to answer questions, write text, or process documents, every response requires GPU compute time. <strong>vLLM is open-source software that makes those responses faster and serves more users on the same hardware.</strong> Teams adopt it to reduce cloud GPU costs, keep data on their own infrastructure, and avoid per-query billing from API providers.</p>
+      </div>
+
+      <div class="journey-map reveal">
+        <h3 class="journey-title">How an AI response reaches the user</h3>
+        <div class="journey-flow">
+          <div class="journey-step">
+            <div class="journey-step-icon">
+              <svg width="24" height="24" fill="none" stroke="var(--text)" stroke-width="1.5"><use href="#icon-globe"/></svg>
+            </div>
+            <strong>User asks a question</strong>
+            <span>Chat, API call, or app request</span>
+          </div>
+          <div class="journey-arrow" aria-hidden="true">&rarr;</div>
+          <div class="journey-step">
+            <div class="journey-step-icon">
+              <svg width="24" height="24" fill="none" stroke="var(--text)" stroke-width="1.5"><use href="#icon-box"/></svg>
+            </div>
+            <strong>Application sends prompt</strong>
+            <span>Your code calls the vLLM API</span>
+          </div>
+          <div class="journey-arrow" aria-hidden="true">&rarr;</div>
+          <div class="journey-step journey-step-highlight">
+            <div class="journey-step-icon">
+              <svg width="24" height="24" fill="none" stroke="var(--red)" stroke-width="1.5"><use href="#icon-chip"/></svg>
+            </div>
+            <strong>vLLM processes on GPU</strong>
+            <span>Prefill, then decode token by token</span>
+          </div>
+          <div class="journey-arrow" aria-hidden="true">&rarr;</div>
+          <div class="journey-step">
+            <div class="journey-step-icon">
+              <svg width="24" height="24" fill="none" stroke="var(--text)" stroke-width="1.5"><use href="#icon-bolt"/></svg>
+            </div>
+            <strong>Response streams back</strong>
+            <span>Words appear as they are generated</span>
+          </div>
+        </div>
+        <p class="journey-caption">The sections below explain what happens at each stage and where vLLM makes the difference.</p>
       </div>
 
       <div class="problem-grid reveal stagger-children">
@@ -175,7 +268,7 @@
           <div class="problem-icon">
             <svg width="48" height="48" fill="none" stroke="var(--red)" stroke-width="1.5"><use href="#icon-gear"/></svg>
           </div>
-          <h3><abbr data-tip="Holds attention keys and values for past tokens. Decode reads them instead of recomputing the full prefix each step.">KV Cache</abbr> Becomes the Real Budget</h3>
+          <h3>The <abbr data-tip="Holds attention keys and values for past tokens. Decode reads them instead of recomputing the full prefix each step.">Key-Value (KV) Cache</abbr> Becomes the Real Budget</h3>
           <p>Long context and high <abbr data-tip="Requests active in the scheduler at once.">concurrency</abbr> with large models all squeeze KV cache space. Design choices decide whether GPU memory holds useful tokens or loses capacity to <abbr data-tip="Free gaps too small to use, trapped between live allocations.">fragmentation</abbr>, eviction pressure, or <abbr data-tip="The scheduler pauses a sequence to free KV memory for another.">preemption</abbr>.</p>
         </div>
       </div>
@@ -215,6 +308,28 @@
           <div class="quickstart-cost-callout">
             <strong>Cost impact:</strong> Cloud GPU list prices often land from a few dollars to tens of dollars per GPU-hour, depending on chip, region, and contract. Cutting the GPU count for the same traffic can trim that bill by a significant amount.
           </div>
+
+          <div class="quickstart-biz-outcomes">
+            <h4>Why teams switch to self-hosted inference</h4>
+            <div class="biz-outcomes-grid">
+              <div class="biz-outcome">
+                <strong>Lower GPU spend</strong>
+                <span>Serve the same traffic on fewer GPUs, or grow traffic without buying more.</span>
+              </div>
+              <div class="biz-outcome">
+                <strong>Data stays yours</strong>
+                <span>Prompts and responses never leave your network.</span>
+              </div>
+              <div class="biz-outcome">
+                <strong>No per-token billing</strong>
+                <span>Costs scale with GPU capacity, not request volume.</span>
+              </div>
+              <div class="biz-outcome">
+                <strong>Vendor flexibility</strong>
+                <span>Swap models or hardware without rewriting integrations.</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -226,7 +341,7 @@
       <div class="section-header reveal">
         <span class="section-num">02</span>
         <h2>What Production Requires <span class="section-tier tier-1">Start here</span></h2>
-        <p class="section-lead">Interactive serving needs a short time to first token, steady streaming gaps between tokens, and predictable latency under concurrent load. The mental model below ties prefill, decode, caching, and how vLLM addresses each requirement.</p>
+        <p class="section-lead">Interactive serving needs a short <abbr data-tip="Time to First Token: delay until the first output token is ready.">time to first token (TTFT)</abbr>, steady streaming gaps between tokens (<abbr data-tip="Time between consecutive streamed output tokens. People also say TPOT or ITL.">inter-token latency</abbr>), and predictable latency under concurrent load. The mental model below ties prefill, decode, caching, and how vLLM addresses each requirement.</p>
       </div>
 
       <div class="modern-summary reveal">
@@ -261,7 +376,7 @@
           <div class="modern-topic-footer">
             <div class="modern-topic-foot">
               <span class="modern-topic-kicker">When it matters</span>
-              <p id="modern-topic-when">Volatile prompt lengths, strict TTFT targets, or separate scale limits for prefill and decode. vLLM documents this path as experimental.</p>
+              <p id="modern-topic-when">Volatile prompt lengths, strict <abbr data-tip="Time to First Token: delay until the first output token is ready.">time-to-first-token</abbr> targets, or separate scale limits for prefill and decode. vLLM documents this path as experimental.</p>
             </div>
             <div class="modern-topic-foot">
               <span class="modern-topic-kicker">Reference</span>
@@ -349,7 +464,7 @@
             </div>
           </article>
           <article class="coverage-card">
-            <h4>Sparse <abbr data-tip="Mixture of Experts routes each token through a subset of experts, so per-token work stays below a same-parameter-count dense model.">MoE</abbr> families</h4>
+            <h4>Sparse <abbr data-tip="Mixture of Experts routes each token through a subset of experts, so per-token work stays below a same-parameter-count dense model.">Mixture-of-Experts (MoE)</abbr> families</h4>
             <p>Sparse MoE stacks need explicit expert-parallel layout and memory planning so routing overhead does not erase the parameter savings.</p>
             <div class="coverage-tags">
               <span class="tag">Mixtral</span>
@@ -359,7 +474,7 @@
           </article>
           <article class="coverage-card">
             <h4>Multimodal request paths</h4>
-            <p>Multimodal traffic changes preprocessing and pushes memory and TTFT harder than text-only chat.</p>
+            <p>Multimodal traffic changes preprocessing and pushes memory and <abbr data-tip="Time to First Token: delay until the first output token is ready.">time to first token</abbr> harder than text-only chat.</p>
             <div class="coverage-tags">
               <span class="tag">LLaVA</span>
               <span class="tag">Qwen2-VL</span>
@@ -368,7 +483,7 @@
           </article>
           <article class="coverage-card">
             <h4>Embedding, scoring, and retrieval</h4>
-            <p><abbr data-tip="Aggregates token embeddings into one vector for search or classification.">Pooling</abbr>, embedding, and ranking endpoints sit beside chat completions for <abbr data-tip="Retrieval-Augmented Generation: retrieve documents, then generate with them in context.">RAG</abbr> and search backends.</p>
+            <p><abbr data-tip="Aggregates token embeddings into one vector for search or classification.">Pooling</abbr>, embedding, and ranking endpoints sit beside chat completions for <abbr data-tip="Retrieval-Augmented Generation: retrieve documents, then generate with them in context.">Retrieval-Augmented Generation (RAG)</abbr> and search backends.</p>
             <div class="coverage-tags">
               <span class="tag">Embedding</span>
               <span class="tag">Scoring</span>
@@ -388,6 +503,7 @@
                 <th>Feature</th>
                 <th>Description</th>
                 <th>Key Benefit</th>
+                <th class="col-plain">What this means for you</th>
               </tr>
             </thead>
             <tbody>
@@ -395,31 +511,37 @@
                 <td><strong><abbr data-tip="Stores weights in fewer bits (e.g. 16 to 8 or 4) to cut memory and often lift throughput.">Quantization</abbr></strong></td>
                 <td><abbr data-tip="Post-training weight quantization fit with calibration data to a target bit width.">GPTQ</abbr>, <abbr data-tip="Activation-aware Weight Quantization scales or protects weights that matter most under real activations.">AWQ</abbr>, <abbr data-tip="8-bit floating point for weights or activations; about half the memory of FP16 with small accuracy drift in many models.">FP8</abbr>, <abbr data-tip="PyTorch library for 4-bit and 8-bit weights with small code changes, aimed at memory savings.">BitsAndBytes</abbr>, <abbr data-tip="Binary file format for quantized weights, used by llama.cpp and compatible runtimes.">GGUF</abbr>, <abbr data-tip="PyTorch toolkit for post-training quantization and sparsity.">TorchAO</abbr>, and more <a href="#source-10">[10]</a></td>
                 <td>Run larger models on fewer GPUs</td>
+                <td class="col-plain">Run the same model on less expensive hardware</td>
               </tr>
               <tr>
                 <td><strong><abbr data-tip="Low-Rank Adaptation adds small trainable adapter matrices; swap them without rewriting base weights.">LoRA</abbr> Adapters</strong></td>
                 <td>Runtime loading/unloading of LoRA weights</td>
                 <td>Serve many fine-tuned variants from one base</td>
+                <td class="col-plain">One deployment serves multiple customized models</td>
               </tr>
               <tr>
                 <td><strong>Structured Output</strong></td>
                 <td>JSON schema constraints and regex or grammar guards</td>
                 <td>Safer integration with tools and downstream systems</td>
+                <td class="col-plain">The model's output always matches a format your code can parse</td>
               </tr>
               <tr>
                 <td><strong>Prefix Caching</strong></td>
                 <td>Automatic hash-based <abbr data-tip="Fixed-size slice of KV cache from the block allocator.">KV block</abbr> reuse for shared prefixes <a href="#source-13">[13]</a></td>
                 <td>Better TTFT for repeated system prompts and shared context</td>
+                <td class="col-plain">Repeated instructions (system prompts) are processed once instead of every time</td>
               </tr>
               <tr>
                 <td><strong>Multimodal</strong></td>
                 <td>Vision-language and audio-capable models</td>
                 <td>Multimodal and text paths in one serving stack</td>
+                <td class="col-plain">Process images, audio, and text with the same server</td>
               </tr>
               <tr>
                 <td><strong><abbr data-tip="Captures a GPU kernel sequence once and replays it to skip repeated CPU launch work each step.">CUDA Graphs</abbr></strong></td>
                 <td>Captured execution graphs for repeat decode shapes</td>
                 <td>Lower per-step launch overhead on stable workloads</td>
+                <td class="col-plain">Faster responses on steady, predictable traffic</td>
               </tr>
             </tbody>
           </table>
@@ -731,6 +853,11 @@ spec:
         <p class="section-lead">The core idea: manage KV cache with the same block-and-table structure as <abbr data-tip="The OS maps contiguous logical ranges onto physical pages that may be scattered. PagedAttention uses the same pattern for KV cache blocks on the GPU.">virtual memory</abbr>, so variable-length sequences and concurrent requests use a fixed GPU memory budget more efficiently.</p>
       </div>
 
+      <details class="plain-english reveal">
+        <summary>In plain English</summary>
+        <p>When a model is answering multiple questions at once, it needs to remember context for each conversation. The straightforward approach reserves a big chunk of GPU memory up front for each request and wastes whatever goes unused. PagedAttention organizes that memory more efficiently&mdash;like how your computer's operating system manages RAM&mdash;so the same GPU can handle more conversations simultaneously without running out of space.</p>
+      </details>
+
       <div id="allocator-showdown" class="showdown reveal">
         <div class="showdown-header">
           <span class="mini-label">Allocator showdown</span>
@@ -854,6 +981,11 @@ spec:
         <h2>Continuous Batching &amp; Chunked Prefill <span class="section-tier tier-3">Technical deep-dive</span></h2>
         <p class="section-lead">Iteration-level schedulers run one <abbr data-tip="Single inference pass from inputs through the model to outputs for that step.">forward pass</abbr> per round and can change which requests are in the batch, instead of holding a fixed batch until every request finishes. <a href="#source-17">[17]</a> <a href="#source-8">[8]</a></p>
       </div>
+
+      <details class="plain-english reveal">
+        <summary>In plain English</summary>
+        <p>Older systems process requests in fixed groups: if one user's question takes longer, everyone else in the group waits. Continuous batching lets vLLM swap finished requests out and new requests in on every processing step, so the GPU stays busy and no single slow response blocks the rest. Chunked prefill breaks very long prompts into smaller pieces so they do not monopolize the processor while other users are waiting for their next word.</p>
+      </details>
 
       <div class="scheduler-lab reveal">
         <div class="lab-heading">
@@ -1073,6 +1205,11 @@ spec:
         <h2>Architecture Deep Dive <span class="section-tier tier-3">Technical deep-dive</span></h2>
         <p class="section-lead">From "what happens when I send a prompt?" to the <abbr data-tip="vLLM's current engine: multi-process isolation, unified scheduling, and higher throughput than V0.">V1 engine</abbr> internals. Built for people new to inference.</p>
       </div>
+
+      <details class="plain-english reveal">
+        <summary>In plain English</summary>
+        <p>vLLM is structured like a well-run kitchen. An API server takes orders (your prompts), a scheduler decides which orders to cook next, and worker processes run the model on the GPU. Separating these roles lets vLLM handle many users at once without one slow request blocking the others. This section walks through each piece from the outside in.</p>
+      </details>
 
       <!-- LAYER 1 — Conceptual on-ramp -->
       <div class="arch-onramp reveal">
@@ -1368,6 +1505,11 @@ engine_core_outputs = self.scheduler.update_from_output(
         <h2>Performance Tuning <span class="section-tier tier-3">Technical deep-dive</span></h2>
         <p class="section-lead">The tuning lab maps concurrency, token budget, and <abbr data-tip="KV cache fill level. When it rises, schedulers queue or preempt work.">KV pressure</abbr> to throughput, latency, and operational risk.</p>
       </div>
+
+      <details class="plain-english reveal">
+        <summary>In plain English</summary>
+        <p>Performance tuning is about finding the right balance between speed and capacity. Allowing more simultaneous users raises overall throughput but can slow individual responses. This section provides interactive sliders to explore those tradeoffs and a table of the most important configuration flags, so operators can match vLLM's behavior to their workload and latency goals.</p>
+      </details>
 
       <div class="tuning-lab reveal">
         <h3>Latency vs Throughput Lab</h3>

@@ -53,5 +53,38 @@ export const objections = [
       'Broader accelerator support if the fleet is not all NVIDIA <a href="#source-10">[10]</a>',
       'Large contributor base with frequent feature releases <a href="#source-10">[10]</a>'
     ]
+  },
+  {
+    id: 'cost-savings',
+    objection: 'How much will this actually save us?',
+    response: 'The cost model shifts from per-token API billing to GPU capacity you control. Cloud GPU list prices range from a few dollars to tens of dollars per GPU-hour depending on chip, region, and commitment. vLLM\u2019s PagedAttention and continuous batching typically let one GPU serve more concurrent requests, so you need fewer GPUs for the same traffic\u2014or handle more traffic without adding hardware. The exact savings depend on your request volume, prompt lengths, and current provider pricing.',
+    keyPoints: [
+      'Per-token API costs grow linearly with traffic; GPU capacity costs can be capped with reserved instances or on-prem hardware',
+      'PagedAttention reduces wasted GPU memory, fitting more concurrent users on each GPU <a href="#source-9">[9]</a>',
+      'Self-hosted open-weights inference runs at roughly 90% lower per-token cost than equivalent proprietary API pricing',
+      'Start with a pilot workload and compare your actual spend to current API bills'
+    ]
+  },
+  {
+    id: 'security-regulated',
+    objection: 'Is this secure enough for regulated data?',
+    response: 'Self-hosted vLLM keeps all prompts and responses on your infrastructure\u2014nothing leaves your network perimeter. The community publishes hardened container images, and vendors like Red Hat ship certified images with vulnerability management and support contracts. vLLM supports FIPS-friendly hashing for multimodal content, and published hardening guides cover reverse proxy setup, network segmentation, secrets management, and CVE tracking.<a href="#source-20">[20]</a>',
+    keyPoints: [
+      'Data sovereignty: prompts and completions never leave your environment when self-hosted',
+      'Hardening guidance covers reverse proxy, network segmentation, secrets management, and CVE tracking <a href="#source-20">[20]</a>',
+      'FIPS-friendly hashing options available for multimodal content <a href="#source-10">[10]</a>',
+      'Vendor-certified images (e.g. Red Hat AI Inference Server) provide enterprise vulnerability management and patching'
+    ]
+  },
+  {
+    id: 'time-to-deploy',
+    objection: 'How long does it take to get running?',
+    response: 'A basic vLLM deployment can serve requests within minutes. Run <code>vllm serve &lt;model&gt;</code> to start a local server with an OpenAI-compatible API. For production Kubernetes deployments, KServe and community Helm charts provide tested templates. The primary setup work is GPU node provisioning and driver installation\u2014the vLLM layer itself is a single container with well-documented flags.',
+    keyPoints: [
+      'Local: <code>vllm serve &lt;model&gt;</code> starts an OpenAI-compatible API server in minutes',
+      'Kubernetes: KServe integration and community Helm charts provide production-ready templates <a href="#source-16">[16]</a>',
+      'OpenAI-compatible API means existing client code usually only needs a base URL change',
+      'Most setup time goes to GPU node provisioning and driver installation, not vLLM configuration'
+    ]
   }
 ];
