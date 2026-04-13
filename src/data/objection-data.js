@@ -33,11 +33,13 @@ export const objections = [
   {
     id: 'model-quality',
     objection: "Open-source model quality isn't there yet",
-    response: 'Llama 3, Mistral, Qwen, and IBM Granite families are widely deployed for chat, RAG, and coding; benchmark them on your own prompts and documents before you standardize.<a href="#source-14">[14]</a> Many organizations publish quantized checkpoints on Hugging Face that target vLLM-supported formats.',
+    response: 'The gap has largely closed. On MMLU the open-weights vs. proprietary difference shrank from ~17 percentage points in early 2024 to under 1 pp by early 2026; Chatbot Arena shows a similar collapse.<a href="#source-19">[19]</a> Current-generation families\u2014Llama 4, DeepSeek V3.2/R2, Qwen 3.5, Gemma 4, Mistral, and IBM Granite\u2014cover chat, RAG, coding, math, and multilingual workloads, and all load directly in vLLM.<a href="#source-14">[14]</a> Benchmark them on your own prompts and documents before you standardize.',
     keyPoints: [
-      'Llama 3, Mistral, Qwen, and Granite are common enterprise baselines for chat, RAG, and internal tools <a href="#source-14">[14]</a>',
-      'Quantized models on Hugging Face, tested and optimized for vLLM',
-      'Fine-tuning can beat generic checkpoints on your domain',
+      'Benchmark convergence: on MMLU the open-vs-proprietary gap fell from ~17 pp to under 1 pp; on Chatbot Arena from 8% to under 2% <a href="#source-19">[19]</a>',
+      'Current model families all supported by vLLM: Llama 4 Maverick (400B MoE, 17B active, 1M-token context), DeepSeek R2 (32B dense, 92.7% AIME), Gemma 4 (Apache 2.0, 31B), Qwen 3.5 (405B, multilingual), Mistral, IBM Granite <a href="#source-14">[14]</a>',
+      'Open-source reasoning models (DeepSeek R2, Gemma 4) rival proprietary reasoning systems on math and coding benchmarks',
+      'Self-hosted open-weights inference runs at roughly 90% lower per-token cost than equivalent proprietary APIs',
+      'Fine-tuning on domain data routinely outperforms generic frontier checkpoints, and open weights make this possible without vendor approval',
       'Evaluate with your own data, not only public leaderboards'
     ]
   },
