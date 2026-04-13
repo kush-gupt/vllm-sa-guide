@@ -742,7 +742,7 @@
   font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: background-color var(--transition), color var(--transition), border-color var(--transition);
 }
 
 .pa-phase-btn.active,
@@ -762,7 +762,7 @@
   font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: transform var(--transition), border-color var(--transition), background-color var(--transition), color var(--transition);
 }
 
 .pa-cinema .pa-play-btn:hover {
@@ -1005,7 +1005,7 @@
   font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: transform var(--transition), border-color var(--transition), background-color var(--transition), color var(--transition);
 }
 
 .chunk-phase-btn:hover {
@@ -1390,7 +1390,7 @@
   gap: 16px;
   align-items: flex-start;
   position: relative;
-  transition: all var(--transition);
+  transition: border-color var(--transition);
 }
 
 .opt-card:hover {
@@ -1516,7 +1516,7 @@
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: background-color var(--transition), color var(--transition), border-color var(--transition);
 }
 
 .modern-topic-btn:hover,
@@ -1535,7 +1535,7 @@
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
-  transition: all var(--transition);
+  transition: border-color var(--transition);
 }
 
 .modern-topic-panel:hover,
@@ -1840,7 +1840,7 @@
   border: 1px solid var(--card-border);
   border-radius: 16px;
   padding: 18px;
-  transition: all var(--transition);
+  transition: box-shadow var(--transition);
 }
 
 .arch-rail-card:hover,
@@ -1912,7 +1912,7 @@
   font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: background-color var(--transition), color var(--transition), border-color var(--transition);
 }
 
 .par-tab.active,
@@ -2459,7 +2459,7 @@
   font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: border-color var(--transition), background-color var(--transition), color var(--transition);
   white-space: nowrap;
 }
 
@@ -2664,7 +2664,7 @@
   padding: 18px 32px;
   min-width: 260px;
   text-align: center;
-  transition: all 0.4s var(--ease-out-expo);
+  transition: border-color 0.4s var(--ease-out-expo), box-shadow 0.4s var(--ease-out-expo);
 }
 
 .decode-model-box strong {
@@ -2693,7 +2693,7 @@
   margin: 4px 0 16px;
   opacity: 0;
   transform: scaleY(0.5);
-  transition: all 0.5s var(--ease-out-expo);
+  transition: opacity 0.5s var(--ease-out-expo), transform 0.5s var(--ease-out-expo);
   pointer-events: none;
 }
 
@@ -3013,7 +3013,7 @@
   font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: background-color var(--transition), color var(--transition), border-color var(--transition);
 }
 
 .decode-phase-btn.active,

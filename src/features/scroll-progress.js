@@ -1,3 +1,5 @@
+import { subscribe } from '../utils/scroll-bus.js';
+
 export function init() {
   const bar = document.getElementById('scroll-progress');
   if (!bar) return;
@@ -5,9 +7,9 @@ export function init() {
   function update() {
     const scrollable = document.documentElement.scrollHeight - window.innerHeight;
     const pct = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0;
-    bar.style.width = pct + '%';
+    bar.style.transform = `scaleX(${pct / 100})`;
   }
 
-  window.addEventListener('scroll', update, { passive: true });
+  subscribe(update);
   update();
 }

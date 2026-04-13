@@ -57,18 +57,23 @@ export function init() {
 
   const sections = document.querySelectorAll('.section[id]');
   const navAnchors = document.querySelectorAll('.nav-links a');
+  const anchorMap = new Map();
+  navAnchors.forEach(a => {
+    const href = a.getAttribute('href');
+    if (href) anchorMap.set(href.slice(1), a);
+  });
 
-  function updateActiveNav() {
-    const scrollY = window.scrollY + 120;
-    let current = '';
-    sections.forEach(sec => {
-      if (sec.offsetTop <= scrollY) current = sec.id;
-    });
-    navAnchors.forEach(a => {
-      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
-    });
-  }
-
-  window.addEventListener('scroll', updateActiveNav, { passive: true });
-  updateActiveNav();
+  let currentId = '';
+  const navObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) currentId = entry.target.id;
+      });
+      navAnchors.forEach(a => a.classList.remove('active'));
+      const active = anchorMap.get(currentId);
+      if (active) active.classList.add('active');
+    },
+    { rootMargin: '-20% 0px -80% 0px' }
+  );
+  sections.forEach(sec => navObserver.observe(sec));
 }

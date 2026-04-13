@@ -1,3 +1,5 @@
+import { subscribe } from '../utils/scroll-bus.js';
+
 export function init() {
   const btn = document.getElementById('back-to-top');
   if (!btn) return;
@@ -6,7 +8,7 @@ export function init() {
     btn.classList.toggle('visible', window.scrollY > 600);
   }
 
-  window.addEventListener('scroll', toggle, { passive: true });
+  subscribe(toggle);
   toggle();
 
   btn.addEventListener('click', () => {

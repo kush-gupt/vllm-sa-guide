@@ -184,11 +184,15 @@ strong { font-weight: 700; }
 .reveal {
   opacity: 0;
   transform: translateY(32px) scale(0.97);
-  will-change: opacity, transform;
 }
 
 .reveal.visible {
+  will-change: opacity, transform;
   animation: revealUp 0.8s var(--ease-out-expo) forwards;
+}
+
+.reveal.done {
+  will-change: auto;
 }
 
 .reveal.stagger-children.visible {

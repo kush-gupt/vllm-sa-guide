@@ -31,7 +31,7 @@
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
   padding: 28px;
-  transition: all var(--transition);
+  transition: transform var(--transition), box-shadow var(--transition);
 }
 
 .reading-path-card:hover {
@@ -187,7 +187,7 @@ details.plain-english p {
   padding: 20px 18px;
   flex: 1;
   max-width: 200px;
-  transition: all var(--transition);
+  transition: border-color var(--transition), background-color var(--transition);
 }
 
 .journey-step-highlight {
@@ -257,7 +257,7 @@ details.plain-english p {
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
   padding: 32px;
-  transition: all var(--transition);
+  transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
 }
 
 .problem-card:hover {
@@ -340,7 +340,7 @@ details.plain-english p {
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
   overflow: hidden;
-  transition: all var(--transition);
+  transition: box-shadow var(--transition), transform var(--transition);
 }
 
 .comp-card:hover {
@@ -703,7 +703,7 @@ td.col-plain {
   border-radius: var(--radius);
   padding: 24px;
   text-align: center;
-  transition: all var(--transition);
+  transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
 }
 
 .hw-card:hover {
@@ -753,7 +753,7 @@ td.col-plain {
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
   padding: 32px;
-  transition: all var(--transition);
+  transition: border-color var(--transition);
 }
 
 .deploy-card:hover {
@@ -859,7 +859,7 @@ td.col-plain {
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
   padding: 28px;
-  transition: all var(--transition);
+  transition: border-color var(--transition);
 }
 
 .ecosystem-card:hover {
@@ -1021,7 +1021,7 @@ td.col-plain {
   padding: 28px;
   text-align: center;
   color: var(--text);
-  transition: all var(--transition);
+  transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
 }
 
 .link-card:hover {
@@ -1351,7 +1351,7 @@ td.col-plain {
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
   padding: 24px;
-  transition: all var(--transition);
+  transition: border-color var(--transition), transform var(--transition);
 }
 
 .quickstart-card:hover {
@@ -1489,7 +1489,7 @@ td.col-plain {
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
   overflow: hidden;
-  transition: all var(--transition);
+  transition: border-color var(--transition), box-shadow var(--transition);
 }
 
 .battle-card:hover {
@@ -1616,7 +1616,7 @@ td.col-plain {
   border-radius: var(--radius-sm);
   padding: 16px 18px;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: border-color var(--transition);
   font-size: 0.9rem;
   color: var(--text-muted);
   line-height: 1.5;
@@ -1662,7 +1662,7 @@ td.col-plain {
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
   overflow: hidden;
-  transition: all var(--transition);
+  transition: border-color var(--transition);
 }
 
 .objection-card:hover {

@@ -11,7 +11,10 @@ export function init() {
     },
     { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
   );
-  revealEls.forEach(el => revealObserver.observe(el));
+  revealEls.forEach(el => {
+    el.addEventListener('animationend', () => el.classList.add('done'), { once: true });
+    revealObserver.observe(el);
+  });
 
   const staggerGridSelectors = [
     '.coverage-grid', '.hw-grid', '.landscape-grid',
