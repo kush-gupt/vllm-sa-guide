@@ -58,18 +58,18 @@
 .nav-links::before {
   content: '';
   position: absolute;
-  top: 50%;
+  top: 0;
   left: 0;
-  height: 30px;
-  margin-top: -15px;
+  height: var(--pill-h, 30px);
   background: var(--card-bg-alt);
   border-radius: var(--radius-sm);
   pointer-events: none;
   opacity: var(--pill-opacity, 0);
   width: var(--pill-w, 0px);
-  transform: translateX(var(--pill-x, 0px));
+  transform: translate(var(--pill-x, 0px), var(--pill-y, 0px));
   transition: transform 0.32s var(--ease-spring),
               width 0.32s var(--ease-out-expo),
+              height 0.32s var(--ease-out-expo),
               opacity 0.2s var(--ease-out-expo);
 }
 

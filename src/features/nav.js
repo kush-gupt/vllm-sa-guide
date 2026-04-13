@@ -39,6 +39,10 @@ export function init() {
     navToggle.setAttribute('aria-expanded', String(open));
     if (open) {
       document.addEventListener('keydown', trapFocus);
+      requestAnimationFrame(() => {
+        const active = navLinks.querySelector('a.active');
+        positionPill(active);
+      });
     } else {
       document.removeEventListener('keydown', trapFocus);
     }
@@ -69,9 +73,15 @@ export function init() {
       return;
     }
     const containerRect = navLinks.getBoundingClientRect();
+    if (containerRect.height === 0) {
+      navLinks.style.setProperty('--pill-opacity', '0');
+      return;
+    }
     const linkRect = link.getBoundingClientRect();
     navLinks.style.setProperty('--pill-x', `${linkRect.left - containerRect.left}px`);
+    navLinks.style.setProperty('--pill-y', `${linkRect.top - containerRect.top}px`);
     navLinks.style.setProperty('--pill-w', `${linkRect.width}px`);
+    navLinks.style.setProperty('--pill-h', `${linkRect.height}px`);
     navLinks.style.setProperty('--pill-opacity', '1');
   }
 
@@ -89,4 +99,13 @@ export function init() {
     { rootMargin: '-20% 0px -80% 0px' }
   );
   sections.forEach(sec => navObserver.observe(sec));
+
+  let resizeRaf = 0;
+  window.addEventListener('resize', () => {
+    cancelAnimationFrame(resizeRaf);
+    resizeRaf = requestAnimationFrame(() => {
+      const active = navLinks.querySelector('a.active');
+      positionPill(active);
+    });
+  });
 }
