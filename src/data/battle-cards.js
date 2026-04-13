@@ -22,14 +22,14 @@ export const battleCards = [
     ]
   },
   {
-    versus: 'TGI (Hugging Face)',
-    scenario: '"We use Hugging Face for everything, so TGI is the natural choice."',
-    howVllmDiffers: 'Hugging Face moved TGI to maintenance mode in December 2025 (bugfix-oriented changes only). vLLM reads the same Hugging Face checkpoints, combines PagedAttention with continuous batching for concurrent traffic, and exposes an OpenAI-compatible API.<a href="#source-9">[9]</a>',
+    versus: 'SGLang',
+    scenario: '"SGLang benchmarks look faster\u2009\u2014\u2009should we switch?"',
+    howVllmDiffers: 'SGLang uses RadixAttention for token-level prefix caching, showing ~29% higher throughput on 8B-class models on H100 GPUs. At 70B+ scale the gap narrows to 3\u20135%. vLLM\'s PagedAttention trades some prefix-heavy throughput for broader hardware support (NVIDIA, AMD, Intel, TPU, Gaudi, Trainium), five parallelism modes (TP, PP, DP, EP, CP), and the largest open-source LLM-serving contributor base.<a href="#source-10">[10]</a><a href="#source-18">[18]</a>',
     keyDifferences: [
-      'Same Hugging Face model hub, no model conversion needed',
-      'Higher throughput under concurrent load (PagedAttention + continuous batching) <a href="#source-9">[9]</a>',
-      'Richer parallelism options (TP, PP, DP, EP, CP) for larger models <a href="#source-12">[12]</a>',
-      'Large contributor base and frequent releases <a href="#source-10">[10]</a>'
+      'Runs on NVIDIA, AMD, Intel, TPU, Gaudi, and AWS Trainium; SGLang targets NVIDIA and AMD <a href="#source-10">[10]</a>',
+      'Five parallelism modes (TP, PP, DP, EP, CP) for large-model multi-node deployments <a href="#source-12">[12]</a>',
+      'Mature Kubernetes docs, Helm charts, and KServe integration for production ops <a href="#source-16">[16]</a>',
+      'Both support speculative decoding, disaggregated prefill, and structured outputs; SGLang\'s overlapped grammar masking adds less overhead at high batch sizes <a href="#source-18">[18]</a>'
     ]
   },
   {
