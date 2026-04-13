@@ -29,7 +29,7 @@ export function init() {
         Array.from(children).forEach((child, i) => {
           child.style.opacity = '0';
           child.style.transform = 'translateY(18px)';
-          child.style.transition = `opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${i * 0.07}s, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${i * 0.07}s`;
+          child.style.transition = `opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1) ${i * 0.05}s, transform 0.45s cubic-bezier(0.16, 1, 0.3, 1) ${i * 0.05}s`;
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
               child.style.opacity = '1';

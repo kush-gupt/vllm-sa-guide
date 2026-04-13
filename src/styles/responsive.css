@@ -17,7 +17,6 @@
 
 @media (max-width: 768px) {
   .nav-links {
-    display: none;
     position: absolute;
     top: var(--nav-height);
     left: 0;
@@ -25,12 +24,22 @@
     background: var(--nav-bg);
     backdrop-filter: blur(20px);
     flex-direction: column;
-    padding: 16px;
+    padding: 0 16px;
     border-bottom: 1px solid var(--card-border);
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+    transition: max-height 0.35s var(--ease-out-expo),
+                opacity 0.25s var(--ease-out-expo),
+                padding 0.35s var(--ease-out-expo);
   }
 
   .nav-links.open {
-    display: flex;
+    max-height: 400px;
+    opacity: 1;
+    padding: 16px;
+    pointer-events: auto;
   }
 
   .nav-divider {

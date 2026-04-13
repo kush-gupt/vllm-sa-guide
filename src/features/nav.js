@@ -63,6 +63,18 @@ export function init() {
     if (href) anchorMap.set(href.slice(1), a);
   });
 
+  function positionPill(link) {
+    if (!link) {
+      navLinks.style.setProperty('--pill-opacity', '0');
+      return;
+    }
+    const containerRect = navLinks.getBoundingClientRect();
+    const linkRect = link.getBoundingClientRect();
+    navLinks.style.setProperty('--pill-x', `${linkRect.left - containerRect.left}px`);
+    navLinks.style.setProperty('--pill-w', `${linkRect.width}px`);
+    navLinks.style.setProperty('--pill-opacity', '1');
+  }
+
   let currentId = '';
   const navObserver = new IntersectionObserver(
     (entries) => {
@@ -72,6 +84,7 @@ export function init() {
       navAnchors.forEach(a => a.classList.remove('active'));
       const active = anchorMap.get(currentId);
       if (active) active.classList.add('active');
+      positionPill(active);
     },
     { rootMargin: '-20% 0px -80% 0px' }
   );

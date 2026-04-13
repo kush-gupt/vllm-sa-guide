@@ -66,6 +66,23 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: var(--nav-height);
+  overscroll-behavior-y: none;
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+.theme-transitioning,
+.theme-transitioning *,
+.theme-transitioning *::before,
+.theme-transitioning *::after {
+  transition: background-color 0.4s var(--ease-out-expo),
+              color 0.4s var(--ease-out-expo),
+              border-color 0.4s var(--ease-out-expo),
+              box-shadow 0.4s var(--ease-out-expo),
+              fill 0.4s var(--ease-out-expo) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -203,27 +220,27 @@ strong { font-weight: 700; }
 
 .stagger-children.visible > * {
   opacity: 0;
-  animation: fadeInUp 0.8s var(--ease-out-expo) forwards;
+  animation: fadeInUp 0.55s var(--ease-out-expo) forwards;
 }
 
-.stagger-children.visible > *:nth-child(1) { animation-delay: 0.1s; }
-.stagger-children.visible > *:nth-child(2) { animation-delay: 0.22s; }
-.stagger-children.visible > *:nth-child(3) { animation-delay: 0.34s; }
-.stagger-children.visible > *:nth-child(4) { animation-delay: 0.46s; }
-.stagger-children.visible > *:nth-child(5) { animation-delay: 0.58s; }
-.stagger-children.visible > *:nth-child(6) { animation-delay: 0.7s; }
-.stagger-children.visible > *:nth-child(7) { animation-delay: 0.82s; }
-.stagger-children.visible > *:nth-child(8) { animation-delay: 0.94s; }
-.stagger-children.visible > *:nth-child(9) { animation-delay: 1.06s; }
-.stagger-children.visible > *:nth-child(10) { animation-delay: 1.18s; }
+.stagger-children.visible > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children.visible > *:nth-child(2) { animation-delay: 0.11s; }
+.stagger-children.visible > *:nth-child(3) { animation-delay: 0.17s; }
+.stagger-children.visible > *:nth-child(4) { animation-delay: 0.23s; }
+.stagger-children.visible > *:nth-child(5) { animation-delay: 0.29s; }
+.stagger-children.visible > *:nth-child(6) { animation-delay: 0.35s; }
+.stagger-children.visible > *:nth-child(7) { animation-delay: 0.41s; }
+.stagger-children.visible > *:nth-child(8) { animation-delay: 0.47s; }
+.stagger-children.visible > *:nth-child(9) { animation-delay: 0.52s; }
+.stagger-children.visible > *:nth-child(10) { animation-delay: 0.55s; }
 
 /* ---------- CROSSFADE UTILITY ---------- */
 .crossfade-container {
   transition: opacity 0.22s var(--ease-out-expo), transform 0.22s var(--ease-out-expo);
-  will-change: opacity, transform;
 }
 
 .crossfade-container[data-transitioning] {
+  will-change: opacity, transform;
   opacity: 0;
   transform: translateY(6px);
   pointer-events: none;

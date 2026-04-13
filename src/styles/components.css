@@ -100,6 +100,19 @@
 
 
 /* ---------- PLAIN ENGLISH SUMMARIES ---------- */
+details.plain-english,
+details.benchmark-callout,
+.feature-matrix-advanced {
+  &::details-content {
+    transition: height var(--transition), content-visibility var(--transition);
+    height: 0;
+    overflow: clip;
+  }
+  &[open]::details-content {
+    height: auto;
+  }
+}
+
 details.plain-english {
   background:
     linear-gradient(135deg, rgba(240, 171, 0, 0.06), transparent 60%),

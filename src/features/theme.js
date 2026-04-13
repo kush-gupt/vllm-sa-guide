@@ -15,6 +15,8 @@ export function init() {
 
   themeBtn.addEventListener('click', () => {
     const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.classList.add('theme-transitioning');
     setTheme(next);
+    setTimeout(() => html.classList.remove('theme-transitioning'), 500);
   });
 }
