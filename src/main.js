@@ -6,6 +6,7 @@ import { init as initScrollProgress } from './features/scroll-progress.js';
 import { init as initBackToTop } from './features/back-to-top.js';
 import { init as initHeroCanvas } from './features/hero-canvas.js';
 import { init as initHeroTypewriter } from './features/hero-typewriter.js';
+import { init as initSmoothNav } from './features/smooth-nav.js';
 
 const isDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
 
@@ -34,6 +35,7 @@ safeInit(initTheme, 'theme');
 safeInit(initNav, 'nav');
 safeInit(initReveal, 'reveal');
 safeInit(initSourceRefs, 'source-refs');
+safeInit(initSmoothNav, 'smooth-nav');
 safeInit(initScrollProgress, 'scroll-progress');
 safeInit(initBackToTop, 'back-to-top');
 requestAnimationFrame(() => safeInit(initHeroCanvas, 'hero-canvas'));
