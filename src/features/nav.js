@@ -46,8 +46,9 @@ export function init() {
     if (open) {
       document.addEventListener('keydown', trapFocus);
       requestAnimationFrame(() => {
-        const active = navLinks.querySelector('a.active');
-        positionPill(active);
+        requestAnimationFrame(() => {
+          positionPill(navLinks.querySelector('a.active'));
+        });
       });
     } else {
       document.removeEventListener('keydown', trapFocus);

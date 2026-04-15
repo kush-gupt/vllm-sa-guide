@@ -30,9 +30,7 @@
     opacity: 0;
     overflow: hidden;
     pointer-events: none;
-    transition: height 0.35s var(--ease-out-expo),
-                opacity 0.25s var(--ease-out-expo),
-                padding 0.35s var(--ease-out-expo);
+    transition: opacity 0.25s var(--ease-out-expo);
   }
 
   .nav-links.open {

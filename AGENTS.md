@@ -113,7 +113,7 @@ The nav has several cooperating pieces:
 - **Pill highlight**: CSS `::before` pseudo-element on `.nav-links` positioned via `--pill-x/y/w/h` CSS variables. `nav.js` updates these from `getBoundingClientRect()`. The pill animates position/size via CSS transition.
 - **Active section tracking**: `IntersectionObserver` on `.section[id]` with `rootMargin: '-20% 0px -80% 0px'`. Whichever section is in view gets its nav link marked `.active`.
 - **Hidden section guard**: If `currentId` points to a `display: none` section (hidden by path-chooser), `nav.js` clears the active state. It also checks `link.closest('li[hidden]')` before positioning the pill.
-- **Mobile**: The nav links become an expandable dropdown. Focus trap keeps Tab cycling within the menu.
+- **Mobile**: The nav links become an expandable dropdown. Focus trap keeps Tab cycling within the menu. **The mobile `.nav-links` transition must only animate `opacity`** — not `padding`, `height`, or other layout-affecting properties. `positionPill()` calls `getBoundingClientRect()` on a double-rAF after the menu opens; if layout properties are mid-transition at that point, the pill lands between links instead of on the active one.
 
 ### The nav divider
 
@@ -172,6 +172,7 @@ Theme toggle, allocator showdown slider, PA cinema play/pause, batching lab work
 
 ## Common pitfalls
 
+- **Transitioning layout properties that JS measures.** `nav.js` positions the pill highlight via `getBoundingClientRect()`. If the mobile `.nav-links` transitions `padding` or other layout-affecting properties when opening, the measurement happens mid-transition and the pill ends up between links. Only transition visual properties (like `opacity`) on containers where JS reads element geometry.
 - **Forgetting the DOM guard.** Every `init()` must check that its elements exist before wiring listeners. The guide may be served with sections removed.
 - **Not re-observing after path changes.** If you add a new `IntersectionObserver` for a feature inside a gated section, it will never fire when the section starts hidden. Either use the `lazySection` pattern (which handles re-observation) or listen for `path-changed` and re-observe manually.
 - **Editing only one card set.** The reading-paths gate (`#reading-paths`) and the path-switcher (`#path-switcher`) have duplicate card markup. If you change section names, step lists, or icons in one, update the other.
