@@ -9,6 +9,7 @@ const MAX_NAIVE_PILLS = 3;
 const MAX_PAGED_PILLS = 4;
 
 export function init() {
+  const root = document.getElementById('allocator-showdown');
   const showdownSlider = document.getElementById('showdown-step');
   const showdownStepLabel = document.getElementById('showdown-step-label');
   const naiveGrid = document.getElementById('naive-grid');
@@ -21,9 +22,13 @@ export function init() {
   const showdownContrast = document.getElementById('showdown-contrast');
 
   if (
+    !root ||
     !showdownSlider || !naiveGrid || !naiveMetrics ||
     !pagedLogical || !pagedPhysical || !pagedMetrics || !showdownContrast
   ) return;
+
+  if (root.dataset.initialized === 'true') return;
+  root.dataset.initialized = 'true';
 
   /* ─── Build stable DOM once ─── */
 

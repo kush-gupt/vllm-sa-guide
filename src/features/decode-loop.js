@@ -32,6 +32,9 @@ export function init() {
 
   if (!titleEl || !captionEl || !tokensEl || !modelBox || !kvBlocks || !playBtn || !phaseBar) return;
 
+  if (root.dataset.initialized === 'true') return;
+  root.dataset.initialized = 'true';
+
   let current = 0;
 
   const isDecodePhase = (id) => id.startsWith('token-') || id === 'pattern';

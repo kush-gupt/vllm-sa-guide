@@ -52,13 +52,20 @@ function lazySection(sectionId, loaders) {
   if (!section) return;
 
   let loaded = false;
+  let observer = null;
 
   function observe() {
     if (loaded) return;
-    const observer = new IntersectionObserver(
+
+    if (observer) {
+      observer.disconnect();
+    }
+
+    observer = new IntersectionObserver(
       (entries) => {
-        if (!entries.some(e => e.isIntersecting)) return;
+        if (loaded || !entries.some(e => e.isIntersecting)) return;
         observer.disconnect();
+        observer = null;
         loaded = true;
         pendingObservers.delete(sectionId);
         (async () => {
