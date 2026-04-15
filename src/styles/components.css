@@ -139,6 +139,7 @@ details.plain-english {
   border-left: 3px solid var(--gold);
   border-radius: var(--radius);
   padding: 0;
+  margin-top: 20px;
   margin-bottom: 32px;
   overflow: hidden;
 }
@@ -184,6 +185,23 @@ details.plain-english p {
   color: var(--text-muted);
   line-height: 1.7;
   margin: 0;
+}
+
+details.plain-english ul,
+details.plain-english ol {
+  padding: 0 24px 20px 48px;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin: 0;
+}
+
+details.plain-english li {
+  margin-bottom: 8px;
+}
+
+details.plain-english li:last-child {
+  margin-bottom: 0;
 }
 
 
@@ -1423,7 +1441,7 @@ td.col-plain {
 }
 
 .quickstart-body {
-  padding: 0 32px 32px;
+  padding: 20px 32px 32px;
 }
 
 .quickstart-pitch {

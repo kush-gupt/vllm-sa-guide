@@ -674,11 +674,11 @@
       <div class="section-header reveal">
         <span class="section-num">04</span>
         <h2>TCO &amp; ROI <span class="section-tier tier-1">Business focus</span></h2>
-        <p class="section-lead">The economics of self-hosted inference depend on three variables: GPU infrastructure cost, operational overhead, and what you would pay an API provider for the same work. This section gives decision-makers a framework for the comparison. <a href="#source-21">[21]</a></p>
+        <p class="section-lead">The economics of self-hosted inference depend on three variables: GPU infrastructure cost, operational overhead, and what you would pay an API provider for the same work. <a href="#source-21">[21]</a></p>
       </div>
 
       <div class="exec-summary reveal">
-        <p>Self-hosted inference trades a fixed GPU cost for variable per-token API billing. At low volume the API wins on simplicity; at production scale the math reverses. <strong>The break-even depends on your traffic pattern, model size, and how aggressively you optimize the serving stack.</strong> GuideLLM and vLLM&rsquo;s built-in benchmarks measure the throughput numbers that drive this calculation. <a href="#source-21">[21]</a></p>
+        <p>Self-hosted inference trades a fixed GPU cost for variable per-token API billing. At low volume the API wins on simplicity; at production scale the math reverses. <strong>The break-even depends on your traffic pattern, model size, and serving-stack configuration.</strong> GuideLLM and vLLM&rsquo;s built-in benchmarks produce the throughput numbers you need for this calculation. <a href="#source-21">[21]</a></p>
       </div>
 
       <div class="problem-grid reveal stagger-children">
@@ -687,21 +687,21 @@
             <svg width="48" height="48" fill="none" stroke="var(--green)" stroke-width="1.5"><use href="#icon-monitor"/></svg>
           </div>
           <h3>GPU Infrastructure</h3>
-          <p>Cloud GPU instances range from roughly $1&ndash;4 per GPU-hour on-demand (A100&ndash;H100 class), with reserved pricing cutting that significantly. Self-hosting amortizes a fixed GPU cost across all requests rather than paying per token. <a href="#source-19">[19]</a></p>
+          <p>Cloud GPU instances range from roughly $1&ndash;4 per GPU-hour on-demand (A100&ndash;H100 class); reserved or spot pricing can halve that. Self-hosting amortizes a fixed GPU cost across all requests rather than paying per token. <a href="#source-19">[19]</a></p>
         </div>
         <div class="problem-card">
           <div class="problem-icon">
             <svg width="48" height="48" fill="none" stroke="var(--green)" stroke-width="1.5"><use href="#icon-gear"/></svg>
           </div>
           <h3>Operational Overhead</h3>
-          <p>Running your own inference means monitoring, upgrades, and on-call staffing. The <a href="https://blog.vllm.ai/2025/01/21/stack-release.html" target="_blank" rel="noopener noreferrer">vLLM production-stack</a> ships built-in autoscaling, observability, and fault tolerance. Enterprise support from Red Hat further reduces the burden. <a href="#source-22">[22]</a></p>
+          <p>Running your own inference means monitoring, upgrades, and on-call staffing. The <a href="https://blog.vllm.ai/2025/01/21/stack-release.html" target="_blank" rel="noopener noreferrer">vLLM production-stack</a> ships built-in autoscaling, observability, and fault tolerance. Enterprise support from Red Hat covers patching and on-call escalation. <a href="#source-22">[22]</a></p>
         </div>
         <div class="problem-card">
           <div class="problem-icon">
             <svg width="48" height="48" fill="none" stroke="var(--green)" stroke-width="1.5"><use href="#icon-bolt"/></svg>
           </div>
           <h3>API Pricing at Scale</h3>
-          <p>Per-token billing from cloud API providers adds up quickly at high volume. When a self-hosted GPU achieves thousands of tokens per second, the effective cost per million tokens drops by orders of magnitude compared to API pricing. <a href="#source-19">[19]</a></p>
+          <p>Per-token billing from cloud API providers adds up at high volume. When a self-hosted GPU achieves thousands of tokens per second, the effective cost per million tokens drops by orders of magnitude compared to API pricing. <a href="#source-19">[19]</a></p>
         </div>
       </div>
 
@@ -711,7 +711,7 @@
           <h3>Self-Hosted vs. API: When Does the Math Flip?</h3>
         </div>
         <div class="quickstart-body">
-          <p class="quickstart-pitch">The break-even point depends on volume. Low-traffic prototypes cost less on cloud APIs. Production workloads with consistent throughput favor self-hosting. The table below illustrates the tradeoff across three common workload profiles.</p>
+          <p class="quickstart-pitch">The break-even point depends on volume. Low-traffic prototypes cost less on cloud APIs. Production workloads with consistent throughput favor self-hosting. Three common workload profiles show where the line falls.</p>
 
           <div class="feature-matrix-wrap reveal">
             <table class="feature-matrix">
@@ -756,7 +756,7 @@
 
       <details class="plain-english reveal">
         <summary>When self-hosting does <em>not</em> save money</summary>
-        <p>Self-hosting is not always the right call. API providers win when traffic volume is low or unpredictable (below roughly 50M tokens per month), when you need access to frontier proprietary models that are not available as open weights, or when the team lacks GPU infrastructure and the speed of getting started matters more than per-token cost. The honest assessment: start with an API for prototyping, measure your production volume with GuideLLM, and migrate to self-hosted when the numbers justify it. <a href="#source-21">[21]</a></p>
+        <p>Self-hosting is not always the right call. API providers win when traffic volume is low or unpredictable (below roughly 50M tokens per month), when you need access to frontier proprietary models that are not available as open weights, or when the team lacks GPU infrastructure and the speed of getting started matters more than per-token cost. Start with an API for prototyping, measure your production volume with GuideLLM, and migrate to self-hosted when the numbers justify it. <a href="#source-21">[21]</a></p>
       </details>
 
       <details class="plain-english reveal">
@@ -772,11 +772,11 @@
       <div class="section-header reveal">
         <span class="section-num">05</span>
         <h2>Adoption Playbook <span class="section-tier tier-1">Business focus</span></h2>
-        <p class="section-lead">A structured path from evaluation to production. Each phase is grounded in actual vLLM deployment modes, tooling, and enterprise support options.</p>
+        <p class="section-lead">A structured path from evaluation to production. Each phase maps to vLLM deployment modes, tooling, and enterprise support options.</p>
       </div>
 
       <div class="exec-summary reveal">
-        <p>The path from &ldquo;should we self-host?&rdquo; to &ldquo;this is running in production&rdquo; is shorter than most teams expect. <strong>vLLM can serve its first request in one command, and the same engine scales to Kubernetes without rewriting anything.</strong> The playbook below breaks the journey into three phases, each with concrete exit criteria.</p>
+        <p><strong>vLLM can serve its first request in one command, and the same engine scales to Kubernetes without rewriting anything.</strong> Three phases, each with concrete exit criteria, take you from a single-GPU proof of concept to production.</p>
       </div>
 
       <div class="problem-grid reveal stagger-children">
@@ -785,7 +785,7 @@
             <svg width="48" height="48" fill="none" stroke="var(--green)" stroke-width="1.5"><use href="#icon-crosshair"/></svg>
           </div>
           <h3>Data Residency</h3>
-          <p>Do prompts and responses need to stay on your network? All vLLM inter-node communication is local by design&mdash;no data leaves your infrastructure. The security guide documents how to isolate those channels. <a href="#source-20">[20]</a></p>
+          <p>Do prompts and responses need to stay on your network? All vLLM inter-node communication is local by design. No data leaves your infrastructure. The security guide documents how to isolate those channels. <a href="#source-20">[20]</a></p>
         </div>
         <div class="problem-card">
           <div class="problem-icon">
@@ -799,7 +799,7 @@
             <svg width="48" height="48" fill="none" stroke="var(--green)" stroke-width="1.5"><use href="#icon-pen"/></svg>
           </div>
           <h3>Team Expertise</h3>
-          <p>Complexity ranges from a one-liner (<code>vllm serve &lt;model&gt;</code>) to multi-node tensor/pipeline/data parallelism. Managed platforms like Red Hat OpenShift AI lower the bar further. <a href="#source-24">[24]</a></p>
+          <p>Complexity ranges from a one-liner (<code>vllm serve &lt;model&gt;</code>) to multi-node tensor/pipeline/data parallelism. Managed platforms like Red Hat OpenShift AI handle the infrastructure layer. <a href="#source-24">[24]</a></p>
         </div>
       </div>
 
@@ -873,9 +873,9 @@
       </div>
 
       <h3 class="reveal" style="margin-top: 40px;">Stakeholder Map</h3>
-      <p class="reveal" style="color: var(--text-muted); margin-bottom: 20px;">Each role has different concerns. Aligning them early prevents late-stage blockers.</p>
+      <p class="reveal" style="color: var(--text-muted); margin-bottom: 20px;">Each role owns a different piece of the deployment. Get them aligned before Phase 2.</p>
 
-      <div class="problem-grid reveal stagger-children">
+      <div class="problem-grid reveal stagger-children" style="grid-template-columns: repeat(2, 1fr);">
         <div class="problem-card">
           <div class="problem-icon">
             <svg width="48" height="48" fill="none" stroke="var(--red)" stroke-width="1.5"><use href="#icon-gear"/></svg>
@@ -908,11 +908,11 @@
 
       <details class="plain-english reveal">
         <summary>Success criteria template</summary>
-        <p>Tie your go/no-go decision to metrics vLLM actually exposes:</p>
+        <p>Tie your go/no-go decision to metrics vLLM exposes:</p>
         <ul>
-          <li><strong>Latency SLOs:</strong> TTFT &lt; X ms, ITL &lt; Y ms &mdash; measured via <code>vllm:time_to_first_token_seconds</code> and <code>vllm:inter_token_latency_seconds</code> Prometheus histograms</li>
-          <li><strong>Cost reduction:</strong> tokens/sec per GPU-dollar, compared against API provider billing &mdash; measured via GuideLLM throughput benchmarks <a href="#source-21">[21]</a></li>
-          <li><strong>Uptime:</strong> <code>/health</code> endpoint availability &ge; target (e.g. 99.9%) &mdash; vLLM returns 200 when healthy, 503 on engine failure</li>
+          <li><strong>Latency SLOs:</strong> TTFT &lt; X ms, ITL &lt; Y ms, measured via <code>vllm:time_to_first_token_seconds</code> and <code>vllm:inter_token_latency_seconds</code> Prometheus histograms</li>
+          <li><strong>Cost reduction:</strong> tokens/sec per GPU-dollar, compared against API provider billing. Measured via GuideLLM throughput benchmarks <a href="#source-21">[21]</a></li>
+          <li><strong>Uptime:</strong> <code>/health</code> endpoint availability &ge; target (e.g. 99.9%). vLLM returns 200 when healthy, 503 on engine failure</li>
           <li><strong>Operational readiness:</strong> Monitoring dashboards active, on-call runbook documented, graceful shutdown tested (<code>--shutdown-timeout</code>)</li>
         </ul>
       </details>
