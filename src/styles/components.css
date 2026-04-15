@@ -205,6 +205,125 @@ details.plain-english li:last-child {
 }
 
 
+/* ---------- OBSERVABILITY STACK BADGES ---------- */
+.obs-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.obs-stack-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  background: var(--bg-alt);
+  color: var(--text);
+  padding: 6px 14px;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.obs-stack-pill svg {
+  opacity: 0.7;
+}
+
+.obs-stack-pill[data-tool="prometheus"] { border-color: rgba(229, 57, 53, 0.35); color: #e53935; }
+.obs-stack-pill[data-tool="otel"]       { border-color: rgba(66, 133, 244, 0.35); color: #4285f4; }
+.obs-stack-pill[data-tool="grafana"]    { border-color: rgba(251, 140, 0, 0.35); color: #fb8c00; }
+
+
+/* ---------- TROUBLESHOOT TREE ---------- */
+.troubleshoot-tree {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.troubleshoot-branch {
+  border: 1px solid var(--card-border);
+  border-radius: calc(var(--radius) - 2px);
+  border-left: 4px solid var(--text-muted);
+  overflow: hidden;
+  transition: border-color 0.3s ease;
+}
+
+.troubleshoot-branch[data-severity="critical"] { border-left-color: #e53935; }
+.troubleshoot-branch[data-severity="high"]     { border-left-color: #fb8c00; }
+.troubleshoot-branch[data-severity="medium"]   { border-left-color: #fdd835; }
+.troubleshoot-branch[data-severity="low"]      { border-left-color: #66bb6a; }
+
+.troubleshoot-branch summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 14px 20px;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background 0.2s ease;
+}
+
+.troubleshoot-branch summary:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.troubleshoot-branch summary::-webkit-details-marker { display: none; }
+
+.troubleshoot-branch summary::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.troubleshoot-branch[data-severity="critical"] summary::before { background: #e53935; box-shadow: 0 0 6px rgba(229, 57, 53, 0.5); }
+.troubleshoot-branch[data-severity="high"]     summary::before { background: #fb8c00; box-shadow: 0 0 6px rgba(251, 140, 0, 0.4); }
+.troubleshoot-branch[data-severity="medium"]   summary::before { background: #fdd835; box-shadow: 0 0 6px rgba(253, 216, 53, 0.35); }
+.troubleshoot-branch[data-severity="low"]      summary::before { background: #66bb6a; box-shadow: 0 0 6px rgba(102, 187, 106, 0.35); }
+
+.troubleshoot-branch summary::after {
+  content: '+';
+  margin-left: auto;
+  font-size: 1.2rem;
+  font-weight: 300;
+  color: var(--text-muted);
+  transition: transform 0.25s ease;
+}
+
+.troubleshoot-branch[open] summary::after {
+  content: '\00d7';
+  transform: rotate(90deg);
+}
+
+.troubleshoot-branch ol {
+  padding: 4px 24px 18px 52px;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+.troubleshoot-branch li {
+  margin-bottom: 8px;
+}
+
+.troubleshoot-branch li:last-child {
+  margin-bottom: 0;
+}
+
+
 /* ---------- JOURNEY MAP ---------- */
 .journey-map {
   margin-bottom: 32px;
@@ -297,6 +416,13 @@ details.plain-english li:last-child {
 .problem-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 24px;
   margin-bottom: 48px;
 }

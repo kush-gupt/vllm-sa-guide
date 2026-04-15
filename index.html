@@ -1008,7 +1008,7 @@ print(outputs[0].outputs[0].text)</code></pre>
               <ul class="deploy-points">
                 <li>Best fit for shared clusters and platform teams</li>
                 <li>Pairs with <abbr data-tip="Adds or removes replicas as demand changes.">autoscaling</abbr> and <abbr data-tip="Routes and secures traffic between services. Centralizes retries, balancing, and observability.">service meshes</abbr></li>
-                <li>Good handoff point into OpenShift AI and KServe stories</li>
+                <li>Good handoff point into OpenShift AI and KServe workflows</li>
               </ul>
             </div>
             <pre class="code-block"><code class="language-yaml">apiVersion: apps/v1
@@ -1156,16 +1156,31 @@ spec:
       <div class="section-header reveal">
         <span class="section-num">07</span>
         <h2>Observability &amp; Troubleshooting <span class="section-tier tier-2">Ops focus</span></h2>
-        <p class="section-lead">vLLM exposes Prometheus metrics on the <code>/metrics</code> endpoint of the API server, supports OpenTelemetry tracing, and ships pre-built Grafana dashboards. This section maps every key metric to an operational decision. <a href="#source-25">[25]</a></p>
+        <p class="section-lead">vLLM exposes Prometheus metrics on the <code>/metrics</code> endpoint of the API server, supports OpenTelemetry tracing, and ships pre-built Grafana dashboards. The metrics below cover queue health, memory pressure, latency percentiles, and request outcomes. <a href="#source-25">[25]</a></p>
+      </div>
+
+      <div class="obs-stack reveal">
+        <span class="obs-stack-pill" data-tool="prometheus">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#icon-monitor"/></svg>
+          Prometheus
+        </span>
+        <span class="obs-stack-pill" data-tool="otel">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#icon-bolt"/></svg>
+          OpenTelemetry
+        </span>
+        <span class="obs-stack-pill" data-tool="grafana">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#icon-pulse"/></svg>
+          Grafana
+        </span>
       </div>
 
       <details class="plain-english reveal">
         <summary>In plain English</summary>
-        <p>Think of vLLM&rsquo;s metrics as dashboard gauges in a car. Queue depth tells you if traffic is backing up. KV cache usage warns you before memory runs out and requests start getting evicted. TTFT and ITL are the speedometers your users actually feel. The troubleshooting tree below maps each symptom to the gauge you should check first and the knob you should turn.</p>
+        <p>Queue depth tells you whether traffic is backing up. KV cache usage warns you before memory pressure triggers evictions. TTFT and ITL are the latency numbers your users feel. The troubleshooting tree below pairs each symptom with the metric to check and the flag to change.</p>
       </details>
 
       <h3 class="reveal" style="margin-top: 32px;">Key Operational Metrics</h3>
-      <p class="reveal" style="color: var(--text-muted); margin-bottom: 16px;">Every metric below is defined in vLLM&rsquo;s <code>PrometheusStatLogger</code> and documented in the official <a href="https://docs.vllm.ai/en/latest/usage/metrics.html" target="_blank" rel="noopener noreferrer">Production Metrics</a> page. <a href="#source-25">[25]</a></p>
+      <p class="reveal" style="color: var(--text-muted); margin-bottom: 16px;">These metrics are defined in vLLM&rsquo;s <code>PrometheusStatLogger</code> and documented in the official <a href="https://docs.vllm.ai/en/latest/usage/metrics.html" target="_blank" rel="noopener noreferrer">Production Metrics</a> page. <a href="#source-25">[25]</a></p>
 
       <div class="feature-matrix-wrap reveal">
         <table class="feature-matrix">
@@ -1254,7 +1269,7 @@ spec:
       <h3 class="reveal" style="margin-top: 36px;">Dashboard Blueprint</h3>
       <p class="reveal" style="color: var(--text-muted); margin-bottom: 16px;">Four Grafana rows built from the metrics above. The vLLM <a href="https://docs.vllm.ai/en/latest/examples/online_serving/dashboards/" target="_blank" rel="noopener noreferrer">Monitoring Dashboards</a> docs and the <a href="https://blog.vllm.ai/2025/01/21/stack-release.html" target="_blank" rel="noopener noreferrer">production-stack</a> ship pre-built versions. <a href="#source-22">[22]</a> <a href="#source-26">[26]</a></p>
 
-      <div class="problem-grid reveal stagger-children">
+      <div class="dashboard-grid reveal stagger-children">
         <div class="problem-card">
           <div class="problem-icon">
             <svg width="48" height="48" fill="none" stroke="var(--red)" stroke-width="1.5"><use href="#icon-bolt"/></svg>
@@ -1315,52 +1330,54 @@ spec:
       <p class="reveal" style="color: var(--text-muted); margin-top: 12px;">On each completed request, vLLM&rsquo;s output processor emits a <code>llm_request</code> span with GenAI-style attributes. These spans flow into Jaeger, Tempo, Datadog, or any OTLP-compatible backend.</p>
 
       <h3 class="reveal" style="margin-top: 36px;">Troubleshooting Decision Tree</h3>
-      <p class="reveal" style="color: var(--text-muted); margin-bottom: 16px;">Each branch maps to a real Prometheus metric and a configuration flag you can change.</p>
+      <p class="reveal" style="color: var(--text-muted); margin-bottom: 16px;">Each branch pairs a Prometheus metric with the configuration flag to change.</p>
 
-      <details class="plain-english reveal" open>
-        <summary>TTFT is high</summary>
-        <ol>
-          <li>Check <code>vllm:num_requests_waiting</code> &mdash; is traffic queueing? If yes, scale replicas or increase <code>--max-num-seqs</code></li>
-          <li>Check <code>vllm:request_prompt_tokens</code> histogram &mdash; are prompts unusually long? Long prefills are compute-bound</li>
-          <li>Consider increasing <code>--tensor-parallel-size</code> to split prefill across GPUs <a href="#source-12">[12]</a></li>
-          <li>Tune chunked prefill via <code>--max-num-batched-tokens</code> to bound the per-step prefill budget <a href="#source-8">[8]</a></li>
-        </ol>
-      </details>
-      <details class="plain-english reveal">
-        <summary>OOM or preemptions</summary>
-        <ol>
-          <li>Check <code>vllm:kv_cache_usage_perc</code> &mdash; is it above 0.9?</li>
-          <li>Lower <code>--gpu-memory-utilization</code> (default 0.9) to leave headroom for activation memory</li>
-          <li>Reduce <code>--max-model-len</code> to cap KV cache per sequence</li>
-          <li>Enable quantization (<code>--quantization awq</code>, <code>gptq</code>, or <code>fp8</code>) to shrink model weights and free memory for KV <a href="#source-8">[8]</a></li>
-        </ol>
-      </details>
-      <details class="plain-english reveal">
-        <summary>Streaming stutters (high ITL)</summary>
-        <ol>
-          <li>Check <code>vllm:inter_token_latency_seconds</code> p99 for spikes</li>
-          <li>Check <code>vllm:iteration_tokens_total</code> &mdash; large batches per step increase per-token decode time</li>
-          <li>Lower <code>--max-num-batched-tokens</code> to reduce batch size, trading throughput for smoother streaming <a href="#source-8">[8]</a></li>
-        </ol>
-      </details>
-      <details class="plain-english reveal">
-        <summary>Requests timing out</summary>
-        <ol>
-          <li>Check <code>vllm:request_queue_time_seconds</code> for growing queue latency</li>
-          <li>Inspect <code>vllm:num_requests_waiting_by_reason</code> &mdash; is the bottleneck <code>capacity</code> (not enough GPU) or <code>deferred</code> (transient constraints like LoRA budget)?</li>
-          <li>For capacity: scale replicas or increase <code>--max-num-seqs</code></li>
-          <li>For deferred: check LoRA adapter limits or KV transfer backpressure</li>
-        </ol>
-      </details>
-      <details class="plain-english reveal">
-        <summary>Low prefix cache hit rate</summary>
-        <ol>
-          <li>Compute hit ratio: <code>rate(vllm:prefix_cache_hits[5m]) / rate(vllm:prefix_cache_queries[5m])</code></li>
-          <li>Enable prefix caching if not already on: <code>--enable-prefix-caching</code> <a href="#source-13">[13]</a></li>
-          <li>Structure prompts so system messages and common context appear at the beginning (cache matches from the prefix)</li>
-          <li>Use session affinity or the vLLM Router&rsquo;s consistent hashing to route repeat users to the same replica</li>
-        </ol>
-      </details>
+      <div class="troubleshoot-tree reveal">
+        <details class="troubleshoot-branch" data-severity="high" open>
+          <summary>TTFT is high</summary>
+          <ol>
+            <li>Check <code>vllm:num_requests_waiting</code> &mdash; is traffic queueing? If yes, scale replicas or increase <code>--max-num-seqs</code></li>
+            <li>Check <code>vllm:request_prompt_tokens</code> histogram &mdash; are prompts unusually long? Long prefills are compute-bound</li>
+            <li>Consider increasing <code>--tensor-parallel-size</code> to split prefill across GPUs <a href="#source-12">[12]</a></li>
+            <li>Tune chunked prefill via <code>--max-num-batched-tokens</code> to bound the per-step prefill budget <a href="#source-8">[8]</a></li>
+          </ol>
+        </details>
+        <details class="troubleshoot-branch" data-severity="critical">
+          <summary>OOM or preemptions</summary>
+          <ol>
+            <li>Check <code>vllm:kv_cache_usage_perc</code> &mdash; is it above 0.9?</li>
+            <li>Lower <code>--gpu-memory-utilization</code> (default 0.9) to leave headroom for activation memory</li>
+            <li>Reduce <code>--max-model-len</code> to cap KV cache per sequence</li>
+            <li>Enable quantization (<code>--quantization awq</code>, <code>gptq</code>, or <code>fp8</code>) to shrink model weights and free memory for KV <a href="#source-8">[8]</a></li>
+          </ol>
+        </details>
+        <details class="troubleshoot-branch" data-severity="high">
+          <summary>Streaming stutters (high ITL)</summary>
+          <ol>
+            <li>Check <code>vllm:inter_token_latency_seconds</code> p99 for spikes</li>
+            <li>Check <code>vllm:iteration_tokens_total</code> &mdash; large batches per step increase per-token decode time</li>
+            <li>Lower <code>--max-num-batched-tokens</code> to reduce batch size, trading throughput for smoother streaming <a href="#source-8">[8]</a></li>
+          </ol>
+        </details>
+        <details class="troubleshoot-branch" data-severity="medium">
+          <summary>Requests timing out</summary>
+          <ol>
+            <li>Check <code>vllm:request_queue_time_seconds</code> for growing queue latency</li>
+            <li>Inspect <code>vllm:num_requests_waiting_by_reason</code> &mdash; is the bottleneck <code>capacity</code> (not enough GPU) or <code>deferred</code> (transient constraints like LoRA budget)?</li>
+            <li>For capacity: scale replicas or increase <code>--max-num-seqs</code></li>
+            <li>For deferred: check LoRA adapter limits or KV transfer backpressure</li>
+          </ol>
+        </details>
+        <details class="troubleshoot-branch" data-severity="low">
+          <summary>Low prefix cache hit rate</summary>
+          <ol>
+            <li>Compute hit ratio: <code>rate(vllm:prefix_cache_hits[5m]) / rate(vllm:prefix_cache_queries[5m])</code></li>
+            <li>Enable prefix caching if not already on: <code>--enable-prefix-caching</code> <a href="#source-13">[13]</a></li>
+            <li>Structure prompts so system messages and common context appear at the beginning (cache matches from the prefix)</li>
+            <li>Use session affinity or the vLLM Router&rsquo;s consistent hashing to route repeat users to the same replica</li>
+          </ol>
+        </details>
+      </div>
 
       <p class="reveal" style="color: var(--text-muted); margin-top: 24px;">For health probe configuration, graceful shutdown, resource limits, and logging controls, see the <a href="#hardening">Resilience Checklist</a> in Production Hardening.</p>
     </div>
@@ -1372,16 +1389,16 @@ spec:
       <div class="section-header reveal">
         <span class="section-num">08</span>
         <h2>Production Hardening <span class="section-tier tier-2">Ops focus</span></h2>
-        <p class="section-lead">A pre-production checklist grounded in vLLM&rsquo;s <a href="https://docs.vllm.ai/en/latest/security/" target="_blank" rel="noopener noreferrer">security guide</a>, official Kubernetes examples, and source code. Every item maps to a real flag, endpoint, or configuration. <a href="#source-28">[28]</a></p>
+        <p class="section-lead">A pre-production checklist drawn from vLLM&rsquo;s <a href="https://docs.vllm.ai/en/latest/security/" target="_blank" rel="noopener noreferrer">security guide</a>, official Kubernetes examples, and source code. <a href="#source-28">[28]</a></p>
       </div>
 
       <details class="plain-english reveal">
         <summary>In plain English</summary>
-        <p>Getting vLLM to run is easy. Getting it to run <em>safely and reliably</em> requires going through a checklist. The items below are the difference between a demo and a production system. Each one links to the exact flag or doc that implements it.</p>
+        <p>vLLM runs out of the box. Running it safely in production takes deliberate configuration. Each item below links to the flag or doc that implements it.</p>
       </details>
 
       <h3 class="reveal" style="margin-top: 32px;">Security Checklist</h3>
-      <p class="reveal" style="color: var(--text-muted); margin-bottom: 16px;">Every item is documented in vLLM&rsquo;s <code>docs/usage/security.md</code> or the CLI flags in <code>cli_args.py</code>. <a href="#source-28">[28]</a></p>
+      <p class="reveal" style="color: var(--text-muted); margin-bottom: 16px;">Items are documented in vLLM&rsquo;s <code>docs/usage/security.md</code> or the CLI flags in <code>cli_args.py</code>. <a href="#source-28">[28]</a></p>
 
       <div class="feature-matrix-wrap reveal">
         <table class="feature-matrix">
@@ -2140,12 +2157,12 @@ engine_core_outputs = self.scheduler.update_from_output(
       <div class="section-header reveal">
         <span class="section-num">12</span>
         <h2>Performance Tuning <span class="section-tier tier-3">Technical deep-dive</span></h2>
-        <p class="section-lead">The tuning lab maps concurrency, token budget, and <abbr data-tip="KV cache fill level. When it rises, schedulers queue or preempt work.">KV pressure</abbr> to throughput, latency, and operational risk.</p>
+        <p class="section-lead">The tuning lab shows how concurrency and token budget affect throughput, latency, and <abbr data-tip="KV cache fill level. When it rises, schedulers queue or preempt work.">KV pressure</abbr>.</p>
       </div>
 
       <details class="plain-english reveal">
         <summary>In plain English</summary>
-        <p>Performance tuning is about finding the right balance between speed and capacity. Allowing more simultaneous users raises overall throughput but can slow individual responses. This section provides interactive sliders to explore those tradeoffs and a table of the most important configuration flags, so operators can match vLLM's behavior to their workload and latency goals.</p>
+        <p>More simultaneous users raise overall throughput but can slow individual responses. The sliders below let you explore that tradeoff, and the table lists the flags that control it.</p>
       </details>
 
       <div class="tuning-lab reveal">
@@ -2286,10 +2303,9 @@ engine_core_outputs = self.scheduler.update_from_output(
         <h3 style="margin-bottom: 12px; color: var(--text);">Practical Benchmarking with GuideLLM</h3>
         <p>The test dataset is the most overlooked tuning variable. Synthetic or toy prompts lead to misleading conclusions because vLLM performance depends on incoming request shapes and arrival patterns. <a href="#source-21">[21]</a></p>
         <ul class="benchmark-list" style="margin-top: 14px;">
-          <li><strong>Start with representative data.</strong> Build test datasets that match your production input/output token distributions, prompt variability, and repeated text patterns (vLLM optimizes recurring prefixes).</li>
-          <li><strong>Use <a href="https://github.com/neuralmagic/guidellm" target="_blank" rel="noopener noreferrer">GuideLLM</a></strong> to move from synthetic load testing to production reality: configurable request shapes, varying concurrency patterns, and captured TTFT / ITL / throughput metrics. <a href="#source-21">[21]</a></li>
-          <li><strong>Establish SLOs first.</strong> Define P95 and P99 targets for TTFT and ITL before tuning, then sweep concurrency to find where those targets break.</li>
-          <li><strong>Iterate.</strong> Performance tuning is not a single pass. Adjust one lever at a time and re-measure against your SLO targets.</li>
+          <li>Build test datasets that match your production input/output token distributions, prompt variability, and repeated text patterns (vLLM optimizes recurring prefixes).</li>
+          <li>Use <a href="https://github.com/neuralmagic/guidellm" target="_blank" rel="noopener noreferrer">GuideLLM</a> to move from synthetic load testing to production reality: configurable request shapes, varying concurrency patterns, and captured TTFT / ITL / throughput metrics. <a href="#source-21">[21]</a></li>
+          <li>Define P95 and P99 targets for TTFT and ITL before tuning, then sweep concurrency to find where those targets break. Adjust one lever at a time and re-measure.</li>
         </ul>
       </div>
 

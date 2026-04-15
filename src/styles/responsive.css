@@ -93,7 +93,8 @@
 
   .quickstart-pillars,
   .battle-cards-grid,
-  .qualification-grid {
+  .qualification-grid,
+  .dashboard-grid {
     grid-template-columns: 1fr;
   }
 
