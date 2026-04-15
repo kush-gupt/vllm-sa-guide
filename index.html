@@ -178,7 +178,7 @@
             <ol class="reading-path-steps">
               <li><a href="#deployment">Deployment</a> &mdash; Kubernetes, parallelism</li>
               <li><a href="#observability">Observability</a> &mdash; metrics, tracing, troubleshooting</li>
-              <li><a href="#hardening">Hardening</a> &mdash; security, resilience, scaling</li>
+              <li><a href="#hardening">Hardening</a> &mdash; security and resilience checklists</li>
               <li><a href="#tuning">Tuning</a> &mdash; performance knobs and benchmarking</li>
             </ol>
           </div>
@@ -761,7 +761,7 @@
 
       <details class="plain-english reveal">
         <summary>How to measure your own cost-per-token</summary>
-        <p>vLLM&rsquo;s benchmark tools compute the throughput numbers that feed a cost calculation. Run <code>vllm bench serve</code> or use <a href="https://github.com/vllm-project/guidellm" target="_blank" rel="noopener noreferrer">GuideLLM</a> with a representative dataset matching your production prompt distribution. The output includes <code>output_throughput</code> (tokens/sec) and <code>total_token_throughput</code>. Divide your GPU-hour cost by that throughput to get cost per million tokens, then compare against your API provider&rsquo;s published pricing. <a href="#source-21">[21]</a> <a href="#source-23">[23]</a></p>
+        <p>Divide your GPU-hour cost by measured throughput (tokens/sec) to get cost per million tokens, then compare against your API provider&rsquo;s pricing. The <a href="#tuning">Performance Tuning</a> section covers representative benchmarking methodology with GuideLLM in detail. <a href="#source-21">[21]</a></p>
       </details>
     </div>
   </section>
@@ -791,7 +791,7 @@
           <div class="problem-icon">
             <svg width="48" height="48" fill="none" stroke="var(--green)" stroke-width="1.5"><use href="#icon-chip"/></svg>
           </div>
-          <h3>GPU Infrastructure</h3>
+          <h3>Hardware Compatibility</h3>
           <p>vLLM runs on CUDA, ROCm, Intel XPU, and CPU. If you have GPU instances from any major cloud or on-prem accelerators, there is likely a supported path. <a href="#source-14">[14]</a></p>
         </div>
         <div class="problem-card">
@@ -952,31 +952,7 @@
             <svg width="28" height="28" fill="none" stroke="var(--red)" stroke-width="1.5"><use href="#icon-shield"/></svg>
             <h4>Security and Compliance</h4>
           </div>
-          <p class="security-callout-lead">vLLM is built for throughput; production security requires layers around it. <a href="#source-20">[20]</a></p>
-          <div class="security-grid">
-            <div class="security-item">
-              <strong>Reverse proxy</strong>
-              <span><code>--api-key</code> protects only <code>/v1</code> endpoints. Use a gateway with endpoint allowlisting. <a href="#source-20">[20]</a></span>
-            </div>
-            <div class="security-item">
-              <strong>Network isolation</strong>
-              <span>Multi-node ZeroMQ traffic is unencrypted. Isolate with NetworkPolicies.</span>
-            </div>
-            <div class="security-item">
-              <strong>Secrets management</strong>
-              <span>HF tokens and API keys belong in Kubernetes Secrets or a vault, not pod specs.</span>
-            </div>
-            <div class="security-item">
-              <strong>Patch cadence</strong>
-              <span>Multiple high-severity CVEs since 2025. Pin versions, scan images, track <a href="https://github.com/vllm-project/vllm/security/advisories" target="_blank" rel="noopener noreferrer">advisories</a>.</span>
-            </div>
-          </div>
-          <div class="security-fips">
-            <strong><abbr data-tip="Federal Information Processing Standards. US government cryptographic requirements for regulated environments.">FIPS</abbr> 140-3:</strong>
-            Multimodal hashing defaults to non-approved <code>blake3</code>; switch via <code>VLLM_MM_HASHER_ALGORITHM</code> env var to <code>sha256</code> or <code>sha512</code>.
-            Restrict TLS cipher suites with <code>--ssl-ciphers</code>.
-            Internal MD5 calls use <code>usedforsecurity=False</code> for FIPS-enabled hosts (tolerance, not full compliance). <a href="#source-10">[10]</a>
-          </div>
+          <p class="security-callout-lead">vLLM is built for throughput; production security requires layers around it. The <a href="#hardening">Production Hardening</a> section covers reverse proxy setup, network isolation, FIPS compliance, SSRF protection, and the full pre-production security checklist. <a href="#source-20">[20]</a></p>
         </div>
       </div>
 
@@ -1094,6 +1070,83 @@ spec:
           </div>
         </div>
       </div>
+
+      <h3 class="reveal" style="margin-top: 36px;">Scaling Patterns</h3>
+      <p class="reveal" style="color: var(--text-muted); margin-bottom: 16px;">Combine parallelism flags with load balancing and routing for production scale. <a href="#source-12">[12]</a></p>
+
+      <div class="feature-matrix-wrap reveal">
+        <table class="feature-matrix">
+          <thead>
+            <tr>
+              <th>Pattern</th>
+              <th>What It Does</th>
+              <th>When to Use</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Parallelism flags</strong></td>
+              <td><code>-tp</code>, <code>-pp</code>, <code>-dp</code> plus expert and context parallel</td>
+              <td>Scale a single model across multiple GPUs. See the <a href="#parallelism-chooser">parallelism chooser</a> above <a href="#source-12">[12]</a></td>
+            </tr>
+            <tr>
+              <td><strong>Multi-API-server</strong></td>
+              <td><code>--api-server-count N</code> runs multiple frontend processes sharing one engine. Auto-configures <code>PROMETHEUS_MULTIPROC_DIR</code> for shared metrics</td>
+              <td>When the API frontend is the bottleneck (high request parsing overhead, many concurrent connections)</td>
+            </tr>
+            <tr>
+              <td><strong>vLLM Router</strong></td>
+              <td>Production-grade Rust load balancer with consistent hashing for KV cache reuse, prefill/decode disaggregation support, K8s service discovery, and circuit breakers <a href="#source-29">[29]</a></td>
+              <td>Multi-replica deployments needing intelligent request routing and cache affinity</td>
+            </tr>
+            <tr>
+              <td><strong>llm-d</strong></td>
+              <td>Red Hat&rsquo;s KV-cache-aware routing layer for multi-replica vLLM on OpenShift <a href="#source-30">[30]</a></td>
+              <td>Multi-turn workloads where routing to the replica holding the conversation&rsquo;s KV cache avoids recomputation</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="reveal" style="margin-top: 36px;">Multi-Model Serving</h3>
+
+      <div class="feature-matrix-wrap reveal">
+        <table class="feature-matrix">
+          <thead>
+            <tr>
+              <th>Pattern</th>
+              <th>How</th>
+              <th>Tradeoff</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Served name aliases</strong></td>
+              <td><code>--served-model-name name1 name2</code> &mdash; one engine, multiple API model IDs</td>
+              <td>No overhead; useful for API compatibility or gradual migration</td>
+            </tr>
+            <tr>
+              <td><strong>Runtime LoRA adapters</strong></td>
+              <td><code>--lora-modules</code> at startup, plus <code>/v1/load_lora_adapter</code> and <code>/v1/unload_lora_adapter</code> at runtime</td>
+              <td>Share one base model across fine-tuned variants; adapter count limited by <code>--max-loras</code> and GPU memory</td>
+            </tr>
+            <tr>
+              <td><strong>Separate deployments + routing</strong></td>
+              <td>One Deployment per model, fronted by vLLM Router or llm-d</td>
+              <td>Full isolation; requires more GPUs but simplifies per-model scaling and upgrades</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <details class="plain-english reveal" style="margin-top: 24px;">
+        <summary>Model storage on Kubernetes</summary>
+        <ul>
+          <li><strong>PVC-based cache:</strong> Mount a PersistentVolumeClaim at <code>/root/.cache/huggingface</code> so the model is downloaded once and persisted across pod restarts. Shown in the official K8s deployment YAML</li>
+          <li><strong>ModelCar packaging:</strong> Package the model into a container image for reproducible, versioned deployments. Documented by Red Hat for OpenShift AI workflows <a href="#source-24">[24]</a></li>
+          <li><strong>Init-container download:</strong> Use an init container to pull the model before the vLLM container starts, decoupling download time from the readiness probe window</li>
+        </ul>
+      </details>
     </div>
   </section>
 
@@ -1309,32 +1362,7 @@ spec:
         </ol>
       </details>
 
-      <h3 class="reveal" style="margin-top: 36px;">Health Checks and Graceful Shutdown</h3>
-
-      <div class="feature-matrix-wrap reveal">
-        <table class="feature-matrix">
-          <thead>
-            <tr>
-              <th>Endpoint / Flag</th>
-              <th>Behavior</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>GET /health</code></td>
-              <td>Returns 200 when the engine is healthy; returns 503 on <code>EngineDeadError</code>. Use for both liveness and readiness probes</td>
-            </tr>
-            <tr>
-              <td>K8s probes (recommended)</td>
-              <td><code>livenessProbe</code> and <code>readinessProbe</code> on <code>httpGet /health:8000</code> with <code>initialDelaySeconds: 60</code>. Increase <code>failureThreshold</code> for large models that take longer to load</td>
-            </tr>
-            <tr>
-              <td><code>--shutdown-timeout N</code></td>
-              <td>Default 0 = abort in-flight requests immediately on SIGTERM. Set &gt;0 to drain: engine logs &ldquo;Draining N in-flight requests (timeout=Xs)&rdquo; and waits for completion before exit</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <p class="reveal" style="color: var(--text-muted); margin-top: 24px;">For health probe configuration, graceful shutdown, resource limits, and logging controls, see the <a href="#hardening">Resilience Checklist</a> in Production Hardening.</p>
     </div>
   </section>
 
@@ -1427,14 +1455,14 @@ spec:
               <td>K8s: set <code>resources.limits</code> (CPU, memory, <code>nvidia.com/gpu</code>) and <code>resources.requests</code>. Mount <code>/dev/shm</code> as <code>emptyDir: { medium: Memory, sizeLimit: "2Gi" }</code> for tensor parallel shared memory</td>
             </tr>
             <tr>
-              <td><strong>Health probes</strong></td>
-              <td>Kubernetes must know when the engine is ready and when it has died</td>
-              <td>Both <code>livenessProbe</code> and <code>readinessProbe</code> on <code>httpGet /health:8000</code> with <code>initialDelaySeconds: 60</code>. Increase <code>failureThreshold</code> for large models (model load time can exceed default timeout)</td>
+              <td><strong>Health endpoint</strong></td>
+              <td><code>GET /health</code> returns 200 when the engine is healthy, 503 on <code>EngineDeadError</code></td>
+              <td>Use for both liveness and readiness probes: <code>httpGet /health:8000</code> with <code>initialDelaySeconds: 60</code>. Increase <code>failureThreshold</code> for large models (load time can exceed default timeout)</td>
             </tr>
             <tr>
               <td><strong>Graceful shutdown</strong></td>
-              <td>Default behavior aborts all in-flight requests on SIGTERM</td>
-              <td>Set <code>--shutdown-timeout N</code> (seconds) to drain in-flight requests before exit. The engine logs &ldquo;Draining N in-flight requests&rdquo; when N &gt; 0</td>
+              <td>Default behavior (<code>--shutdown-timeout 0</code>) aborts all in-flight requests on SIGTERM</td>
+              <td>Set <code>--shutdown-timeout N</code> (seconds) to drain in-flight requests before exit. The engine logs &ldquo;Draining N in-flight requests (timeout=Xs)&rdquo; when N &gt; 0</td>
             </tr>
             <tr>
               <td><strong>Logging controls</strong></td>
@@ -1445,82 +1473,7 @@ spec:
         </table>
       </div>
 
-      <h3 class="reveal" style="margin-top: 36px;">Scaling Patterns</h3>
-      <p class="reveal" style="color: var(--text-muted); margin-bottom: 16px;">Combine parallelism flags with load balancing and routing for production scale. <a href="#source-12">[12]</a></p>
-
-      <div class="feature-matrix-wrap reveal">
-        <table class="feature-matrix">
-          <thead>
-            <tr>
-              <th>Pattern</th>
-              <th>What It Does</th>
-              <th>When to Use</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Parallelism flags</strong></td>
-              <td><code>-tp</code>, <code>-pp</code>, <code>-dp</code> plus expert and context parallel</td>
-              <td>Scale a single model across multiple GPUs. See the <a href="#deployment">Deployment</a> section&rsquo;s parallelism chooser <a href="#source-12">[12]</a></td>
-            </tr>
-            <tr>
-              <td><strong>Multi-API-server</strong></td>
-              <td><code>--api-server-count N</code> runs multiple frontend processes sharing one engine. Auto-configures <code>PROMETHEUS_MULTIPROC_DIR</code> for shared metrics</td>
-              <td>When the API frontend is the bottleneck (high request parsing overhead, many concurrent connections)</td>
-            </tr>
-            <tr>
-              <td><strong>vLLM Router</strong></td>
-              <td>Production-grade Rust load balancer with consistent hashing for KV cache reuse, prefill/decode disaggregation support, K8s service discovery, and circuit breakers <a href="#source-29">[29]</a></td>
-              <td>Multi-replica deployments needing intelligent request routing and cache affinity</td>
-            </tr>
-            <tr>
-              <td><strong>llm-d</strong></td>
-              <td>Red Hat&rsquo;s KV-cache-aware routing layer for multi-replica vLLM on OpenShift <a href="#source-30">[30]</a></td>
-              <td>Multi-turn workloads where routing to the replica holding the conversation&rsquo;s KV cache avoids recomputation</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <h3 class="reveal" style="margin-top: 36px;">Multi-Model Serving</h3>
-
-      <div class="feature-matrix-wrap reveal">
-        <table class="feature-matrix">
-          <thead>
-            <tr>
-              <th>Pattern</th>
-              <th>How</th>
-              <th>Tradeoff</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Served name aliases</strong></td>
-              <td><code>--served-model-name name1 name2</code> &mdash; one engine, multiple API model IDs</td>
-              <td>No overhead; useful for API compatibility or gradual migration</td>
-            </tr>
-            <tr>
-              <td><strong>Runtime LoRA adapters</strong></td>
-              <td><code>--lora-modules</code> at startup, plus <code>/v1/load_lora_adapter</code> and <code>/v1/unload_lora_adapter</code> at runtime</td>
-              <td>Share one base model across fine-tuned variants; adapter count limited by <code>--max-loras</code> and GPU memory</td>
-            </tr>
-            <tr>
-              <td><strong>Separate deployments + routing</strong></td>
-              <td>One Deployment per model, fronted by vLLM Router or llm-d</td>
-              <td>Full isolation; requires more GPUs but simplifies per-model scaling and upgrades</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <details class="plain-english reveal" style="margin-top: 24px;">
-        <summary>Model storage on Kubernetes</summary>
-        <ul>
-          <li><strong>PVC-based cache:</strong> Mount a PersistentVolumeClaim at <code>/root/.cache/huggingface</code> so the model is downloaded once and persisted across pod restarts. Shown in the official K8s deployment YAML</li>
-          <li><strong>ModelCar packaging:</strong> Package the model into a container image for reproducible, versioned deployments. Documented by Red Hat for OpenShift AI workflows <a href="#source-24">[24]</a></li>
-          <li><strong>Init-container download:</strong> Use an init container to pull the model before the vLLM container starts, decoupling download time from the readiness probe window</li>
-        </ul>
-      </details>
+      <p class="reveal" style="color: var(--text-muted); margin-top: 24px;">For scaling patterns, multi-model serving, and model storage options, see the <a href="#deployment">Deployment Options</a> section.</p>
     </div>
   </section>
 
@@ -2376,7 +2329,7 @@ engine_core_outputs = self.scheduler.update_from_output(
             <ol class="reading-path-steps">
               <li><a href="#deployment">Deployment</a> &mdash; Kubernetes, parallelism</li>
               <li><a href="#observability">Observability</a> &mdash; metrics, tracing, troubleshooting</li>
-              <li><a href="#hardening">Hardening</a> &mdash; security, resilience, scaling</li>
+              <li><a href="#hardening">Hardening</a> &mdash; security and resilience checklists</li>
               <li><a href="#tuning">Tuning</a> &mdash; performance knobs and benchmarking</li>
             </ol>
           </div>

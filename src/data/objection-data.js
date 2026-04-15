@@ -2,7 +2,7 @@ export const objections = [
   {
     id: 'openai',
     objection: 'We already use Cloud APIs',
-    response: 'Cloud APIs meter by token, so cost tracks every request. Data leaves your perimeter unless you buy isolated endpoints. vLLM serves an OpenAI-compatible API on hardware you run; most clients only change base URL and model id.',
+    response: 'Cloud APIs meter by token, so cost tracks every request. Data leaves your perimeter unless you buy isolated endpoints. vLLM serves an OpenAI-compatible API on hardware you run; most clients only change base URL and model id. See the <a href="#tco">TCO &amp; ROI</a> section for workload-specific cost modeling.',
     keyPoints: [
       'At scale, GPU capacity cost is often easier to cap than open-ended per-token bills',
       'Data sovereignty: prompts and responses stay in your environment',
@@ -57,7 +57,7 @@ export const objections = [
   {
     id: 'cost-savings',
     objection: 'How much will this actually save us?',
-    response: 'The cost model shifts from per-token API billing to GPU capacity you control. Cloud GPU list prices range from a few dollars to tens of dollars per GPU-hour depending on chip, region, and commitment. vLLM\u2019s PagedAttention and continuous batching typically let one GPU serve more concurrent requests, so you need fewer GPUs for the same traffic\u2014or handle more traffic without adding hardware. The exact savings depend on your request volume, prompt lengths, and current provider pricing.',
+    response: 'The cost model shifts from per-token API billing to GPU capacity you control. The <a href="#tco">TCO &amp; ROI</a> section breaks down cost drivers across RAG chatbot, batch processing, and code assistant workloads. The exact savings depend on your request volume, prompt lengths, and current provider pricing.',
     keyPoints: [
       'Per-token API costs grow linearly with traffic; GPU capacity costs can be capped with reserved instances or on-prem hardware',
       'PagedAttention reduces wasted GPU memory, fitting more concurrent users on each GPU <a href="#source-9">[9]</a>',
@@ -68,10 +68,10 @@ export const objections = [
   {
     id: 'security-regulated',
     objection: 'Is this secure enough for regulated data?',
-    response: 'Self-hosted vLLM keeps all prompts and responses on your infrastructure\u2014nothing leaves your network perimeter. The community publishes hardened container images, and vendors like Red Hat ship certified images with vulnerability management and support contracts. vLLM supports FIPS-friendly hashing for multimodal content, and published hardening guides cover reverse proxy setup, network segmentation, secrets management, and CVE tracking.<a href="#source-20">[20]</a>',
+    response: 'Self-hosted vLLM keeps all prompts and responses on your infrastructure\u2014nothing leaves your network perimeter. The <a href="#hardening">Production Hardening</a> section has the full security and resilience checklist covering reverse proxy, network isolation, FIPS, SSRF, and more.<a href="#source-20">[20]</a>',
     keyPoints: [
       'Data sovereignty: prompts and completions never leave your environment when self-hosted',
-      'Hardening guidance covers reverse proxy, network segmentation, secrets management, and CVE tracking <a href="#source-20">[20]</a>',
+      'Full security checklist in the <a href="#hardening">Production Hardening</a> section <a href="#source-20">[20]</a>',
       'FIPS-friendly hashing options available for multimodal content <a href="#source-10">[10]</a>',
       'Vendor-certified images (e.g. Red Hat AI Inference Server) provide enterprise vulnerability management and patching'
     ]
@@ -79,12 +79,12 @@ export const objections = [
   {
     id: 'time-to-deploy',
     objection: 'How long does it take to get running?',
-    response: 'A basic vLLM deployment can serve requests within minutes. Run <code>vllm serve &lt;model&gt;</code> to start a local server with an OpenAI-compatible API. For production Kubernetes deployments, KServe and community Helm charts provide tested templates. The primary setup work is GPU node provisioning and driver installation\u2014the vLLM layer itself is a single container with well-documented flags.',
+    response: 'A basic vLLM deployment can serve requests within minutes. Run <code>vllm serve &lt;model&gt;</code> to start a local server with an OpenAI-compatible API. The <a href="#adoption">Adoption Playbook</a> maps the full path from POC to production in three phases with concrete exit criteria.',
     keyPoints: [
       'Local: <code>vllm serve &lt;model&gt;</code> starts an OpenAI-compatible API server in minutes',
       'Kubernetes: KServe integration and community Helm charts provide production-ready templates <a href="#source-16">[16]</a>',
       'OpenAI-compatible API means existing client code usually only needs a base URL change',
-      'Most setup time goes to GPU node provisioning and driver installation, not vLLM configuration'
+      'Full phased rollout plan in the <a href="#adoption">Adoption Playbook</a>'
     ]
   }
 ];
