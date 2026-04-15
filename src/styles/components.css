@@ -1938,3 +1938,166 @@ td.col-plain {
   color: var(--text-muted);
   border: 1px solid rgba(120, 130, 150, 0.25);
 }
+
+
+/* ---------- PATH CHOOSER GATING ---------- */
+html:not([data-active-path]) section[data-paths] {
+  display: none;
+}
+
+html[data-active-path="business"] section[data-paths]:not([data-paths~="business"]),
+html[data-active-path="ops"] section[data-paths]:not([data-paths~="ops"]),
+html[data-active-path="deep"] section[data-paths]:not([data-paths~="deep"]) {
+  display: none;
+}
+
+html[data-active-path="all"] section[data-paths] {
+  display: block;
+}
+
+/* Gate mode: expand reading-paths to fill viewport */
+html:not([data-active-path]) .reading-paths-section {
+  min-height: calc(100vh - var(--nav-height));
+  display: flex;
+  align-items: center;
+}
+
+html:not([data-active-path]) .reading-paths-section::before {
+  display: none;
+}
+
+html:not([data-active-path]) .reading-path-card {
+  cursor: pointer;
+}
+
+/* Active-card highlight when a path is selected */
+html[data-active-path="business"] .reading-path-business,
+html[data-active-path="all"] .reading-path-business.path-was-active {
+  border-color: var(--green);
+}
+html[data-active-path="business"] .reading-path-business::after,
+html[data-active-path="all"] .reading-path-business.path-was-active::after {
+  opacity: 0.5;
+  box-shadow: 0 8px 24px rgba(62, 134, 53, 0.15);
+}
+
+html[data-active-path="ops"] .reading-path-ops,
+html[data-active-path="all"] .reading-path-ops.path-was-active {
+  border-color: var(--red);
+}
+html[data-active-path="ops"] .reading-path-ops::after,
+html[data-active-path="all"] .reading-path-ops.path-was-active::after {
+  opacity: 0.5;
+  box-shadow: 0 8px 24px rgba(238, 0, 0, 0.12);
+}
+
+html[data-active-path="deep"] .reading-path-deep,
+html[data-active-path="all"] .reading-path-deep.path-was-active {
+  border-color: var(--gold);
+}
+html[data-active-path="deep"] .reading-path-deep::after,
+html[data-active-path="all"] .reading-path-deep.path-was-active::after {
+  opacity: 0.5;
+  box-shadow: 0 8px 24px rgba(240, 171, 0, 0.15);
+}
+
+/* Hide path-switcher until JS reveals it */
+.path-switcher-section[hidden] {
+  display: none !important;
+}
+
+/* Also hide when no path is chosen or showing all */
+html:not([data-active-path]) .path-switcher-section,
+html[data-active-path="all"] .path-switcher-section {
+  display: none;
+}
+
+.path-switcher-section {
+  padding: 48px 0;
+}
+
+.path-switcher-section::before {
+  display: none;
+}
+
+.path-switcher-inner {
+  max-width: var(--container-max);
+  margin: 0 auto;
+}
+
+.path-switcher-grid {
+  grid-template-columns: repeat(2, 1fr);
+  margin-bottom: 24px;
+}
+
+.path-switcher-grid .reading-path-card {
+  cursor: pointer;
+}
+
+.path-switcher-grid .reading-path-card[hidden] {
+  display: none;
+}
+
+.path-show-all {
+  display: block;
+  margin: 0 auto;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 12px 32px;
+  transition: color var(--transition),
+              background var(--transition),
+              border-color var(--transition),
+              transform 0.4s var(--ease-out-expo),
+              box-shadow 0.4s var(--ease-out-expo);
+}
+
+.path-show-all:hover {
+  color: #fff;
+  background: var(--red);
+  border-color: var(--red);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px var(--red-glow);
+  transition-duration: 0.18s;
+}
+
+.path-show-all:active {
+  transform: translateY(0) scale(0.97);
+  transition-duration: 0.08s;
+}
+
+/* ---------- NAV PATH BADGE ---------- */
+.nav-path-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-text);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  color: var(--text-muted);
+  transition: color var(--transition), border-color var(--transition), opacity 0.3s var(--ease-out-expo);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.nav-path-badge[hidden] {
+  display: none;
+}
+
+.nav-path-badge:hover {
+  color: var(--text);
+}
+
+.nav-path-badge[data-color="green"] { border-color: var(--green); color: var(--green); }
+.nav-path-badge[data-color="red"] { border-color: var(--red); color: var(--red); }
+.nav-path-badge[data-color="gold"] { border-color: var(--gold); color: var(--gold); }

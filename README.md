@@ -20,6 +20,20 @@ npm run preview   # preview the production build locally
 
 The `dist/` folder is a fully static site — serve it from any HTTP server, S3 bucket, or GitHub Pages.
 
+## Reading paths
+
+The guide gates content behind a **path chooser**. First-time visitors see a full-viewport prompt asking them to pick one of three reading paths:
+
+| Path | Sections shown |
+|------|----------------|
+| **Business & Decision-Makers** | The Problem, Key Techniques, Capabilities, Reference |
+| **Platform & Ops Engineers** | The Problem, Key Techniques, Capabilities, Deployment, Tuning, Reference |
+| **Deep-Dive & Research** | PagedAttention, Batching, Architecture, Tuning, Reference |
+
+The chosen path is persisted in `localStorage` and the `?path=` URL parameter so links are shareable. Users can switch paths via a card-based switcher before the Reference section, or click "Show everything" to reveal all content.
+
+Sections outside the active path are `display: none`, which means their `IntersectionObserver`-based lazy loading never fires — JS modules for hidden sections are never downloaded.
+
 ## Deployment
 
 ### Cloudflare Workers (default)
@@ -65,19 +79,21 @@ public/
   fonts/                    Self-hosted Red Hat font files (woff2) + LICENSE
   og-image.png              Open Graph preview image
 src/
-  main.js                   Entry point — initializes globals, lazy-loads sections
+  main.js                   Entry point — eager inits, lazy-loads sections, path-changed relay
   styles/
     main.css                @import aggregator (order matters — see AGENTS.md)
     fonts.css               @font-face declarations for Red Hat typefaces
     tokens.css              CSS custom properties (design tokens, dark/light themes)
-    base.css                Reset, typography, keyframes, reveal animations
+    base.css                Reset, typography, keyframes, section basics, reveal animations
     layout.css              Nav, hero, footer
-    components.css          Cards, pills, badges, tables, code blocks, model coverage
+    components.css          Cards, pills, badges, tables, code blocks, path-chooser gating
     interactive.css         Allocator showdown, PA cinema, batching lab, tuning lab
     responsive.css          All media queries
   features/
+    path-chooser.js         Reading-path gate, card handlers, nav/badge/switcher state
     theme.js                Dark/light toggle with localStorage persistence
-    nav.js                  Mobile hamburger menu, scroll-based active link, focus trap
+    nav.js                  Hamburger menu, scroll-based active link + pill, focus trap
+    smooth-nav.js           Enhanced smooth-scroll for in-page anchor links
     reveal.js               IntersectionObserver scroll reveal + stagger animations
     tooltips.js             Keyboard-accessible jargon tooltips for abbr[data-tip]
     quickstart.js           Collapsible quickstart panel toggle
@@ -93,6 +109,7 @@ src/
     parallelism.js          Parallelism strategy tabs (TP/PP/DP/EP/CP)
     allocator-showdown.js   Naive vs PagedAttention allocator comparison
     hero-canvas.js          Particle network canvas animation (reduced-motion aware)
+    hero-canvas-worker.js   OffscreenCanvas web worker for hero particles
     hero-typewriter.js      Word-by-word hero description reveal animation
     arch-diagrams.js        Architecture diagrams via beautiful-mermaid
     decode-loop.js          Autoregressive decode walkthrough
@@ -107,6 +124,7 @@ src/
     roving-tabindex.js      Arrow-key focus management for tab groups
     autoplay.js             Play/pause + IntersectionObserver auto-stop for animations
     tab-utils.js            Shared tab-button activation with ARIA and URL hash sync
+    scroll-bus.js           Lightweight pub/sub for coordinating scroll-sensitive features
   data/
     batching-scenarios.js   Balanced / prompt-heavy / bursty frame data
     chunk-frames.js         Chunked prefill step definitions
@@ -116,6 +134,7 @@ src/
     pa-phases.js            PagedAttention cinema phase data
     showdown-steps.js       Allocator showdown step definitions
     battle-cards.js         Comparison card data (vs TGI, TRT-LLM, SGLang)
+    comparison-faq.js       Side-by-side comparison FAQ entries
     objection-data.js       FAQ objection/response data
 ```
 
@@ -138,14 +157,12 @@ Pull requests trigger builds but do not push to the registry.
 
 ## External dependencies
 
-
 | Dependency                                                           | Loaded via                    | Purpose                                      |
 | -------------------------------------------------------------------- | ----------------------------- | -------------------------------------------- |
 | [Vite](https://vite.dev)                                             | npm (dev only)                | Dev server + production build                |
 | [Prism.js](https://prismjs.com)                                      | npm                           | Syntax highlighting for code blocks          |
 | [beautiful-mermaid](https://www.npmjs.com/package/beautiful-mermaid) | npm                           | Architecture and flow diagrams (lazy-loaded) |
 | [Red Hat fonts](https://github.com/RedHatOfficial/RedHatFont)        | Self-hosted (`public/fonts/`) | Display, Text, and Mono typefaces (SIL OFL)  |
-
 
 ## Contributing
 

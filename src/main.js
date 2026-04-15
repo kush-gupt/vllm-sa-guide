@@ -7,6 +7,8 @@ import { init as initBackToTop } from './features/back-to-top.js';
 import { init as initHeroCanvas } from './features/hero-canvas.js';
 import { init as initHeroTypewriter } from './features/hero-typewriter.js';
 import { init as initSmoothNav } from './features/smooth-nav.js';
+import { init as initPathChooser } from './features/path-chooser.js';
+import { reobserve as reobserveReveals } from './features/reveal.js';
 
 const isDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
 
@@ -40,31 +42,52 @@ safeInit(initScrollProgress, 'scroll-progress');
 safeInit(initBackToTop, 'back-to-top');
 requestAnimationFrame(() => safeInit(initHeroCanvas, 'hero-canvas'));
 safeInit(initHeroTypewriter, 'hero-typewriter');
+safeInit(initPathChooser, 'path-chooser');
 
 // --- Lazy-load below-fold features when their section approaches viewport ---
+const pendingObservers = new Map();
+
 function lazySection(sectionId, loaders) {
   const section = document.getElementById(sectionId);
   if (!section) return;
-  const observer = new IntersectionObserver(
-    (entries) => {
-      if (!entries.some(e => e.isIntersecting)) return;
-      observer.disconnect();
-      (async () => {
-        for (const load of loaders) {
-          try {
-            const mod = await load();
-            if (mod.init) mod.init();
-          } catch (e) {
-            console.error(`[lazy:${sectionId}] init failed:`, e);
-            showDevError(`lazy:${sectionId}`);
+
+  let loaded = false;
+
+  function observe() {
+    if (loaded) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some(e => e.isIntersecting)) return;
+        observer.disconnect();
+        loaded = true;
+        pendingObservers.delete(sectionId);
+        (async () => {
+          for (const load of loaders) {
+            try {
+              const mod = await load();
+              if (mod.init) mod.init();
+            } catch (e) {
+              console.error(`[lazy:${sectionId}] init failed:`, e);
+              showDevError(`lazy:${sectionId}`);
+            }
           }
-        }
-      })();
-    },
-    { rootMargin: '200px' }
-  );
-  observer.observe(section);
+        })();
+      },
+      { rootMargin: '200px' }
+    );
+    observer.observe(section);
+  }
+
+  pendingObservers.set(sectionId, observe);
+  observe();
 }
+
+window.addEventListener('path-changed', () => {
+  for (const setup of pendingObservers.values()) {
+    setup();
+  }
+  reobserveReveals();
+});
 
 lazySection('why', [
   () => import('./features/quickstart.js'),

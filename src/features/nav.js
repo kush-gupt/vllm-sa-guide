@@ -1,3 +1,9 @@
+let _positionPill = null;
+
+export function repositionPill() {
+  _positionPill?.();
+}
+
 export function init() {
   const navToggle = document.querySelector('.nav-toggle');
   const navLinks = document.querySelector('.nav-links');
@@ -68,7 +74,7 @@ export function init() {
   });
 
   function positionPill(link) {
-    if (!link) {
+    if (!link || link.closest('li[hidden]')) {
       navLinks.style.setProperty('--pill-opacity', '0');
       return;
     }
@@ -85,15 +91,26 @@ export function init() {
     navLinks.style.setProperty('--pill-opacity', '1');
   }
 
+  _positionPill = () => {
+    const active = navLinks.querySelector('a.active');
+    positionPill(active);
+  };
+
   let currentId = '';
   const navObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) currentId = entry.target.id;
       });
+
+      const currentSection = document.getElementById(currentId);
+      if (currentSection && getComputedStyle(currentSection).display === 'none') {
+        currentId = '';
+      }
+
       navAnchors.forEach(a => a.classList.remove('active'));
       const active = anchorMap.get(currentId);
-      if (active) active.classList.add('active');
+      if (active && !active.closest('li[hidden]')) active.classList.add('active');
       positionPill(active);
     },
     { rootMargin: '-20% 0px -80% 0px' }

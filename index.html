@@ -73,6 +73,7 @@
         <span class="logo-sep">|</span>
         <span class="logo-subtitle">Inference Guide</span>
       </a>
+      <button class="nav-path-badge" type="button" hidden aria-label="Change reading path"></button>
       <button class="nav-toggle" aria-label="Toggle menu">
         <span></span><span></span><span></span>
       </button>
@@ -151,7 +152,7 @@
         <h2 class="reading-paths-title">How to read this guide</h2>
         <p class="reading-paths-lead">Pick the path that fits your role. Every section is self-contained, so you can skip ahead or stop early.</p>
         <div class="reading-paths-grid">
-          <div class="reading-path-card reading-path-business">
+          <div class="reading-path-card reading-path-business" data-path="business" role="button" tabindex="0">
             <div class="reading-path-icon">
               <svg width="32" height="32" fill="none" stroke="var(--green)" stroke-width="1.5"><use href="#icon-target"/></svg>
             </div>
@@ -164,7 +165,7 @@
               <li><a href="#modern-inference">Common Questions</a> &mdash; cost, security, migration</li>
             </ol>
           </div>
-          <div class="reading-path-card reading-path-ops">
+          <div class="reading-path-card reading-path-ops" data-path="ops" role="button" tabindex="0">
             <div class="reading-path-icon">
               <svg width="32" height="32" fill="none" stroke="var(--red)" stroke-width="1.5"><use href="#icon-gear"/></svg>
             </div>
@@ -177,7 +178,7 @@
               <li><a href="#reference">Reference</a> &mdash; CLI, API, and sources</li>
             </ol>
           </div>
-          <div class="reading-path-card reading-path-deep">
+          <div class="reading-path-card reading-path-deep" data-path="deep" role="button" tabindex="0">
             <div class="reading-path-icon">
               <svg width="32" height="32" fill="none" stroke="var(--gold)" stroke-width="1.5"><use href="#icon-chip"/></svg>
             </div>
@@ -200,7 +201,7 @@
        ===================================================================== -->
 
   <!-- ========== WHY vLLM ========== -->
-  <section id="why" class="section">
+  <section id="why" class="section" data-paths="business ops">
     <div class="container">
       <div class="section-header reveal">
         <span class="section-num">01</span>
@@ -337,7 +338,7 @@
   </section>
 
   <!-- ========== MODERN INFERENCE ========== -->
-  <section id="modern-inference" class="section">
+  <section id="modern-inference" class="section" data-paths="business ops">
     <div class="container">
       <div class="section-header reveal">
         <span class="section-num">02</span>
@@ -443,7 +444,7 @@
   </section>
 
   <!-- ========== MODELS & FEATURES ========== -->
-  <section id="models" class="section">
+  <section id="models" class="section" data-paths="business ops">
     <div class="container">
       <div class="section-header reveal">
         <span class="section-num">03</span>
@@ -664,7 +665,7 @@
   </section>
 
   <!-- ========== DEPLOYMENT ========== -->
-  <section id="deployment" class="section">
+  <section id="deployment" class="section" data-paths="ops">
     <div class="container">
       <div class="section-header reveal">
         <span class="section-num">04</span>
@@ -846,7 +847,7 @@ spec:
        ===================================================================== -->
 
   <!-- ========== PAGED ATTENTION ========== -->
-  <section id="paged-attention" class="section">
+  <section id="paged-attention" class="section" data-paths="deep">
     <div class="container">
       <div class="section-header reveal">
         <span class="section-num">05</span>
@@ -975,7 +976,7 @@ spec:
   </section>
 
   <!-- ========== CONTINUOUS BATCHING ========== -->
-  <section id="batching" class="section">
+  <section id="batching" class="section" data-paths="deep">
     <div class="container">
       <div class="section-header reveal">
         <span class="section-num">06</span>
@@ -1199,7 +1200,7 @@ spec:
   </section>
 
   <!-- ========== ARCHITECTURE ========== -->
-  <section id="architecture" class="section">
+  <section id="architecture" class="section" data-paths="deep">
     <div class="container">
       <div class="section-header reveal">
         <span class="section-num">07</span>
@@ -1499,7 +1500,7 @@ engine_core_outputs = self.scheduler.update_from_output(
   </section>
 
   <!-- ========== TUNING ========== -->
-  <section id="tuning" class="section">
+  <section id="tuning" class="section" data-paths="ops deep">
     <div class="container">
       <div class="section-header reveal">
         <span class="section-num">08</span>
@@ -1664,8 +1665,60 @@ engine_core_outputs = self.scheduler.update_from_output(
     </div>
   </section>
 
+  <!-- ========== PATH SWITCHER ========== -->
+  <section id="path-switcher" class="section path-switcher-section" aria-label="Switch reading path" hidden>
+    <div class="container">
+      <div class="path-switcher-inner reveal">
+        <h2 class="reading-paths-title">Explore another perspective</h2>
+        <p class="reading-paths-lead">You finished the <strong class="path-switcher-current"></strong> path. Switch to see the guide from a different angle, or show everything.</p>
+        <div class="reading-paths-grid path-switcher-grid">
+          <div class="reading-path-card reading-path-business" data-switch-path="business" role="button" tabindex="0">
+            <div class="reading-path-icon">
+              <svg width="32" height="32" fill="none" stroke="var(--green)" stroke-width="1.5"><use href="#icon-target"/></svg>
+            </div>
+            <h3>Business &amp; Decision-Makers</h3>
+            <p>Understand costs, capabilities, and when vLLM fits.</p>
+            <ol class="reading-path-steps">
+              <li><a href="#why">The Problem</a> &mdash; why inference is hard</li>
+              <li><a href="#modern-inference">Key Techniques</a> &mdash; what production requires</li>
+              <li><a href="#models">Capabilities</a> &mdash; models, features, hardware</li>
+              <li><a href="#modern-inference">Common Questions</a> &mdash; cost, security, migration</li>
+            </ol>
+          </div>
+          <div class="reading-path-card reading-path-ops" data-switch-path="ops" role="button" tabindex="0">
+            <div class="reading-path-icon">
+              <svg width="32" height="32" fill="none" stroke="var(--red)" stroke-width="1.5"><use href="#icon-gear"/></svg>
+            </div>
+            <h3>Platform &amp; Ops Engineers</h3>
+            <p>Deploy, tune, and operate vLLM in production.</p>
+            <ol class="reading-path-steps">
+              <li>Read the full guide top to bottom</li>
+              <li><a href="#deployment">Deployment</a> &mdash; Kubernetes, parallelism</li>
+              <li><a href="#tuning">Tuning</a> &mdash; performance knobs and benchmarking</li>
+              <li><a href="#reference">Reference</a> &mdash; CLI, API, and sources</li>
+            </ol>
+          </div>
+          <div class="reading-path-card reading-path-deep" data-switch-path="deep" role="button" tabindex="0">
+            <div class="reading-path-icon">
+              <svg width="32" height="32" fill="none" stroke="var(--gold)" stroke-width="1.5"><use href="#icon-chip"/></svg>
+            </div>
+            <h3>Deep-Dive &amp; Research</h3>
+            <p>Understand the engine internals and scheduling.</p>
+            <ol class="reading-path-steps">
+              <li><a href="#paged-attention">PagedAttention</a> &mdash; memory management</li>
+              <li><a href="#batching">Batching</a> &mdash; scheduler mechanics</li>
+              <li><a href="#architecture">Architecture</a> &mdash; V1 engine internals</li>
+              <li><a href="#tuning">Tuning</a> &mdash; latency vs throughput tradeoffs</li>
+            </ol>
+          </div>
+        </div>
+        <button class="path-show-all" type="button">Show everything</button>
+      </div>
+    </div>
+  </section>
+
   <!-- ========== REFERENCE ========== -->
-  <section id="reference" class="section">
+  <section id="reference" class="section" data-paths="business ops deep">
     <div class="container">
       <div class="section-header reveal">
         <span class="section-num">09</span>

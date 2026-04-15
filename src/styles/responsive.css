@@ -86,6 +86,11 @@
     grid-template-columns: 1fr;
   }
 
+  html:not([data-active-path]) .reading-paths-section {
+    min-height: auto;
+    padding: 48px 0;
+  }
+
   .quickstart-pillars,
   .battle-cards-grid,
   .qualification-grid {
@@ -139,6 +144,10 @@
 
   .tuning-score-grid {
     grid-template-columns: 1fr;
+  }
+
+  .nav-path-badge {
+    display: none;
   }
 }
 

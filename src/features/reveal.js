@@ -1,11 +1,38 @@
+let _revealObserver = null;
+let _staggerObserver = null;
+
+const STAGGER_GRID_SELECTORS = [
+  '.coverage-grid', '.hw-grid', '.landscape-grid',
+  '.discovery-grid', '.links-grid',
+];
+
+export function reobserve() {
+  if (_revealObserver) {
+    document.querySelectorAll('.reveal:not(.visible)').forEach(el => {
+      el.addEventListener('animationend', () => el.classList.add('done'), { once: true });
+      _revealObserver.observe(el);
+    });
+  }
+  if (_staggerObserver) {
+    STAGGER_GRID_SELECTORS.forEach(sel => {
+      document.querySelectorAll(sel).forEach(el => {
+        const hasAnimated = Array.from(el.children).some(
+          c => c.style.transition && c.style.opacity === '1'
+        );
+        if (!hasAnimated) _staggerObserver.observe(el);
+      });
+    });
+  }
+}
+
 export function init() {
   const revealEls = document.querySelectorAll('.reveal');
-  const revealObserver = new IntersectionObserver(
+  _revealObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('visible');
-          revealObserver.unobserve(entry.target);
+          _revealObserver.unobserve(entry.target);
         }
       });
     },
@@ -13,15 +40,10 @@ export function init() {
   );
   revealEls.forEach(el => {
     el.addEventListener('animationend', () => el.classList.add('done'), { once: true });
-    revealObserver.observe(el);
+    _revealObserver.observe(el);
   });
 
-  const staggerGridSelectors = [
-    '.coverage-grid', '.hw-grid', '.landscape-grid',
-    '.discovery-grid', '.links-grid',
-  ];
-
-  const staggerObserver = new IntersectionObserver(
+  _staggerObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach(entry => {
         if (!entry.isIntersecting) return;
@@ -37,13 +59,13 @@ export function init() {
             });
           });
         });
-        staggerObserver.unobserve(entry.target);
+        _staggerObserver.unobserve(entry.target);
       });
     },
     { threshold: 0.08, rootMargin: '0px 0px -30px 0px' }
   );
 
-  staggerGridSelectors.forEach(sel => {
-    document.querySelectorAll(sel).forEach(el => staggerObserver.observe(el));
+  STAGGER_GRID_SELECTORS.forEach(sel => {
+    document.querySelectorAll(sel).forEach(el => _staggerObserver.observe(el));
   });
 }
