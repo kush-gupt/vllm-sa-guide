@@ -33,12 +33,12 @@ export const objections = [
   {
     id: 'model-quality',
     objection: "Open-source model quality isn't there yet",
-    response: 'The gap has largely closed. On MMLU the open-weights vs. proprietary difference shrank from ~17 percentage points in early 2024 to under 1 pp by early 2026; Chatbot Arena shows a similar collapse.<a href="#source-19">[19]</a> Current-generation families\u2014Llama 4, DeepSeek V3.2/R2, Qwen 3.5, Gemma 4, Mistral, and IBM Granite\u2014cover chat, RAG, coding, math, and multilingual workloads, and all load directly in vLLM.<a href="#source-14">[14]</a> Benchmark them on your own prompts and documents before you standardize.',
+    response: 'The gap has largely closed. The Artificial Analysis Intelligence Index shows open-weights models converging with proprietary over 2024\u20132026; on individual benchmarks like MMLU, HumanEval, and MATH the strongest open-weights models now match or exceed proprietary baselines.<a href="#source-19">[19]</a> Current-generation families\u2014Llama 4, DeepSeek V3.2/R2, Qwen 3.5, Gemma 4, Mistral, and IBM Granite\u2014cover chat, RAG, coding, math, and multilingual workloads, and all load directly in vLLM.<a href="#source-14">[14]</a> Benchmark them on your own prompts and documents before you standardize.',
     keyPoints: [
-      'Benchmark convergence: on MMLU the open-vs-proprietary gap fell from ~17 pp to under 1 pp; on Chatbot Arena from 8% to under 2% <a href="#source-19">[19]</a>',
-      'Current model families all supported by vLLM: Llama 4 Maverick (400B MoE, 17B active, 1M-token context), DeepSeek R2 (32B dense, 92.7% AIME), Gemma 4 (Apache 2.0, 31B), Qwen 3.5 (405B, multilingual), Mistral, IBM Granite <a href="#source-14">[14]</a>',
+      'Benchmark convergence: the Artificial Analysis Intelligence Index shows open-weights models converging with proprietary over 2024\u20132026; on MMLU, HumanEval, and MATH the best open-weights models match or surpass proprietary offerings <a href="#source-19">[19]</a>',
+      'Current model families all supported by vLLM: Llama 4 Maverick (400B MoE, 17B active, 1M-token context), DeepSeek R2 (32B dense, reported 92.7% AIME), Gemma 4 (Apache 2.0, 31B), Qwen 3.5 (MoE, multilingual), Mistral, IBM Granite <a href="#source-14">[14]</a>',
       'Open-source reasoning models (DeepSeek R2, Gemma 4) rival proprietary reasoning systems on math and coding benchmarks',
-      'Self-hosted open-weights inference runs at roughly 90% lower per-token cost than equivalent proprietary APIs',
+      'Self-hosted open-weights inference can run at substantially lower per-token cost than proprietary APIs, depending on utilization and workload',
       'Fine-tuning on domain data routinely outperforms generic frontier checkpoints, and open weights make this possible without vendor approval',
       'Evaluate with your own data, not only public leaderboards'
     ]
@@ -61,7 +61,7 @@ export const objections = [
     keyPoints: [
       'Per-token API costs grow linearly with traffic; GPU capacity costs can be capped with reserved instances or on-prem hardware',
       'PagedAttention reduces wasted GPU memory, fitting more concurrent users on each GPU <a href="#source-9">[9]</a>',
-      'Self-hosted open-weights inference runs at roughly 90% lower per-token cost than equivalent proprietary API pricing',
+      'Self-hosted open-weights inference can run at substantially lower per-token cost than proprietary API pricing, depending on utilization and workload',
       'Start with a pilot workload and compare your actual spend to current API bills'
     ]
   },

@@ -566,7 +566,7 @@
               <tbody>
                 <tr>
                   <td><strong><abbr data-tip="A draft source proposes tokens; the target model verifies with rejection sampling so outputs match the base distribution. You spend more forward passes to cut wall-clock decode when acceptance stays high.">Speculative Decoding</abbr></strong></td>
-                  <td><abbr data-tip="Early-exit speculative method that predicts draft tokens from intermediate hidden states instead of running a separate model.">EAGLE</abbr>, <abbr data-tip="Multi-Token Prediction. Trains or uses extra heads to propose several tokens at once for speculative verification.">MTP</abbr>, draft, n-gram, <abbr data-tip="Parallel Auto-Regressive Decoding. Generates multiple candidate continuations in parallel for verification.">PARD</abbr>, suffix, and MLP-style speculators</td>
+                  <td><abbr data-tip="Early-exit speculative method that predicts draft tokens from intermediate hidden states instead of running a separate model.">EAGLE</abbr>, <abbr data-tip="Multi-Token Prediction. Trains or uses extra heads to propose several tokens at once for speculative verification.">MTP</abbr>, draft, n-gram, <abbr data-tip="Parallel Draft Model. Generates multiple candidate continuations in parallel for verification.">PARD</abbr>, suffix, and MLP-style speculators</td>
                   <td>Lower wall-clock latency when acceptance rate is healthy</td>
                 </tr>
                 <tr>
@@ -687,7 +687,7 @@
             <svg width="48" height="48" fill="none" stroke="var(--green)" stroke-width="1.5"><use href="#icon-monitor"/></svg>
           </div>
           <h3>GPU Infrastructure</h3>
-          <p>Cloud GPU instances range from roughly $1&ndash;4 per GPU-hour on-demand (A100&ndash;H100 class); reserved or spot pricing can halve that. Self-hosting amortizes a fixed GPU cost across all requests rather than paying per token. <a href="#source-19">[19]</a></p>
+          <p>Cloud GPU pricing spans five generations today&mdash;from the still-common A100 through Blackwell Ultra (B300&thinsp;/&thinsp;GB300). Raw hourly cost is misleading; the metric that matters is <strong>effective cost per token = hourly rate &divide; (throughput &times; 3,600)</strong>. A more expensive GPU that doubles throughput delivers a lower per-token cost. The table below compares the landscape. <a href="#source-19">[19]</a></p>
         </div>
         <div class="problem-card">
           <div class="problem-icon">
@@ -703,6 +703,81 @@
           <h3>API Pricing at Scale</h3>
           <p>Per-token billing from cloud API providers adds up at high volume. When a self-hosted GPU achieves thousands of tokens per second, the effective cost per million tokens drops by orders of magnitude compared to API pricing. <a href="#source-19">[19]</a></p>
         </div>
+      </div>
+
+      <div class="feature-matrix-wrap reveal" style="margin-bottom: 36px;">
+        <h3 style="margin-bottom: 12px;">GPU Landscape for LLM Inference</h3>
+        <table class="feature-matrix">
+          <thead>
+            <tr>
+              <th>GPU</th>
+              <th><abbr data-tip="High-Bandwidth Memory per GPU.">HBM</abbr></th>
+              <th><abbr data-tip="Memory bandwidth per GPU.">BW</abbr></th>
+              <th>Cloud&thinsp;$/hr<br><small>(specialist&thinsp;&ndash;&thinsp;major)</small></th>
+              <th><abbr data-tip="Approximate relative decode throughput on a Llama-70B-class dense model vs. A100 baseline. Actual numbers depend on model, batch size, quantization, and vLLM tuning.">Relative tok/s</abbr></th>
+              <th><abbr data-tip="Estimated effective cost per million output tokens using midrange hourly pricing and typical throughput. Formula: $/hr &divide; (tok/s &times; 3,600) &times; 1M. Actuals vary with utilization and workload.">~$/M&thinsp;tokens</abbr></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>A100 80&thinsp;GB</strong></td>
+              <td>80&thinsp;GB HBM2e</td>
+              <td>2.0&thinsp;TB/s</td>
+              <td>$0.70&ndash;6</td>
+              <td>1&times;</td>
+              <td>~$0.28</td>
+            </tr>
+            <tr>
+              <td><strong>H100 SXM</strong></td>
+              <td>80&thinsp;GB HBM3</td>
+              <td>3.35&thinsp;TB/s</td>
+              <td>$1.30&ndash;12</td>
+              <td>~2&times;</td>
+              <td>~$0.19</td>
+            </tr>
+            <tr>
+              <td><strong>H200</strong></td>
+              <td>141&thinsp;GB HBM3e</td>
+              <td>4.8&thinsp;TB/s</td>
+              <td>$1.50&ndash;11</td>
+              <td>~2.5&ndash;3&times;</td>
+              <td>~$0.14</td>
+            </tr>
+            <tr>
+              <td><strong>B200</strong> <small>(Blackwell)</small></td>
+              <td>192&thinsp;GB HBM3e</td>
+              <td>8&thinsp;TB/s</td>
+              <td>$1.70&ndash;7</td>
+              <td>~4&ndash;5&times;</td>
+              <td>~$0.10</td>
+            </tr>
+            <tr>
+              <td><strong>B300</strong> <small>(Blackwell Ultra)</small></td>
+              <td>288&thinsp;GB HBM3e</td>
+              <td>8&thinsp;TB/s</td>
+              <td colspan="1">Preorder</td>
+              <td>~5&ndash;6&times;</td>
+              <td>&mdash;</td>
+            </tr>
+            <tr>
+              <td><strong>GB200 NVL72</strong> <small>(rack-scale)</small></td>
+              <td>192&thinsp;GB/GPU</td>
+              <td>NVLink&thinsp;72</td>
+              <td>$11&ndash;19/GPU</td>
+              <td colspan="2" style="text-align:center;"><em>See <a href="https://blog.vllm.ai/2026/02/03/dsr1-gb200-part1.html" target="_blank" rel="noopener noreferrer">vLLM GB200 blog</a></em></td>
+            </tr>
+            <tr>
+              <td><strong>GB300 NVL72</strong> <small>(rack-scale)</small></td>
+              <td>288&thinsp;GB/GPU</td>
+              <td>NVLink&thinsp;72</td>
+              <td>Preorder</td>
+              <td colspan="2" style="text-align:center;"><em>8&ndash;20&times; vs.&thinsp;Hopper on MoE&thinsp;+&thinsp;FP4 &mdash; <a href="https://blog.vllm.ai/2026/02/13/gb300-deepseek.html" target="_blank" rel="noopener noreferrer">vLLM GB300 blog</a></em></td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 10px;">
+          <strong>$/M&thinsp;tokens</strong> estimates assume midrange specialist-provider pricing and Llama-70B-class decode throughput. GB200&thinsp;/&thinsp;GB300 are rack-scale systems; per-GPU throughput benchmarks on DeepSeek MoE models with <abbr data-tip="NVIDIA FP4 quantization format. Halves weight memory vs. FP8 and leverages Blackwell's native FP4 Tensor Cores.">NVFP4</abbr> are from vLLM v0.14.1. Hourly rates span specialist providers (RunPod, Lambda, Verda) to major clouds (AWS, Azure, GCP); reserved and spot pricing can be significantly lower. Self-hosting amortizes a fixed GPU cost across all requests rather than paying per token. <a href="#source-19">[19]</a>
+        </p>
       </div>
 
       <div class="quickstart-banner reveal">
@@ -1127,7 +1202,7 @@ spec:
             </tr>
             <tr>
               <td><strong>Runtime LoRA adapters</strong></td>
-              <td><code>--lora-modules</code> at startup, plus <code>/v1/load_lora_adapter</code> and <code>/v1/unload_lora_adapter</code> at runtime</td>
+              <td><code>--lora-modules</code> at startup, plus <code>/v1/load_lora_adapter</code> and <code>/v1/unload_lora_adapter</code> at runtime (requires <code>VLLM_ALLOW_RUNTIME_LORA_UPDATING=1</code>)</td>
               <td>Share one base model across fine-tuned variants; adapter count limited by <code>--max-loras</code> and GPU memory</td>
             </tr>
             <tr>
@@ -1389,7 +1464,7 @@ spec:
       <div class="section-header reveal">
         <span class="section-num">08</span>
         <h2>Production Hardening <span class="section-tier tier-2">Ops focus</span></h2>
-        <p class="section-lead">A pre-production checklist drawn from vLLM&rsquo;s <a href="https://docs.vllm.ai/en/latest/security/" target="_blank" rel="noopener noreferrer">security guide</a>, official Kubernetes examples, and source code. <a href="#source-28">[28]</a></p>
+        <p class="section-lead">A pre-production checklist drawn from vLLM&rsquo;s <a href="https://docs.vllm.ai/en/latest/usage/security.html" target="_blank" rel="noopener noreferrer">security guide</a>, official Kubernetes examples, and source code. <a href="#source-28">[28]</a></p>
       </div>
 
       <details class="plain-english reveal">
@@ -1412,7 +1487,7 @@ spec:
           <tbody>
             <tr>
               <td><strong>Deploy behind a reverse proxy</strong></td>
-              <td><code>--api-key</code> only protects <code>/v1</code> endpoints. Endpoints like <code>/invocations</code>, <code>/pause</code>, <code>/resume</code>, and <code>/pooling</code> are <strong>unprotected</strong>. The security guide states: &ldquo;The most effective approach is to deploy vLLM behind a reverse proxy.&rdquo; <a href="#source-20">[20]</a></td>
+              <td><code>--api-key</code> only protects <code>/v1</code> endpoints. Endpoints like <code>/invocations</code> and <code>/pooling</code> are <strong>unprotected</strong>; <code>/pause</code> and <code>/resume</code> are also unprotected but only exist when <code>VLLM_SERVER_DEV_MODE=1</code> is set. The security guide states: &ldquo;The most effective approach is to deploy vLLM behind a reverse proxy.&rdquo; <a href="#source-20">[20]</a></td>
               <td>nginx, Envoy, or a Kubernetes Gateway that allowlists only the endpoints you need and adds rate limiting</td>
             </tr>
             <tr>
@@ -2102,7 +2177,7 @@ engine_core_outputs = self.scheduler.update_from_output(
             </button>
             <div class="comp-card-body">
               <div>
-                <p>Abstracts how scheduled work reaches GPU workers. <code>ParallelConfig</code> defaults to <strong>UniProc</strong> when <code>world_size == 1</code> and to <strong>Multiproc</strong> (<code>mp</code>) for typical multi-GPU setups; <strong><abbr data-tip="Distributed runtime vLLM can use for multi-node runs when you pick the Ray executor backend.">Ray</abbr></strong> is selected when you set <code>distributed_executor_backend=&quot;ray&quot;</code> or when Ray placement groups or certain data-parallel paths apply. All implementations still expose the same <code>execute_model</code> surface to the engine core.</p>
+                <p>Abstracts how scheduled work reaches GPU workers. <code>ParallelConfig</code> defaults to <strong>UniProc</strong> when <code>world_size == 1</code> and to <strong>Multiproc</strong> (<code>mp</code>) for typical multi-GPU setups; <strong><abbr data-tip="Distributed runtime vLLM uses for multi-node runs, selected explicitly or auto-detected.">Ray</abbr></strong> is selected when you set <code>distributed_executor_backend=&quot;ray&quot;</code>, or auto-detected when Ray placement groups are active, <code>data_parallel_backend</code> is <code>&quot;ray&quot;</code>, or Ray is already initialized. All implementations still expose the same <code>execute_model</code> surface to the engine core.</p>
                 <p class="comp-card-why"><strong>Why it matters:</strong> <code>EngineCore.step()</code> stays the same; changing parallelism swaps the executor implementation behind <code>model_executor</code>.</p>
                 <code class="code-path">vllm/v1/executor/</code>
               </div>
@@ -2304,7 +2379,7 @@ engine_core_outputs = self.scheduler.update_from_output(
         <p>The test dataset is the most overlooked tuning variable. Synthetic or toy prompts lead to misleading conclusions because vLLM performance depends on incoming request shapes and arrival patterns. <a href="#source-21">[21]</a></p>
         <ul class="benchmark-list" style="margin-top: 14px;">
           <li>Build test datasets that match your production input/output token distributions, prompt variability, and repeated text patterns (vLLM optimizes recurring prefixes).</li>
-          <li>Use <a href="https://github.com/neuralmagic/guidellm" target="_blank" rel="noopener noreferrer">GuideLLM</a> to move from synthetic load testing to production reality: configurable request shapes, varying concurrency patterns, and captured TTFT / ITL / throughput metrics. <a href="#source-21">[21]</a></li>
+          <li>Use <a href="https://github.com/vllm-project/guidellm" target="_blank" rel="noopener noreferrer">GuideLLM</a> to move from synthetic load testing to production reality: configurable request shapes, varying concurrency patterns, and captured TTFT / ITL / throughput metrics. <a href="#source-21">[21]</a></li>
           <li>Define P95 and P99 targets for TTFT and ITL before tuning, then sweep concurrency to find where those targets break. Adjust one lever at a time and re-measure.</li>
         </ul>
       </div>
@@ -2459,7 +2534,7 @@ curl http://localhost:8000/v1/models</code></pre>
             <span>Production Metrics</span>
             <small>vLLM Prometheus metrics reference</small>
           </a>
-          <a href="https://docs.vllm.ai/en/latest/security/" target="_blank" rel="noopener noreferrer" class="link-card">
+          <a href="https://docs.vllm.ai/en/latest/usage/security.html" target="_blank" rel="noopener noreferrer" class="link-card">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#icon-shield"/></svg>
             <span>Security Guide</span>
             <small>Endpoints, FIPS, SSRF, hardening</small>
@@ -2507,7 +2582,7 @@ curl http://localhost:8000/v1/models</code></pre>
           <li id="source-25">vLLM Docs, <a href="https://docs.vllm.ai/en/latest/usage/metrics.html" target="_blank" rel="noopener noreferrer">Production Metrics</a> (Prometheus metric names, types, and descriptions for all vLLM gauges, counters, and histograms).</li>
           <li id="source-26">vLLM Docs, <a href="https://docs.vllm.ai/en/latest/examples/online_serving/prometheus_grafana.html" target="_blank" rel="noopener noreferrer">Prometheus and Grafana</a> (Docker Compose setup, Prometheus scraping, Grafana dashboard example).</li>
           <li id="source-27">vLLM Docs, <a href="https://docs.vllm.ai/en/latest/examples/online_serving/dashboards/" target="_blank" rel="noopener noreferrer">Monitoring Dashboards</a> (pre-built Grafana dashboards for vLLM).</li>
-          <li id="source-28">vLLM Docs, <a href="https://docs.vllm.ai/en/latest/security/" target="_blank" rel="noopener noreferrer">Security</a> (inter-node communication, API key limitations, protected vs. unprotected endpoints, FIPS, SSRF, reverse proxy recommendations).</li>
+          <li id="source-28">vLLM Docs, <a href="https://docs.vllm.ai/en/latest/usage/security.html" target="_blank" rel="noopener noreferrer">Security</a> (inter-node communication, API key limitations, protected vs. unprotected endpoints, FIPS, SSRF, reverse proxy recommendations).</li>
           <li id="source-29">vLLM Project, <a href="https://blog.vllm.ai/2025/12/13/vllm-router-release.html" target="_blank" rel="noopener noreferrer">vLLM Router: A High-Performance and Prefill/Decode Aware Load Balancer</a> (consistent hashing, K8s service discovery, circuit breakers).</li>
           <li id="source-30">Red Hat Developer, <a href="https://developers.redhat.com/articles/2026/01/13/accelerate-multi-turn-workloads-llm-d" target="_blank" rel="noopener noreferrer">Accelerate multi-turn LLM workloads on OpenShift AI with llm-d intelligent routing</a> (KV-cache-aware routing for multi-replica vLLM).</li>
         </ol>
