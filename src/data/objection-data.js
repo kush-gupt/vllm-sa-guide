@@ -68,10 +68,10 @@ export const objections = [
   {
     id: 'security-regulated',
     objection: 'Is this secure enough for regulated data?',
-    response: 'Self-hosted vLLM keeps all prompts and responses on your infrastructure\u2014nothing leaves your network perimeter. The <a href="#hardening">Production Hardening</a> section has the full security and resilience checklist covering reverse proxy, network isolation, FIPS, SSRF, and more.<a href="#source-20">[20]</a>',
+    response: 'Self-hosted vLLM keeps all prompts and responses on your infrastructure\u2014nothing leaves your network perimeter. The <a href="#hardening">Production Hardening</a> section has the full security and resilience checklist covering reverse proxy, network isolation, FIPS, SSRF, and more.<a href="#source-28">[28]</a>',
     keyPoints: [
       'Data sovereignty: prompts and completions never leave your environment when self-hosted',
-      'Full security checklist in the <a href="#hardening">Production Hardening</a> section <a href="#source-20">[20]</a>',
+      'Full security checklist in the <a href="#hardening">Production Hardening</a> section <a href="#source-28">[28]</a>',
       'FIPS-friendly hashing options available for multimodal content <a href="#source-10">[10]</a>',
       'Vendor-certified images (e.g. Red Hat AI Inference Server) provide enterprise vulnerability management and patching'
     ]

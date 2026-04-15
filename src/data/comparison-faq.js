@@ -24,12 +24,12 @@ export const comparisonFaq = [
   {
     id: 'sglang',
     question: 'SGLang benchmarks look faster — should we switch?',
-    response: 'SGLang uses RadixAttention for token-level prefix caching, showing ~29% higher throughput on 8B-class models on H100 GPUs. At 70B+ scale the gap narrows to 3\u20135%. vLLM\'s PagedAttention trades some prefix-heavy throughput for broader hardware support (NVIDIA, AMD, Intel, TPU, Gaudi, Trainium), five parallelism modes (TP, PP, DP, EP, CP), and the largest open-source LLM-serving contributor base.<a href="#source-10">[10]</a><a href="#source-18">[18]</a>',
+    response: 'SGLang uses RadixAttention for token-level prefix caching and shows lower latency at low concurrency; vLLM scales to higher peak throughput under production-level concurrency and handles long contexts more efficiently. Performance depends on concurrency, model size, and context length\u2014both engines improve rapidly across releases. vLLM\'s broader accelerator ecosystem (NVIDIA, AMD, Intel, TPU, Gaudi, Trainium, Inferentia, Spyre, Metal), five parallelism modes (TP, PP, DP, EP, CP), and the largest open-source LLM-serving contributor base differentiate at production scale.<a href="#source-10">[10]</a>',
     keyPoints: [
-      'Runs on NVIDIA, AMD, Intel, TPU, Gaudi, and AWS Trainium; SGLang targets NVIDIA and AMD <a href="#source-10">[10]</a>',
+      'Broader accelerator ecosystem: both support NVIDIA, AMD, TPU, and Ascend NPU; vLLM adds Trainium, Inferentia, Spyre, and Metal plugins with no SGLang equivalent <a href="#source-10">[10]</a>',
       'Five parallelism modes (TP, PP, DP, EP, CP) for large-model multi-node deployments <a href="#source-12">[12]</a>',
       'Mature Kubernetes docs, Helm charts, and KServe integration for production ops <a href="#source-16">[16]</a>',
-      'Both support speculative decoding, disaggregated prefill, and structured outputs; SGLang\'s overlapped grammar masking adds less overhead at high batch sizes <a href="#source-18">[18]</a>'
+      'Both support speculative decoding, disaggregated prefill, and structured outputs'
     ]
   },
   {
@@ -45,11 +45,11 @@ export const comparisonFaq = [
   {
     id: 'enterprise-support',
     question: 'We need enterprise support',
-    response: 'vLLM has multiple enterprise support options. The community publishes container images with vulnerability management, FIPS-aware crypto paths (configurable multimodal hashing, TLS cipher control, FIPS-tolerant internal hashing), and hardening guidance. Production deployments need a reverse proxy, network segmentation, and secrets management around the engine. Vendors like Red Hat ship certified images, support contracts, and production accountability on top of the open-source project.<a href="#source-10">[10]</a> <a href="#source-20">[20]</a>',
+    response: 'vLLM has multiple enterprise support options. The community publishes container images with vulnerability management, FIPS-aware crypto paths (configurable multimodal hashing, TLS cipher control, FIPS-tolerant internal hashing), and hardening guidance. Production deployments need a reverse proxy, network segmentation, and secrets management around the engine. Vendors like Red Hat ship certified images, support contracts, and production accountability on top of the open-source project.<a href="#source-10">[10]</a> <a href="#source-28">[28]</a>',
     keyPoints: [
       'Community container images with vulnerability management; vendor-certified images available (e.g. Red Hat AI Inference Server)',
       'FIPS support: SHA-256/512 multimodal hashing, <code>--ssl-ciphers</code> for TLS, <code>usedforsecurity=False</code> on internal MD5 for FIPS-enabled hosts <a href="#source-10">[10]</a>',
-      'Reverse proxy with endpoint allowlisting required; <code>--api-key</code> alone does not secure all endpoints <a href="#source-20">[20]</a>',
+      'Reverse proxy with endpoint allowlisting required; <code>--api-key</code> alone does not secure all endpoints <a href="#source-28">[28]</a>',
       'Dedicated support contacts for production issues'
     ]
   },
