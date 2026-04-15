@@ -3,9 +3,9 @@ export const objections = [
     id: 'openai',
     objection: 'We already use Cloud APIs',
     response:
-      'Commercial APIs publish per-token pricing. Self-hosted vLLM changes that cost model: you pay for GPU capacity and operations you control, while keeping an OpenAI-compatible serving surface and choosing your own open-weight models.<a href="#source-31">[31]</a> <a href="#source-10">[10]</a>',
+      'Commercial APIs publish per-token pricing. Self-hosted vLLM changes that cost model: you pay for capacity and operations you control while keeping an OpenAI-compatible serving surface and choosing your own open-weight models.<a href="#source-31">[31]</a> <a href="#source-10">[10]</a>',
     keyPoints: [
-      'OpenAI-compatible server: existing clients often only need a base URL and served model name change <a href="#source-10">[10]</a>',
+      'OpenAI-compatible server: many existing clients only need a base URL and model-name change <a href="#source-7">[7]</a>',
       'Inference traffic can stay on infrastructure you control when you self-host; secure it with the reverse-proxy and network-isolation guidance in the security docs <a href="#source-28">[28]</a>',
       'Capacity cost, utilization, and operational overhead replace per-token provider billing in the cost model <a href="#source-21">[21]</a> <a href="#source-31">[31]</a>',
       'Supported-model coverage stays under your team\'s control rather than the provider catalog <a href="#source-14">[14]</a>',
@@ -15,10 +15,10 @@ export const objections = [
     id: 'gpu-expertise',
     objection: "We don't have GPU expertise",
     response:
-      'KServe documents running vLLM on Kubernetes through its Hugging Face serving runtime or through LLMInferenceService, so platform teams can reuse familiar rollouts, autoscaling, and traffic controls. Red Hat also documents vLLM-based deployment paths on OpenShift AI and related tooling for packaging and benchmarking.<a href="#source-16">[16]</a> <a href="#source-24">[24]</a>',
+      'KServe documents running vLLM on Kubernetes through its Hugging Face serving runtime or through LLMInferenceService, so platform teams can reuse familiar rollouts, autoscaling, and traffic controls. Red Hat also documents vLLM-based deployment paths on OpenShift AI plus packaging and benchmarking workflows around that stack.<a href="#source-16">[16]</a> <a href="#source-24">[24]</a>',
     keyPoints: [
       'KServe supports vLLM through the Hugging Face serving runtime and through LLMInferenceService <a href="#source-16">[16]</a>',
-      'Standard Kubernetes patterns for autoscaling, routing, and health probes still apply to the serving workload',
+      'Standard Kubernetes patterns for autoscaling, routing, and health probes still apply to the serving workload <a href="#source-16">[16]</a>',
       'OpenShift AI docs show packaging, deployment, and benchmarking workflows built around vLLM <a href="#source-24">[24]</a>',
     ]
   },
@@ -26,7 +26,7 @@ export const objections = [
     id: 'enterprise-support',
     objection: 'We need enterprise support',
     response:
-      'vLLM publishes security guidance for reverse proxies, network isolation, API-key limitations, and SSRF controls. Enterprise offerings come from vendors building on the project, including Red Hat AI Inference Server and OpenShift AI deployment workflows.<a href="#source-28">[28]</a> <a href="#source-24">[24]</a>',
+      'vLLM publishes security guidance for reverse proxies, network isolation, API-key limitations, and SSRF controls. Commercial support usually comes from vendors building on the upstream project; Red Hat documents one such path through OpenShift AI workflows around vLLM-based serving.<a href="#source-28">[28]</a> <a href="#source-24">[24]</a>',
     keyPoints: [
       'Do not rely on <code>--api-key</code> alone; the security guide explicitly recommends a reverse proxy and endpoint allowlisting <a href="#source-28">[28]</a>',
       'Network isolation and media-domain controls are part of the documented production hardening guidance <a href="#source-28">[28]</a>',
@@ -51,7 +51,7 @@ export const objections = [
     id: 'already-using',
     objection: "We're already using TGI / TensorRT-LLM",
     response:
-      'Hugging Face documents TGI as maintenance mode and recommends vLLM, SGLang, llama.cpp, or MLX for new engine work. TensorRT-LLM remains a strong NVIDIA-specific option. Teams usually pick vLLM when they want OpenAI-compatible serving, broad hardware coverage, and documented parallelism/disaggregation paths.<a href="#source-20">[20]</a> <a href="#source-10">[10]</a> <a href="#source-12">[12]</a>',
+      'Hugging Face now documents TGI as maintenance mode and recommends engines such as vLLM or SGLang for new inference-stack work. TensorRT-LLM remains a strong NVIDIA-specific option. Teams usually pick vLLM when they want OpenAI-compatible serving, broad model and hardware coverage, or official docs for parallelism and disaggregated prefill.<a href="#source-20">[20]</a> <a href="#source-10">[10]</a> <a href="#source-12">[12]</a> <a href="#source-2">[2]</a>',
     keyPoints: [
       'TGI is in maintenance mode and points users to newer engines including vLLM <a href="#source-20">[20]</a>',
       'TensorRT-LLM is specialized for NVIDIA deployments <a href="#source-3">[3]</a>',
@@ -87,11 +87,11 @@ export const objections = [
     id: 'time-to-deploy',
     objection: 'How long does it take to get running?',
     response:
-      'A local proof of concept can start with <code>vllm serve &lt;model&gt;</code>, and the official docs cover the path into Kubernetes-based deployments with KServe. The <a href="#adoption">Adoption Playbook</a> maps that progression into POC, pilot, and production phases.<a href="#source-10">[10]</a> <a href="#source-16">[16]</a>',
+      'A local proof of concept can start with <code>vllm serve &lt;model&gt;</code>, and the official docs cover the path into Kubernetes-based deployments with KServe. The <a href="#adoption">Adoption Playbook</a> maps that progression into POC, pilot, and production phases.<a href="#source-7">[7]</a> <a href="#source-16">[16]</a>',
     keyPoints: [
-      'Local: <code>vllm serve &lt;model&gt;</code> starts an OpenAI-compatible API server for initial evaluation <a href="#source-10">[10]</a>',
+      'Local: <code>vllm serve &lt;model&gt;</code> starts an OpenAI-compatible API server for initial evaluation <a href="#source-7">[7]</a>',
       'Kubernetes: KServe integration docs cover vLLM-based deployment patterns <a href="#source-16">[16]</a>',
-      'OpenAI-compatible serving means many clients only need a base URL and model-name change <a href="#source-10">[10]</a>',
+      'OpenAI-compatible serving means many clients only need a base URL and model-name change <a href="#source-7">[7]</a>',
       'Full phased rollout plan in the <a href="#adoption">Adoption Playbook</a>',
     ]
   },

@@ -38,11 +38,11 @@ export function init() {
 
     if (formulaEl) {
       const parts = [
-        `API\u00a0Servers = DP (${dp})`,
+        `API\u00a0Servers\u00a0(default) = DP (${dp})`,
         `Engine\u00a0Cores = DP (${dp})`,
         `GPU\u00a0Workers = TP\u00d7PP\u00d7DP (${tp}\u00d7${pp}\u00d7${dp} = ${workers})`,
       ];
-      if (hasCoord) parts.push('Coordinator = 1');
+      if (hasCoord) parts.push('DP\u00a0Coordinator = 1');
       formulaEl.innerHTML = parts
         .map(p => `<span class="formula-chip">${p}</span>`)
         .join('');
@@ -63,22 +63,22 @@ export function init() {
         const dpCont = isLastDP ? ' ' : '\u2502';
 
         lines.push(line(0, dpPrefix, `API Server ${d + 1}`, 'api'));
-        lines.push(line(1, '\u2514', `EngineCore_DP${d}`, 'engine', dpCont));
+        lines.push(line(1, '\u2514', `Engine Core DP${d}`, 'engine', dpCont));
         for (let w = 0; w < workersPerEngine; w++) {
           const wPrefix = w === workersPerEngine - 1 ? '\u2514' : '\u251c';
           const rank = d * workersPerEngine + w;
-          lines.push(line(2, wPrefix, `VllmWorker-${rank}`, 'worker', dpCont, ' '));
+          lines.push(line(2, wPrefix, `vLLM Worker ${rank}`, 'worker', dpCont, ' '));
         }
       }
       if (hasCoord) {
-        lines.push(line(0, '\u2514', 'DPCoordinator', 'coord'));
+        lines.push(line(0, '\u2514', 'DP Coordinator', 'coord'));
       }
     } else {
       lines.push(line(0, null, 'API Server', 'api'));
-      lines.push(line(0, '\u2514', 'EngineCore', 'engine'));
+      lines.push(line(0, '\u2514', 'Engine Core', 'engine'));
       for (let w = 0; w < workersPerEngine; w++) {
         const wPrefix = w === workersPerEngine - 1 ? '\u2514' : '\u251c';
-        lines.push(line(1, wPrefix, `VllmWorker-${w}`, 'worker', ' '));
+        lines.push(line(1, wPrefix, `vLLM Worker ${w}`, 'worker', ' '));
       }
     }
 

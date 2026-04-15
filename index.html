@@ -140,7 +140,7 @@
       </div>
       <a href="#reading-paths" class="hero-cta">Explore Modern Serving <span class="cta-arrow">&darr;</span></a>
       <p class="hero-footnote">
-        Source snapshot: public docs and engineering posts reviewed in April 2026.
+        Source snapshot: official docs and engineering posts reviewed in April 2026.
         <a href="#source-1">[1]</a>
         <a href="#source-2">[2]</a>
         <a href="#source-3">[3]</a>
@@ -285,7 +285,7 @@
           <h3>vLLM at a Glance</h3>
         </div>
         <div class="quickstart-body">
-          <p class="quickstart-pitch">vLLM is an <strong>open-source engine for fast, cost-effective AI inference at scale</strong>. <strong><abbr data-tip="vLLM maps logical KV blocks to GPU pages as sequences grow, like virtual memory. That cuts reserved-but-empty space versus one contiguous buffer per request.">PagedAttention</abbr></strong> tightens KV memory use. <a href="#source-9">[9]</a> <strong><abbr data-tip="The scheduler admits and finishes requests every iteration instead of waiting for a fixed batch to empty.">Continuous batching</abbr></strong> keeps accelerators busy under mixed load. The runtime also ships <abbr data-tip="Reuses KV blocks when different prompts share an opening token sequence.">prefix caching</abbr>, structured and multimodal paths, multi-GPU <abbr data-tip="Spreads tensors or layers across GPUs so one deployment fits a larger model or more load.">parallelism</abbr>, and production-oriented APIs. <a href="#source-10">[10]</a></p>
+          <p class="quickstart-pitch">vLLM is an <strong>open-source inference and serving engine for high-throughput, memory-efficient LLM workloads</strong>. <strong><abbr data-tip="vLLM maps logical KV blocks to GPU pages as sequences grow, like virtual memory. That cuts reserved-but-empty space versus one contiguous buffer per request.">PagedAttention</abbr></strong> tightens KV memory use. <a href="#source-9">[9]</a> <strong><abbr data-tip="The scheduler admits and finishes requests every iteration instead of waiting for a fixed batch to empty.">Continuous batching</abbr></strong> keeps accelerators busy under mixed load. The runtime also ships <abbr data-tip="Reuses KV blocks when different prompts share an opening token sequence.">prefix caching</abbr>, structured-output support, multimodal model support, multi-GPU <abbr data-tip="Spreads tensors or layers across GPUs so one deployment fits a larger model or more load.">parallelism</abbr>, and OpenAI-compatible serving. <a href="#source-13">[13]</a> <a href="#source-15">[15]</a> <a href="#source-14">[14]</a> <a href="#source-12">[12]</a> <a href="#source-7">[7]</a></p>
 
           <div class="quickstart-pillars">
             <div class="quickstart-card">
@@ -293,14 +293,14 @@
                 <svg width="36" height="36" fill="none" stroke="var(--green)" stroke-width="1.5"><use href="#icon-bolt"/></svg>
               </div>
               <h3>Faster Responses</h3>
-              <p>Users see the first word sooner and the reply streams without stalling.</p>
+              <p>Targets lower TTFT and steadier streaming by reducing KV waste and prioritizing decode work under mixed load. <a href="#source-9">[9]</a> <a href="#source-8">[8]</a></p>
             </div>
             <div class="quickstart-card">
               <div class="quickstart-card-icon">
                 <svg width="36" height="36" fill="none" stroke="var(--green)" stroke-width="1.5"><use href="#icon-monitor"/></svg>
               </div>
               <h3>More Users, Same Hardware</h3>
-              <p>PagedAttention and continuous batching serve more concurrent requests from the same GPU budget, which can mean the same traffic on fewer GPUs. <a href="#source-9">[9]</a></p>
+              <p>PagedAttention and continuous batching increase useful work per GPU by reducing KV waste and keeping batches moving under uneven traffic. <a href="#source-9">[9]</a> <a href="#source-17">[17]</a></p>
             </div>
             <div class="quickstart-card">
               <div class="quickstart-card-icon">
@@ -319,20 +319,20 @@
             <h4>Why teams switch to self-hosted inference</h4>
             <div class="biz-outcomes-grid">
               <div class="biz-outcome">
-                <strong>Lower GPU spend</strong>
-                <span>Serve the same traffic on fewer GPUs, or grow traffic without buying more.</span>
+                <strong>Potentially lower cost per output</strong>
+                <span>When utilization is high, higher throughput per GPU can improve cost per token or cost per request. <a href="#source-21">[21]</a> <a href="#source-23">[23]</a></span>
               </div>
               <div class="biz-outcome">
-                <strong>Data stays yours</strong>
-                <span>Self-hosted inference lets prompts and responses stay on infrastructure you control.</span>
+                <strong>Deployment control</strong>
+                <span>Self-hosting keeps prompts and responses on infrastructure you operate, subject to your own network and storage controls. <a href="#source-28">[28]</a></span>
               </div>
               <div class="biz-outcome">
-                <strong>No per-token billing</strong>
-                <span>Self-hosted costs are driven mainly by capacity and utilization rather than per-request token metering.</span>
+                <strong>Capacity-based cost model</strong>
+                <span>Self-hosted costs are driven mainly by the capacity you provision and the utilization you achieve, not a provider's per-token meter. <a href="#source-31">[31]</a> <a href="#source-21">[21]</a></span>
               </div>
               <div class="biz-outcome">
-                <strong>Vendor flexibility</strong>
-                <span>Swap models or hardware without rewriting integrations.</span>
+                <strong>Model and hardware flexibility</strong>
+                <span>One serving layer can cover many supported open-weight model families and multiple documented hardware backends. <a href="#source-14">[14]</a> <a href="#source-10">[10]</a></span>
               </div>
             </div>
           </div>
@@ -397,7 +397,7 @@
         <div class="landscape-grid">
           <div class="landscape-card landscape-vllm">
             <h4>vLLM</h4>
-            <p>Open-source serving engine focused on high-<abbr data-tip="Output tokens per second summed across all in-flight requests. Use it to size batch-scale capacity.">throughput</abbr> inference, broad model support, OpenAI-compatible APIs, and features such as PagedAttention, unified scheduling, and prefix caching. <a href="#source-10">[10]</a></p>
+            <p>Open-source serving engine focused on high-<abbr data-tip="Output tokens per second summed across all in-flight requests. Use it to size batch-scale capacity.">throughput</abbr> inference, broad model support, OpenAI-compatible APIs, and features such as PagedAttention, unified scheduling, and prefix caching. <a href="#source-10">[10]</a> <a href="#source-14">[14]</a> <a href="#source-13">[13]</a></p>
           </div>
           <div class="landscape-card">
             <h4><abbr data-tip="Text Generation Inference, Hugging Face's stack for serving text generation models.">TGI</abbr></h4>
@@ -453,7 +453,7 @@
       <div class="section-header reveal">
         <span class="section-num">03</span>
         <h2>What vLLM Can Do <span class="section-tier tier-1">Start here</span></h2>
-        <p class="section-lead">The supported-models documentation lists 200+ native architectures, alongside pooling and multimodal stacks, for chat, code, vision, audio, and <abbr data-tip="Maps text to dense vectors for similarity search and ranking.">embedding</abbr> workloads. <a href="#source-14">[14]</a> What follows is a concise feature matrix and hardware map for serving.</p>
+        <p class="section-lead">The supported-models documentation covers native text, multimodal, and pooling architectures for chat, code, vision, audio, <abbr data-tip="Maps text to dense vectors for similarity search and ranking.">embedding</abbr>, scoring, and retrieval workloads. <a href="#source-14">[14]</a> What follows is a concise feature matrix and hardware map for serving.</p>
       </div>
 
       <div class="model-coverage reveal">
@@ -515,19 +515,19 @@
             <tbody>
               <tr>
                 <td><strong><abbr data-tip="Stores weights in fewer bits (e.g. 16 to 8 or 4) to cut memory and often lift throughput.">Quantization</abbr></strong></td>
-                <td><abbr data-tip="Post-training weight quantization fit with calibration data to a target bit width.">GPTQ</abbr>, <abbr data-tip="Activation-aware Weight Quantization scales or protects weights that matter most under real activations.">AWQ</abbr>, <abbr data-tip="8-bit floating point for weights or activations; about half the memory of FP16 with small accuracy drift in many models.">FP8</abbr>, <abbr data-tip="PyTorch library for 4-bit and 8-bit weights with small code changes, aimed at memory savings.">BitsAndBytes</abbr>, <abbr data-tip="Binary file format for quantized weights, used by llama.cpp and compatible runtimes.">GGUF</abbr>, <abbr data-tip="PyTorch toolkit for post-training quantization and sparsity.">TorchAO</abbr>, and more <a href="#source-10">[10]</a></td>
+                <td><abbr data-tip="Post-training weight quantization fit with calibration data to a target bit width.">GPTQ</abbr>, <abbr data-tip="Activation-aware Weight Quantization scales or protects weights that matter most under real activations.">AWQ</abbr>, <abbr data-tip="8-bit floating point for weights or activations; about half the memory of FP16 with small accuracy drift in many models.">FP8</abbr>, <abbr data-tip="PyTorch library for 4-bit and 8-bit weights with small code changes, aimed at memory savings.">BitsAndBytes</abbr>, <abbr data-tip="Binary file format for quantized weights, used by llama.cpp and compatible runtimes.">GGUF</abbr>, <abbr data-tip="PyTorch toolkit for post-training quantization and sparsity.">TorchAO</abbr>, and related schemes are documented in the project and surrounding vllm-project materials <a href="#source-10">[10]</a></td>
                 <td>Run larger models on fewer GPUs</td>
                 <td class="col-plain">Run the same model on less expensive hardware</td>
               </tr>
               <tr>
                 <td><strong><abbr data-tip="Low-Rank Adaptation adds small trainable adapter matrices; swap them without rewriting base weights.">LoRA</abbr> Adapters</strong></td>
-                <td>Runtime loading/unloading of LoRA weights</td>
+                <td>Runtime loading and unloading of LoRA weights <a href="#source-32">[32]</a></td>
                 <td>Serve many fine-tuned variants from one base</td>
                 <td class="col-plain">One deployment serves multiple customized models</td>
               </tr>
               <tr>
                 <td><strong>Structured Output</strong></td>
-                <td>JSON schema constraints and regex or grammar guards</td>
+                <td>JSON schema constraints plus regex, choice, grammar, and structural-tag guards <a href="#source-15">[15]</a> <a href="#source-6">[6]</a></td>
                 <td>Safer integration with tools and downstream systems</td>
                 <td class="col-plain">The model's output is constrained to a format your code can parse</td>
               </tr>
@@ -539,13 +539,13 @@
               </tr>
               <tr>
                 <td><strong>Multimodal</strong></td>
-                <td>Vision-language and audio-capable models</td>
+                <td>Vision-language and audio-capable models <a href="#source-14">[14]</a></td>
                 <td>Multimodal and text paths in one serving stack</td>
                 <td class="col-plain">Process images, audio, and text with the same server</td>
               </tr>
               <tr>
                 <td><strong><abbr data-tip="Captures a GPU kernel sequence once and replays it to skip repeated CPU launch work each step.">CUDA Graphs</abbr></strong></td>
-                <td>Captured execution graphs for repeat decode shapes</td>
+                <td>Captured execution graphs for repeat decode shapes and other stable execution paths <a href="#source-10">[10]</a></td>
                 <td>Lower per-step launch overhead on stable workloads</td>
                 <td class="col-plain">Faster responses on steady, predictable traffic</td>
               </tr>
@@ -566,12 +566,12 @@
               <tbody>
                 <tr>
                   <td><strong><abbr data-tip="A draft source proposes tokens; the target model verifies with rejection sampling so outputs match the base distribution. You spend more forward passes to cut wall-clock decode when acceptance stays high.">Speculative Decoding</abbr></strong></td>
-                  <td><abbr data-tip="Early-exit speculative method that predicts draft tokens from intermediate hidden states instead of running a separate model.">EAGLE</abbr>, <abbr data-tip="Multi-Token Prediction. Trains or uses extra heads to propose several tokens at once for speculative verification.">MTP</abbr>, draft, n-gram, <abbr data-tip="Parallel Draft Model. Generates multiple candidate continuations in parallel for verification.">PARD</abbr>, suffix, and MLP-style speculators</td>
+                  <td><abbr data-tip="Early-exit speculative method that predicts draft tokens from intermediate hidden states instead of running a separate model.">EAGLE</abbr>, <abbr data-tip="Multi-Token Prediction. Trains or uses extra heads to propose several tokens at once for speculative verification.">MTP</abbr>, draft, n-gram, <abbr data-tip="Parallel Draft Model. Generates multiple candidate continuations in parallel for verification.">PARD</abbr>, suffix, and MLP-style speculators <a href="#source-34">[34]</a></td>
                   <td>Lower wall-clock latency when acceptance rate is healthy</td>
                 </tr>
                 <tr>
                   <td><strong>Expert / MoE Support</strong></td>
-                  <td>Serve sparse MoE architectures such as Mixtral and DeepSeek families</td>
+                  <td>Serve sparse MoE architectures such as Mixtral and DeepSeek families <a href="#source-14">[14]</a> <a href="#source-12">[12]</a></td>
                   <td>Use hardware more efficiently for large sparse models</td>
                 </tr>
                 <tr>
@@ -815,7 +815,7 @@
       </div>
 
       <div class="exec-summary reveal">
-        <p><strong>You can start with <code>vllm serve &lt;model&gt;</code> for local evaluation and then move into Kubernetes-based deployment patterns documented by vLLM and KServe.</strong> Three phases, each with concrete exit criteria, take you from a single-GPU proof of concept to production. <a href="#source-10">[10]</a> <a href="#source-16">[16]</a></p>
+        <p><strong>You can start with <code>vllm serve &lt;model&gt;</code> for local evaluation and then move into Kubernetes-based deployment patterns documented by vLLM and KServe.</strong> Three phases, each with concrete exit criteria, take you from a single-GPU proof of concept to production. <a href="#source-7">[7]</a> <a href="#source-16">[16]</a></p>
       </div>
 
       <div class="problem-grid reveal stagger-children">
@@ -951,8 +951,8 @@
         <ul>
           <li><strong>Latency SLOs:</strong> TTFT &lt; X ms, ITL &lt; Y ms, measured via <code>vllm:time_to_first_token_seconds</code> and <code>vllm:inter_token_latency_seconds</code> Prometheus histograms <a href="#source-25">[25]</a></li>
           <li><strong>Cost reduction:</strong> tokens/sec per infrastructure dollar, compared against published API pricing. Measured via GuideLLM throughput benchmarks <a href="#source-21">[21]</a> <a href="#source-31">[31]</a></li>
-          <li><strong>Uptime:</strong> <code>/health</code> endpoint availability meets your target, paired with platform probes and alerting</li>
-          <li><strong>Operational readiness:</strong> Monitoring dashboards active, on-call runbook documented, graceful shutdown tested (<code>--shutdown-timeout</code>) <a href="#source-22">[22]</a></li>
+          <li><strong>Uptime:</strong> <code>/health</code> endpoint availability meets your target, paired with platform probes and alerting <a href="#source-28">[28]</a></li>
+          <li><strong>Operational readiness:</strong> Monitoring dashboards active, on-call runbook documented, graceful shutdown tested (<code>--shutdown-timeout</code>) <a href="#source-7">[7]</a> <a href="#source-22">[22]</a></li>
         </ul>
       </details>
     </div>
@@ -964,7 +964,7 @@
       <div class="section-header reveal">
         <span class="section-num">06</span>
         <h2>Deployment Options <span class="section-tier tier-1">Start here</span></h2>
-        <p class="section-lead">vLLM runs the same engine on one GPU, behind an HTTP server, or on Kubernetes. You keep one model source and the same engine flags across those shapes instead of maintaining separate stacks per environment.</p>
+        <p class="section-lead">vLLM runs the same engine family on one GPU, behind an HTTP server, or on Kubernetes. That gives teams one serving stack with familiar model and runtime flags across those shapes instead of maintaining separate engines per environment. <a href="#source-7">[7]</a> <a href="#source-16">[16]</a></p>
       </div>
 
       <div class="deploy-ecosystem reveal">
@@ -975,7 +975,7 @@
               <svg width="36" height="36" fill="none" stroke="var(--red)" stroke-width="1.5"><use href="#icon-globe"/></svg>
             </div>
             <h4>Kubernetes-Native Serving</h4>
-            <p>Upstream docs cover running vLLM on Kubernetes with <abbr data-tip="Kubernetes framework for deploying and scaling inference services.">KServe</abbr> (Hugging Face serving runtime or LLMInferenceService). <a href="#source-16">[16]</a> <abbr data-tip="Red Hat platform on OpenShift for enterprise model serving and lifecycle.">OpenShift AI</abbr> documents KServe-based model serving; you apply the same integration patterns there when exposing vLLM as a served model.</p>
+            <p>Upstream docs cover running vLLM on Kubernetes with <abbr data-tip="Kubernetes framework for deploying and scaling inference services.">KServe</abbr> (Hugging Face serving runtime or LLMInferenceService). <a href="#source-16">[16]</a> <abbr data-tip="Red Hat platform on OpenShift for enterprise model serving and lifecycle.">OpenShift AI</abbr> documents KServe-based model serving; you apply the same integration patterns there when exposing vLLM as a served model. <a href="#source-24">[24]</a></p>
           </div>
           <div class="ecosystem-card">
             <div class="ecosystem-card-icon">
@@ -1026,7 +1026,7 @@ print(outputs[0].outputs[0].text)</code></pre>
                 <span class="deploy-badge online">Online</span>
                 <h3>API Server</h3>
               </div>
-              <p>One command starts an <abbr data-tip="Uses OpenAI-shaped requests and responses. Many OpenAI clients work unchanged.">OpenAI-compatible</abbr> HTTP server with chat, completions, and embeddings.</p>
+              <p>One command starts an <abbr data-tip="Uses OpenAI-shaped requests and responses. Many OpenAI clients work unchanged.">OpenAI-compatible</abbr> HTTP server with chat, completions, and model-listing endpoints; embedding and pooling flows are documented separately in the supported-model and pooling docs. <a href="#source-7">[7]</a> <a href="#source-14">[14]</a></p>
               <ul class="deploy-points">
                 <li>Drop-in for any OpenAI client</li>
                 <li>Continuous batching with streaming</li>
@@ -1050,7 +1050,8 @@ print(outputs[0].outputs[0].text)</code></pre>
                 <li>Good handoff point into OpenShift AI and KServe workflows</li>
               </ul>
             </div>
-            <pre class="code-block"><code class="language-yaml">apiVersion: apps/v1
+            <pre class="code-block"><code class="language-yaml"># Minimal example only; add probes, shared memory, auth, and model storage for production.
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: vllm-server
@@ -1130,7 +1131,7 @@ spec:
             </tr>
             <tr>
               <td><strong>Multi-API-server</strong></td>
-              <td><code>--api-server-count N</code> runs multiple frontend processes sharing one engine. Auto-configures <code>PROMETHEUS_MULTIPROC_DIR</code> for shared metrics</td>
+              <td><code>--api-server-count N</code> runs multiple frontend processes sharing one engine. Auto-configures <code>PROMETHEUS_MULTIPROC_DIR</code> for shared metrics <a href="#source-12">[12]</a></td>
               <td>When the API frontend is the bottleneck (high request parsing overhead, many concurrent connections)</td>
             </tr>
             <tr>
@@ -1161,17 +1162,17 @@ spec:
           <tbody>
             <tr>
               <td><strong>Served name aliases</strong></td>
-              <td><code>--served-model-name name1 name2</code> &mdash; one engine, multiple API model IDs</td>
+              <td><code>--served-model-name name1 name2</code> &mdash; one engine, multiple API model IDs <a href="#source-7">[7]</a></td>
               <td>No overhead; useful for API compatibility or gradual migration</td>
             </tr>
             <tr>
               <td><strong>Runtime LoRA adapters</strong></td>
-              <td><code>--lora-modules</code> at startup, plus <code>/v1/load_lora_adapter</code> and <code>/v1/unload_lora_adapter</code> at runtime (requires <code>VLLM_ALLOW_RUNTIME_LORA_UPDATING=1</code>)</td>
+              <td><code>--lora-modules</code> at startup, plus <code>/v1/load_lora_adapter</code> and <code>/v1/unload_lora_adapter</code> at runtime (requires <code>VLLM_ALLOW_RUNTIME_LORA_UPDATING=1</code>) <a href="#source-32">[32]</a></td>
               <td>Share one base model across fine-tuned variants; adapter count limited by <code>--max-loras</code> and GPU memory</td>
             </tr>
             <tr>
               <td><strong>Separate deployments + routing</strong></td>
-              <td>One Deployment per model, fronted by vLLM Router or llm-d</td>
+              <td>One Deployment per model, fronted by vLLM Router or llm-d <a href="#source-29">[29]</a> <a href="#source-30">[30]</a></td>
               <td>Full isolation; requires more GPUs but simplifies per-model scaling and upgrades</td>
             </tr>
           </tbody>
@@ -1181,9 +1182,9 @@ spec:
       <details class="plain-english reveal" style="margin-top: 24px;">
         <summary>Model storage on Kubernetes</summary>
         <ul>
-          <li><strong>PVC-based cache:</strong> Mount a PersistentVolumeClaim at <code>/root/.cache/huggingface</code> so the model is downloaded once and persisted across pod restarts. Shown in the official K8s deployment YAML</li>
+          <li><strong>PVC-based cache:</strong> Mount a PersistentVolumeClaim at <code>/root/.cache/huggingface</code> so the model is downloaded once and persisted across pod restarts. Shown in official KServe and Kubernetes-oriented deployment examples <a href="#source-16">[16]</a></li>
           <li><strong>ModelCar packaging:</strong> Package the model into a container image for reproducible, versioned deployments. Documented by Red Hat for OpenShift AI workflows <a href="#source-24">[24]</a></li>
-          <li><strong>Init-container download:</strong> Use an init container to pull the model before the vLLM container starts, decoupling download time from the readiness probe window</li>
+          <li><strong>Init-container download:</strong> Use an init container to pull the model before the vLLM container starts, decoupling download time from the readiness probe window. This is a common Kubernetes pattern when model download time would otherwise dominate readiness.</li>
         </ul>
       </details>
     </div>
@@ -1195,7 +1196,7 @@ spec:
       <div class="section-header reveal">
         <span class="section-num">07</span>
         <h2>Observability &amp; Troubleshooting <span class="section-tier tier-2">Ops focus</span></h2>
-        <p class="section-lead">vLLM exposes Prometheus metrics on the <code>/metrics</code> endpoint of the API server, supports OpenTelemetry tracing, and ships pre-built Grafana dashboards. The metrics below cover queue health, memory pressure, latency percentiles, and request outcomes. <a href="#source-25">[25]</a></p>
+        <p class="section-lead">vLLM exposes Prometheus metrics on the <code>/metrics</code> endpoint of the API server, supports OpenTelemetry tracing, and ships pre-built Grafana dashboards. The metrics below cover queue health, memory pressure, latency percentiles, and request outcomes. <a href="#source-25">[25]</a> <a href="#source-5">[5]</a> <a href="#source-27">[27]</a></p>
       </div>
 
       <div class="obs-stack reveal">
@@ -1215,7 +1216,7 @@ spec:
 
       <details class="plain-english reveal">
         <summary>In plain English</summary>
-        <p>Queue depth tells you whether traffic is backing up. KV cache usage warns you before memory pressure triggers evictions. TTFT and ITL are the latency numbers your users feel. The troubleshooting tree below pairs each symptom with the metric to check and the flag to change.</p>
+        <p>Queue depth tells you whether traffic is backing up. KV cache usage warns you before memory pressure triggers evictions. TTFT and ITL are the latency numbers your users feel. The troubleshooting tree below pairs each symptom with the metric to check and the flag to change. <a href="#source-25">[25]</a> <a href="#source-8">[8]</a></p>
       </details>
 
       <h3 class="reveal" style="margin-top: 32px;">Key Operational Metrics</h3>
@@ -1289,8 +1290,8 @@ spec:
             <tr>
               <td><code>vllm:request_success</code></td>
               <td>Counter</td>
-              <td>Completed requests by <code>finished_reason</code>: <code>stop</code>, <code>length</code>, <code>abort</code>, <code>error</code></td>
-              <td><code>error</code> or <code>abort</code> rate rising</td>
+              <td>Count of successfully processed requests</td>
+              <td>Success rate drops against your normal request volume baseline</td>
             </tr>
           </tbody>
         </table>
@@ -1306,7 +1307,7 @@ spec:
       </details>
 
       <h3 class="reveal" style="margin-top: 36px;">Dashboard Blueprint</h3>
-      <p class="reveal" style="color: var(--text-muted); margin-bottom: 16px;">Four Grafana rows built from the metrics above. The vLLM <a href="https://docs.vllm.ai/en/latest/examples/online_serving/dashboards/" target="_blank" rel="noopener noreferrer">Monitoring Dashboards</a> docs and the <a href="https://blog.vllm.ai/2025/01/21/stack-release.html" target="_blank" rel="noopener noreferrer">production-stack</a> ship pre-built versions. <a href="#source-22">[22]</a> <a href="#source-26">[26]</a></p>
+      <p class="reveal" style="color: var(--text-muted); margin-bottom: 16px;">Four Grafana rows built from the metrics above. The vLLM <a href="https://docs.vllm.ai/en/latest/examples/online_serving/dashboards/" target="_blank" rel="noopener noreferrer">Monitoring Dashboards</a> docs and the <a href="https://blog.vllm.ai/2025/01/21/stack-release.html" target="_blank" rel="noopener noreferrer">production-stack</a> provide pre-built versions. <a href="#source-27">[27]</a> <a href="#source-22">[22]</a></p>
 
       <div class="dashboard-grid reveal stagger-children">
         <div class="problem-card">
@@ -1340,7 +1341,7 @@ spec:
       </div>
 
       <h3 class="reveal" style="margin-top: 36px;">OpenTelemetry Tracing</h3>
-      <p class="reveal" style="color: var(--text-muted); margin-bottom: 16px;">vLLM has built-in OTLP tracing that follows the <a href="https://opentelemetry.io/docs/specs/semconv/gen-ai/" target="_blank" rel="noopener noreferrer">OpenTelemetry GenAI semantic conventions</a>. <a href="#source-5">[5]</a></p>
+      <p class="reveal" style="color: var(--text-muted); margin-bottom: 16px;">vLLM ships an official OTLP tracing example and documents trace export through <code>--otlp-traces-endpoint</code> plus related environment variables. <a href="#source-5">[5]</a></p>
 
       <div class="feature-matrix-wrap reveal">
         <table class="feature-matrix">
@@ -1366,7 +1367,7 @@ spec:
           </tbody>
         </table>
       </div>
-      <p class="reveal" style="color: var(--text-muted); margin-top: 12px;">With an OTLP collector configured, request traces can flow into Jaeger, Tempo, Datadog, or any other OTLP-compatible backend you already use.</p>
+      <p class="reveal" style="color: var(--text-muted); margin-top: 12px;">With an OTLP collector configured, request traces can flow into Jaeger or any other OTLP-compatible backend you already run. <a href="#source-5">[5]</a></p>
 
       <h3 class="reveal" style="margin-top: 36px;">Troubleshooting Decision Tree</h3>
       <p class="reveal" style="color: var(--text-muted); margin-bottom: 16px;">Each branch pairs a Prometheus metric with the configuration flag to change.</p>
@@ -1413,7 +1414,7 @@ spec:
             <li>Compute hit ratio: <code>rate(vllm:prefix_cache_hits[5m]) / rate(vllm:prefix_cache_queries[5m])</code></li>
             <li>Enable prefix caching if not already on: <code>--enable-prefix-caching</code> <a href="#source-13">[13]</a></li>
             <li>Structure prompts so system messages and common context appear at the beginning (cache matches from the prefix)</li>
-            <li>Use session affinity or the vLLM Router&rsquo;s consistent hashing to route repeat users to the same replica</li>
+            <li>Use session affinity or the vLLM Router&rsquo;s consistent hashing to route repeat users to the same replica <a href="#source-29">[29]</a></li>
           </ol>
         </details>
       </div>
@@ -1433,11 +1434,11 @@ spec:
 
       <details class="plain-english reveal">
         <summary>In plain English</summary>
-        <p>vLLM runs out of the box. Running it safely in production takes deliberate configuration. Each item below links to the flag or doc that implements it.</p>
+        <p>vLLM runs out of the box. Running it safely in production takes deliberate configuration. Each item below links to the flag or doc that implements it. <a href="#source-28">[28]</a> <a href="#source-7">[7]</a></p>
       </details>
 
       <h3 class="reveal" style="margin-top: 32px;">Security Checklist</h3>
-      <p class="reveal" style="color: var(--text-muted); margin-bottom: 16px;">Items are documented in vLLM&rsquo;s <code>docs/usage/security.md</code> or the CLI flags in <code>cli_args.py</code>. <a href="#source-28">[28]</a></p>
+      <p class="reveal" style="color: var(--text-muted); margin-bottom: 16px;">Items are documented in vLLM&rsquo;s security guide plus the official server arguments and deployment examples. <a href="#source-28">[28]</a> <a href="#source-7">[7]</a> <a href="#source-16">[16]</a></p>
 
       <div class="feature-matrix-wrap reveal">
         <table class="feature-matrix">
@@ -1508,7 +1509,7 @@ spec:
             <tr>
               <td><strong>Resource limits and requests</strong></td>
               <td>Prevent noisy-neighbor issues and ensure GPU scheduling</td>
-              <td>K8s: set <code>resources.limits</code> (CPU, memory, <code>nvidia.com/gpu</code>) and <code>resources.requests</code>. Mount <code>/dev/shm</code> as <code>emptyDir: { medium: Memory, sizeLimit: "2Gi" }</code> for tensor parallel shared memory</td>
+              <td>K8s: set <code>resources.limits</code> (CPU, memory, <code>nvidia.com/gpu</code>) and <code>resources.requests</code>. Mount <code>/dev/shm</code> as <code>emptyDir: { medium: Memory, sizeLimit: "2Gi" }</code> for tensor parallel shared memory <a href="#source-16">[16]</a></td>
             </tr>
             <tr>
               <td><strong>Health endpoint</strong></td>
@@ -1518,12 +1519,12 @@ spec:
             <tr>
               <td><strong>Graceful shutdown</strong></td>
               <td>Without a drain window, restarts can interrupt in-flight requests.</td>
-              <td>Set <code>--shutdown-timeout N</code> to give the server time to finish or drain active work before exit.</td>
+              <td>Set <code>--shutdown-timeout N</code> to give the server time to finish or drain active work before exit. <a href="#source-7">[7]</a></td>
             </tr>
             <tr>
               <td><strong>Logging controls</strong></td>
               <td>Production logs should be informative without leaking prompts or overwhelming storage</td>
-              <td><code>--max-log-len</code> to bound logged prompt/output size. <code>--disable-access-log-for-endpoints /health,/metrics</code> to suppress probe noise. <code>--enable-log-requests</code> is off by default</td>
+              <td><code>--max-log-len</code> to bound logged prompt/output size. <code>--disable-access-log-for-endpoints /health,/metrics</code> to suppress probe noise. <code>--enable-log-requests</code> is off by default <a href="#source-7">[7]</a></td>
             </tr>
           </tbody>
         </table>
@@ -1543,12 +1544,12 @@ spec:
       <div class="section-header reveal">
         <span class="section-num">09</span>
         <h2>PagedAttention <span class="section-tier tier-3">Technical deep-dive</span></h2>
-        <p class="section-lead">The core idea: manage KV cache with the same block-and-table structure as <abbr data-tip="The OS maps contiguous logical ranges onto physical pages that may be scattered. PagedAttention uses the same pattern for KV cache blocks on the GPU.">virtual memory</abbr>, so variable-length sequences and concurrent requests use a fixed GPU memory budget more efficiently.</p>
+        <p class="section-lead">The core idea: manage KV cache with the same block-and-table structure as <abbr data-tip="The OS maps contiguous logical ranges onto physical pages that may be scattered. PagedAttention uses the same pattern for KV cache blocks on the GPU.">virtual memory</abbr>, so variable-length sequences and concurrent requests use a fixed GPU memory budget more efficiently. <a href="#source-9">[9]</a></p>
       </div>
 
       <details class="plain-english reveal">
         <summary>In plain English</summary>
-        <p>When a model is answering multiple questions at once, it needs to remember context for each conversation. The straightforward approach reserves a big chunk of GPU memory up front for each request and wastes whatever goes unused. PagedAttention organizes that memory more efficiently&mdash;like how your computer's operating system manages RAM&mdash;so the same GPU can handle more conversations simultaneously without running out of space.</p>
+        <p>When a model is answering multiple questions at once, it needs to remember context for each conversation. The straightforward approach reserves a big chunk of GPU memory up front for each request and wastes whatever goes unused. PagedAttention organizes that memory more efficiently&mdash;like how your computer's operating system manages RAM&mdash;so the same GPU can handle more conversations simultaneously without running out of space. <a href="#source-9">[9]</a></p>
       </details>
 
       <div id="allocator-showdown" class="showdown reveal">
@@ -1677,7 +1678,7 @@ spec:
 
       <details class="plain-english reveal">
         <summary>In plain English</summary>
-        <p>Older systems process requests in fixed groups: if one user's question takes longer, everyone else in the group waits. Continuous batching lets vLLM swap finished requests out and new requests in on every processing step, so the GPU stays busy and no single slow response blocks the rest. Chunked prefill breaks very long prompts into smaller pieces so they do not monopolize the processor while other users are waiting for their next word.</p>
+        <p>Older systems process requests in fixed groups: if one user's question takes longer, everyone else in the group waits. Continuous batching lets vLLM swap finished requests out and new requests in on every processing step, so the GPU stays busy and no single slow response blocks the rest. Chunked prefill breaks very long prompts into smaller pieces so they do not monopolize the processor while other users are waiting for their next word. <a href="#source-17">[17]</a> <a href="#source-8">[8]</a></p>
       </details>
 
       <div class="scheduler-lab reveal">
@@ -1885,7 +1886,7 @@ spec:
           <strong>Without chunking:</strong> Req A&rsquo;s 256-token prompt would consume the entire 128-token budget for 2 consecutive steps. Reqs B and C would not decode during those steps, and Reqs D through F would wait longer, increasing Time to First Token (TTFT) for queued work.
         </div>
 
-        <p class="chunk-benefit">Chunking caps how much prefill runs per step, so decode is less likely to sit idle behind a long prompt. When prefill dominates load, operators can split the two phases across separate pools&mdash;see <a href="#modern-inference">Disaggregated Prefill</a> in the Modern Requirements section.</p>
+        <p class="chunk-benefit">Chunking caps how much prefill runs per step, so decode is less likely to sit idle behind a long prompt. When prefill dominates load, operators can split the two phases across separate pools&mdash;see <a href="#modern-inference">Disaggregated Prefill</a> in the Modern Requirements section. <a href="#source-8">[8]</a> <a href="#source-2">[2]</a></p>
       </div>
     </div>
   </section>
@@ -1896,12 +1897,12 @@ spec:
       <div class="section-header reveal">
         <span class="section-num">11</span>
         <h2>Architecture Deep Dive <span class="section-tier tier-3">Technical deep-dive</span></h2>
-        <p class="section-lead">From "what happens when I send a prompt?" to the <abbr data-tip="vLLM's current engine: multi-process isolation, unified scheduling, and higher throughput than V0.">V1 engine</abbr> internals. Built for people new to inference.</p>
+        <p class="section-lead">From "what happens when I send a prompt?" to the <abbr data-tip="vLLM's current engine: multi-process isolation, unified scheduling, and higher throughput than V0.">V1 engine</abbr> internals. Built for people new to inference. <a href="#source-11">[11]</a></p>
       </div>
 
       <details class="plain-english reveal">
         <summary>In plain English</summary>
-        <p>vLLM is structured like a well-run kitchen. An API server takes orders (your prompts), a scheduler decides which orders to cook next, and worker processes run the model on the GPU. Separating these roles lets vLLM handle many users at once without one slow request blocking the others. This section walks through each piece from the outside in.</p>
+        <p>vLLM is structured like a well-run kitchen. An API server takes orders (your prompts), a scheduler decides which orders to cook next, and worker processes run the model on the GPU. Separating these roles lets vLLM handle many users at once without one slow request blocking the others. This section walks through each piece from the outside in. <a href="#source-11">[11]</a></p>
       </details>
 
       <!-- LAYER 1 — Conceptual on-ramp -->
@@ -1910,7 +1911,7 @@ spec:
           <span class="mini-label">Start here</span>
           <h3>What happens when you send a prompt?</h3>
         </div>
-        <p class="arch-onramp-text">Serving a prompt means <strong>turning text into token IDs</strong>, <strong>running the model on the GPU</strong> to produce more tokens, and <strong>streaming decoded text</strong> back as tokens arrive. The rest of the vLLM layout speeds up and overlaps those stages.</p>
+        <p class="arch-onramp-text">Serving a prompt means <strong>turning text into token IDs</strong>, <strong>running the model on the GPU</strong> to produce more tokens, and <strong>streaming decoded text</strong> back as tokens arrive. The rest of the vLLM layout speeds up and overlaps those stages. <a href="#source-11">[11]</a></p>
         <div class="arch-three-steps">
           <div class="arch-step-card">
             <span class="arch-step-num">1</span>
@@ -1932,7 +1933,7 @@ spec:
             <p>Each new token is converted back to text and streamed to the user in real time.</p>
           </div>
         </div>
-        <p class="arch-onramp-callout">Most serving cost and latency sit in step 2. The architecture below shows how vLLM runs that loop efficiently under concurrency, building on the <a href="#why">KV cache</a> and <a href="#paged-attention">PagedAttention</a> concepts covered earlier.</p>
+        <p class="arch-onramp-callout">Most serving cost and latency sit in step 2. The architecture below shows how vLLM runs that loop efficiently under concurrency, building on the <a href="#why">KV cache</a> and <a href="#paged-attention">PagedAttention</a> concepts covered earlier. <a href="#source-11">[11]</a> <a href="#source-9">[9]</a></p>
       </div>
 
       <!-- LAYER 2 — The Autoregressive Decode Loop (interactive) -->
@@ -2022,13 +2023,13 @@ spec:
           <div class="engine-loop-card">
             <span class="engine-loop-card-num">2</span>
             <h4>Execute</h4>
-            <p>Sends the scheduled batch to GPU workers via the executor. Each worker runs the model&rsquo;s forward pass using fused attention backends (<abbr data-tip="Attention algorithm that skips materializing the full attention matrix, cutting memory use and improving speed.">FlashAttention</abbr>, <abbr data-tip="GPU kernel library for attention and KV cache operations. Alternative backend to FlashAttention.">FlashInfer</abbr>, etc.) and CUDA graphs against the paged KV cache.</p>
+            <p>Sends the scheduled batch to GPU workers via the executor. Each worker runs the model&rsquo;s forward pass using fused attention backends (<abbr data-tip="Attention algorithm that skips materializing the full attention matrix, cutting memory use and improving speed.">FlashAttention</abbr>, <abbr data-tip="GPU kernel library for attention and KV cache operations. Alternative backend to FlashAttention.">FlashInfer</abbr>, etc.) and CUDA graphs against the paged KV cache. <a href="#source-11">[11]</a></p>
             <code class="code-path">vllm/v1/worker/gpu_model_runner.py</code>
           </div>
           <div class="engine-loop-card">
             <span class="engine-loop-card-num">3</span>
             <h4>Update</h4>
-            <p>Applies sampled tokens from the model output, records progress in the scheduler, frees finished requests, and streams <abbr data-tip="Human-readable text rebuilt from token IDs.">detokenized</abbr> text to the user. Then the loop repeats.</p>
+            <p>Applies sampled tokens from the model output, records progress in the scheduler, frees finished requests, and streams <abbr data-tip="Human-readable text rebuilt from token IDs.">detokenized</abbr> text to the user. Then the loop repeats. <a href="#source-11">[11]</a></p>
             <code class="code-path">vllm/v1/engine/core.py</code>
           </div>
         </div>
@@ -2042,7 +2043,7 @@ model_output = future.result()
 engine_core_outputs = self.scheduler.update_from_output(
     scheduler_output, model_output
 )</code></pre>
-          <p class="engine-loop-code-note">Order matches <code>EngineCore.step()</code>: after <code>future.result()</code>, the real code may call <code>sample_tokens(grammar_output)</code> if the model output is <code>None</code>, and it runs <code>_process_aborts_queue()</code> before <code>update_from_output</code>, inside logging context managers. The <code>non_block=True</code> call overlaps GPU work with <abbr data-tip="Bits that hide illegal next tokens so sampling stays inside JSON, regex, or grammar rules.">grammar bitmask</abbr> preparation. See <code>vllm/v1/engine/core.py</code> for the full branch logic.</p>
+          <p class="engine-loop-code-note">Order matches <code>EngineCore.step()</code>: after <code>future.result()</code>, the real code may call <code>sample_tokens(grammar_output)</code> if the model output is <code>None</code>, and it runs <code>_process_aborts_queue()</code> before <code>update_from_output</code>, inside logging context managers. The <code>non_block=True</code> call overlaps GPU work with <abbr data-tip="Bits that hide illegal next tokens so sampling stays inside JSON, regex, or grammar rules.">grammar bitmask</abbr> preparation. See <code>vllm/v1/engine/core.py</code> for the full branch logic. <a href="#source-11">[11]</a></p>
         </div>
       </div>
 
@@ -2076,7 +2077,7 @@ engine_core_outputs = self.scheduler.update_from_output(
             </button>
             <div class="comp-card-body">
               <div>
-                <p>The Input Processor tokenizes text (and encodes images/audio) in the API server process. The Output Processor detokenizes new tokens and streams them back as <abbr data-tip="Server-Sent Events: one HTTP response streams chunks to the client as they are ready.">SSE</abbr> events. Both run in the API process, which communicates with the engine core via ZMQ, so tokenization and detokenization stay off the core GPU scheduling path.</p>
+                <p>The Input Processor tokenizes text (and encodes images or audio when the model path requires it) in the API server process. The Output Processor detokenizes new tokens and streams them back as <abbr data-tip="Server-Sent Events: one HTTP response streams chunks to the client as they are ready.">SSE</abbr> events. Both run in the API process, which communicates with the engine core via ZMQ, so tokenization and detokenization stay off the core GPU scheduling path. <a href="#source-11">[11]</a></p>
                 <p class="comp-card-why"><strong>Why it matters:</strong> Tokenization and detokenization are CPU-bound. Running them in a separate process from the GPU scheduler prevents them from adding latency to the critical engine loop.</p>
                 <code class="code-path">vllm/v1/engine/input_processor.py</code>
                 <code class="code-path">vllm/v1/engine/output_processor.py</code>
@@ -2109,7 +2110,7 @@ engine_core_outputs = self.scheduler.update_from_output(
             </button>
             <div class="comp-card-body">
               <div>
-                <p>Manages the block pool you saw in the PagedAttention section. Allocates and frees fixed-size blocks, enables prefix caching by hashing block contents, and supports FP8/INT8 quantized KV storage. <a href="#source-13">[13]</a></p>
+                <p>Manages the block pool you saw in the PagedAttention section. It allocates and frees fixed-size blocks and enables prefix caching by hashing block contents. <a href="#source-13">[13]</a></p>
                 <p class="comp-card-why"><strong>Why it matters:</strong> KV cache is the #1 memory consumer. This manager is why vLLM can serve more concurrent requests than naive implementations.</p>
                 <code class="code-path">vllm/v1/core/kv_cache_manager.py</code>
               </div>
@@ -2125,7 +2126,7 @@ engine_core_outputs = self.scheduler.update_from_output(
             </button>
             <div class="comp-card-body">
               <div>
-                <p>Runs the actual <code>torch.nn.Module</code> forward pass on each GPU. Prepares input tensors, replays CUDA graphs for speed, and coordinates with attention backends (FlashAttention, FlashInfer) to read/write the paged KV cache.</p>
+                <p>Runs the actual <code>torch.nn.Module</code> forward pass on each GPU. It prepares input tensors, replays CUDA graphs for speed, and coordinates with attention backends (FlashAttention, FlashInfer) to read and write the paged KV cache. <a href="#source-11">[11]</a></p>
                 <p class="comp-card-why"><strong>Why it matters:</strong> This is where GPU time is spent. CUDA graph capture eliminates CPU launch overhead, making each decode step faster.</p>
                 <code class="code-path">vllm/v1/worker/gpu_model_runner.py</code>
               </div>
@@ -2141,7 +2142,7 @@ engine_core_outputs = self.scheduler.update_from_output(
             </button>
             <div class="comp-card-body">
               <div>
-                <p>Abstracts how scheduled work reaches GPU workers. <code>ParallelConfig</code> defaults to <strong>UniProc</strong> when <code>world_size == 1</code> and to <strong>Multiproc</strong> (<code>mp</code>) for typical multi-GPU setups; <strong><abbr data-tip="Distributed runtime vLLM uses for multi-node runs, selected explicitly or auto-detected.">Ray</abbr></strong> is selected when you set <code>distributed_executor_backend=&quot;ray&quot;</code>, or auto-detected when Ray placement groups are active, <code>data_parallel_backend</code> is <code>&quot;ray&quot;</code>, or Ray is already initialized. All implementations still expose the same <code>execute_model</code> surface to the engine core.</p>
+                <p>Abstracts how scheduled work reaches GPU workers. <code>ParallelConfig</code> defaults to <strong>UniProc</strong> when <code>world_size == 1</code> and to <strong>Multiproc</strong> (<code>mp</code>) for typical multi-GPU setups; <strong><abbr data-tip="Distributed runtime vLLM uses for multi-node runs, selected explicitly or auto-detected.">Ray</abbr></strong> is used for multi-node or Ray-backed deployments. All implementations still expose the same <code>execute_model</code> surface to the engine core. <a href="#source-11">[11]</a></p>
                 <p class="comp-card-why"><strong>Why it matters:</strong> <code>EngineCore.step()</code> stays the same; changing parallelism swaps the executor implementation behind <code>model_executor</code>.</p>
                 <code class="code-path">vllm/v1/executor/</code>
               </div>
@@ -2156,8 +2157,8 @@ engine_core_outputs = self.scheduler.update_from_output(
 
       <!-- LAYER 6 — Process calculator (moved to bottom with context) -->
       <div class="process-calc reveal">
-        <h3>Process Count Calculator</h3>
-        <p>The architecture diagram above maps to real OS processes. Adjust the parallelism settings to see how many processes vLLM spawns for your setup.</p>
+        <h3>Illustrative Process Calculator</h3>
+        <p>The architecture diagram above maps to real OS processes. This calculator shows a common V1 topology under the default assumption that API-server count tracks data-parallel replicas; adjust the inputs to see how process count changes under that model. <a href="#source-11">[11]</a> <a href="#source-12">[12]</a></p>
         <div class="calc-grid">
           <div class="calc-input">
             <label for="tp-size"><abbr data-tip="Shards each layer's weights across GPUs on one node. Needs a fast link (NVLink-class).">Tensor Parallel</abbr> (TP)</label>
@@ -2175,7 +2176,7 @@ engine_core_outputs = self.scheduler.update_from_output(
             <input type="number" id="dp-size" value="1" min="1" max="16">
           </div>
           <div class="calc-result" id="calc-result">
-            <div class="result-row"><span>API Servers</span><span id="res-api">1</span></div>
+            <div class="result-row"><span>API Servers (default)</span><span id="res-api">1</span></div>
             <div class="result-row"><span>Engine Cores</span><span id="res-engine">1</span></div>
             <div class="result-row"><span>GPU Workers</span><span id="res-workers">4</span></div>
             <div class="result-row" id="coord-row" style="display:none"><span>DP Coordinator</span><span id="res-coord">1</span></div>
@@ -2196,12 +2197,12 @@ engine_core_outputs = self.scheduler.update_from_output(
       <div class="section-header reveal">
         <span class="section-num">12</span>
         <h2>Performance Tuning <span class="section-tier tier-3">Technical deep-dive</span></h2>
-        <p class="section-lead">The tuning lab shows how concurrency and token budget affect throughput, latency, and <abbr data-tip="KV cache fill level. When it rises, schedulers queue or preempt work.">KV pressure</abbr>.</p>
+        <p class="section-lead">The tuning lab shows how concurrency and token budget affect throughput, latency, and <abbr data-tip="KV cache fill level. When it rises, schedulers queue or preempt work.">KV pressure</abbr>. <a href="#source-8">[8]</a></p>
       </div>
 
       <details class="plain-english reveal">
         <summary>In plain English</summary>
-        <p>More simultaneous users raise overall throughput but can slow individual responses. The sliders below let you explore that tradeoff, and the table lists the flags that control it.</p>
+        <p>More simultaneous users raise overall throughput but can slow individual responses. The sliders below let you explore that tradeoff, and the table lists the flags that control it. <a href="#source-8">[8]</a> <a href="#source-21">[21]</a></p>
       </details>
 
       <div class="tuning-lab reveal">
@@ -2334,7 +2335,7 @@ engine_core_outputs = self.scheduler.update_from_output(
           <li>Separate <abbr data-tip="Time to First Token: delay until the first output token is ready.">TTFT</abbr>, <abbr data-tip="Time between consecutive streamed output tokens. People also say TPOT or ITL.">inter-token latency</abbr>, and total throughput instead of reporting only one aggregate score.</li>
           <li>Warmup, cache state, and request arrival pattern materially change results for <abbr data-tip="Runs requests together on the GPU for a step; the batch roster changes each step as work arrives or finishes.">dynamic batching</abbr> systems.</li>
           <li>Use a real prompt-length distribution, not a single toy prompt, when comparing engines.</li>
-          <li>Always record hardware, <abbr data-tip="Number format for weights and activations (FP16, BF16, FP8). Smaller formats use less memory and can shift accuracy slightly.">precision</abbr>, <abbr data-tip="Maximum input tokens per request; you reserve KV cache out to this length.">context limit</abbr>, and key <abbr data-tip="Chooses which requests run each GPU step, caps per-step tokens, and decides when to admit, pause, or preempt work.">scheduler</abbr> settings alongside the results. <a href="#source-7">[7]</a></li>
+          <li>Always record hardware, <abbr data-tip="Number format for weights and activations (FP16, BF16, FP8). Smaller formats use less memory and can shift accuracy slightly.">precision</abbr>, <abbr data-tip="Maximum input tokens per request; you reserve KV cache out to this length.">context limit</abbr>, and key <abbr data-tip="Chooses which requests run each GPU step, caps per-step tokens, and decides when to admit, pause, or preempt work.">scheduler</abbr> settings alongside the results. <a href="#source-21">[21]</a> <a href="#source-23">[23]</a></li>
         </ul>
       </details>
 
@@ -2429,6 +2430,7 @@ vllm serve &lt;model&gt; \
 
 # Benchmark
 vllm bench serve --model &lt;model&gt;</code></pre>
+          <p style="color: var(--text-muted); margin-top: 10px;">Commands above are drawn from the official serve and benchmark CLI docs. <a href="#source-7">[7]</a> <a href="#source-33">[33]</a></p>
         </div>
 
         <div class="ref-card ref-card-code">
@@ -2442,6 +2444,7 @@ curl http://localhost:8000/v1/chat/completions \
 
 # List models
 curl http://localhost:8000/v1/models</code></pre>
+          <p style="color: var(--text-muted); margin-top: 10px;">Paths follow the documented OpenAI-compatible server surface. <a href="#source-7">[7]</a></p>
         </div>
       </div>
 
@@ -2458,10 +2461,10 @@ curl http://localhost:8000/v1/models</code></pre>
             <span>Inside vLLM</span>
             <small>Architecture blog</small>
           </a>
-          <a href="https://docs.vllm.ai/en/latest/examples/online_serving/disaggregated_prefill.html" target="_blank" rel="noopener noreferrer" class="link-card">
+          <a href="https://docs.vllm.ai/en/latest/features/disagg_prefill/" target="_blank" rel="noopener noreferrer" class="link-card">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#icon-page"/></svg>
             <span>Disaggregated Prefill</span>
-            <small>vLLM example docs</small>
+            <small>experimental vLLM docs</small>
           </a>
           <a href="https://github.com/vllm-project/vllm" target="_blank" rel="noopener noreferrer" class="link-card">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#icon-github"/></svg>
@@ -2478,20 +2481,20 @@ curl http://localhost:8000/v1/models</code></pre>
             <span>Meta Parallelism</span>
             <small>TTFT, TTIT, TP, CP, EP</small>
           </a>
-          <a href="https://opentelemetry.io/docs/specs/semconv/gen-ai/" target="_blank" rel="noopener noreferrer" class="link-card">
+          <a href="https://docs.vllm.ai/en/latest/examples/online_serving/opentelemetry.html" target="_blank" rel="noopener noreferrer" class="link-card">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#icon-crosshair"/></svg>
-            <span><abbr data-tip="Vendor-neutral APIs and data model for traces, metrics, and logs.">OpenTelemetry</abbr> GenAI</span>
-            <small><abbr data-tip="Standard names for span and metric fields so backends and UIs agree on what each value means.">Semantic conventions</abbr></small>
+            <span>Setup OpenTelemetry POC</span>
+            <small>vLLM OTLP and Jaeger example</small>
           </a>
           <a href="https://platform.openai.com/docs/guides/structured-outputs" target="_blank" rel="noopener noreferrer" class="link-card">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#icon-list"/></svg>
             <span>Structured Outputs</span>
             <small>JSON schema as product feature</small>
           </a>
-          <a href="https://www.ietf.org/archive/id/draft-gaikwad-llm-benchmarking-methodology-00.html" target="_blank" rel="noopener noreferrer" class="link-card">
+          <a href="https://developers.redhat.com/articles/2026/03/03/practical-strategies-vllm-performance-tuning" target="_blank" rel="noopener noreferrer" class="link-card">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#icon-doc-lines"/></svg>
-            <span>Benchmark Methodology</span>
-            <small>IETF Internet-Draft</small>
+            <span>Practical vLLM Tuning</span>
+            <small>Representative datasets and SLOs</small>
           </a>
           <a href="https://docs.vllm.ai/en/latest/usage/metrics.html" target="_blank" rel="noopener noreferrer" class="link-card">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#icon-monitor"/></svg>
@@ -2519,37 +2522,40 @@ curl http://localhost:8000/v1/models</code></pre>
       <div class="sources-section reveal">
         <h3>Source Notes</h3>
         <ol class="source-list">
-          <li id="source-1">Aleksa Gordic (vLLM Blog), <a href="https://vllm.ai/blog/anatomy-of-vllm" target="_blank" rel="noopener noreferrer">Inside vLLM: Anatomy of a High-Throughput LLM Inference System</a>.</li>
-          <li id="source-2">vLLM docs, <a href="https://docs.vllm.ai/en/latest/examples/online_serving/disaggregated_prefill.html" target="_blank" rel="noopener noreferrer">Disaggregated Prefill</a>.</li>
+          <li id="source-1">Aleksa Gordi&#263; (vLLM Blog), <a href="https://vllm.ai/blog/anatomy-of-vllm" target="_blank" rel="noopener noreferrer">Inside vLLM: Anatomy of a High-Throughput LLM Inference System</a>.</li>
+          <li id="source-2">vLLM docs, <a href="https://docs.vllm.ai/en/latest/features/disagg_prefill/" target="_blank" rel="noopener noreferrer">Disaggregated Prefilling (experimental)</a>.</li>
           <li id="source-3">NVIDIA, <a href="https://developer.nvidia.com/blog/introducing-new-kv-cache-reuse-optimizations-in-nvidia-tensorrt-llm/" target="_blank" rel="noopener noreferrer">Introducing New KV Cache Reuse Optimizations in NVIDIA TensorRT-LLM</a>.</li>
           <li id="source-4">Engineering at Meta, <a href="https://engineering.fb.com/2025/10/17/ai-research/scaling-llm-inference-innovations-tensor-parallelism-context-parallelism-expert-parallelism/" target="_blank" rel="noopener noreferrer">Scaling LLM Inference: Innovations in Tensor Parallelism, Context Parallelism, and Expert Parallelism</a>.</li>
-          <li id="source-5">OpenTelemetry, <a href="https://opentelemetry.io/docs/specs/semconv/gen-ai/" target="_blank" rel="noopener noreferrer">Semantic conventions for generative AI systems</a>.</li>
+          <li id="source-5">vLLM docs, <a href="https://docs.vllm.ai/en/latest/examples/online_serving/opentelemetry.html" target="_blank" rel="noopener noreferrer">Setup OpenTelemetry POC</a> (OTLP tracing example, exporter protocol, Jaeger walkthrough).</li>
           <li id="source-6">OpenAI API docs, <a href="https://platform.openai.com/docs/guides/structured-outputs/" target="_blank" rel="noopener noreferrer">Structured model outputs</a>.</li>
-          <li id="source-7">IETF Internet-Draft, <a href="https://www.ietf.org/archive/id/draft-gaikwad-llm-benchmarking-methodology-00.html" target="_blank" rel="noopener noreferrer">Benchmarking Methodology for Large Language Model Serving</a>.</li>
+          <li id="source-7">vLLM docs, <a href="https://docs.vllm.ai/en/latest/configuration/serve_args/" target="_blank" rel="noopener noreferrer">Server Arguments</a> (<code>vllm serve</code>, OpenAI-compatible server flags, operational controls).</li>
           <li id="source-8">vLLM docs, <a href="https://docs.vllm.ai/en/latest/configuration/optimization.html" target="_blank" rel="noopener noreferrer">Optimization and Tuning</a> (chunked prefill defaults, preemption, tuning parameters).</li>
-          <li id="source-9">Kwon et al., <a href="https://arxiv.org/abs/2309.06180" target="_blank" rel="noopener noreferrer">Efficient Memory Management for Large Language Model Serving with PagedAttention</a>, SOSP 2023 (2&ndash;4&times; throughput improvement, PagedAttention design).</li>
-          <li id="source-10">vLLM project, <a href="https://github.com/vllm-project/vllm" target="_blank" rel="noopener noreferrer">GitHub repository and README</a> (hardware support, feature list, OpenAI-compatible serving, project links).</li>
-          <li id="source-11">vLLM docs, <a href="https://github.com/vllm-project/vllm/blob/main/docs/design/arch_overview.md" target="_blank" rel="noopener noreferrer">Architecture Overview</a> (V1 multi-process architecture, process counts, entrypoints).</li>
-          <li id="source-12">vLLM docs, <a href="https://docs.vllm.ai/en/latest/serving/parallelism_scaling.html" target="_blank" rel="noopener noreferrer">Parallelism and Scaling</a> (TP, PP overview); see also <a href="https://docs.vllm.ai/en/latest/serving/data_parallel_deployment.html" target="_blank" rel="noopener noreferrer">Data Parallel Deployment</a> (DP + MoE), <a href="https://docs.vllm.ai/en/latest/serving/expert_parallel_deployment.html" target="_blank" rel="noopener noreferrer">Expert Parallel Deployment</a> (EP), and <a href="https://docs.vllm.ai/en/latest/serving/context_parallel_deployment.html" target="_blank" rel="noopener noreferrer">Context Parallel Deployment</a> (CP).</li>
-          <li id="source-13">vLLM docs, <a href="https://github.com/vllm-project/vllm/blob/main/docs/design/prefix_caching.md" target="_blank" rel="noopener noreferrer">Automatic Prefix Caching</a> (hash-based block caching design, <abbr data-tip="Least Recently Used eviction. When memory is full, the longest-untouched blocks go first.">LRU eviction</abbr>).</li>
-          <li id="source-14">vLLM docs, <a href="https://docs.vllm.ai/en/latest/models/supported_models.html" target="_blank" rel="noopener noreferrer">Supported Models</a> (broad model coverage across decoder, MoE, multimodal, pooling, and embedding tasks).</li>
-          <li id="source-15">vLLM project, <a href="https://github.com/vllm-project/media-kit" target="_blank" rel="noopener noreferrer">Media Kit</a> (official logo assets and brand colors).</li>
-          <li id="source-16">vLLM docs, <a href="https://docs.vllm.ai/en/latest/deployment/integrations/kserve.html" target="_blank" rel="noopener noreferrer">Deploying with KServe</a> (Kubernetes-native serving integration).</li>
-          <li id="source-17">Yu et al., <a href="https://www.usenix.org/conference/osdi22/presentation/yu" target="_blank" rel="noopener noreferrer">Orca: A Distributed Serving System for Transformer-Based Generative Models</a>, OSDI 2022 (iteration-level scheduling / continuous batching).</li>
-          <li id="source-18">SGLang project, <a href="https://github.com/sgl-project/sglang" target="_blank" rel="noopener noreferrer">GitHub repository</a> (RadixAttention, structured outputs, hardware platform docs).</li>
-          <li id="source-19">Artificial Analysis, <a href="https://artificialanalysis.ai/trends#open-source" target="_blank" rel="noopener noreferrer">Open Source Models: Progress in Open Weights vs. Proprietary Intelligence</a> (Intelligence Index trend data).</li>
-          <li id="source-20">Hugging Face, <a href="https://raw.githubusercontent.com/huggingface/text-generation-inference/main/README.md" target="_blank" rel="noopener noreferrer">Text Generation Inference README</a> (maintenance-mode notice and recommendation to use vLLM, SGLang, llama.cpp, or MLX for new engine work).</li>
-          <li id="source-21">Trevor Royer (Red Hat Developer), <a href="https://developers.redhat.com/articles/2026/03/03/practical-strategies-vllm-performance-tuning" target="_blank" rel="noopener noreferrer">Practical strategies for vLLM performance tuning</a> (GuideLLM, representative datasets, SLO-driven benchmarking).</li>
-          <li id="source-22">vLLM Project, <a href="https://blog.vllm.ai/2025/01/21/stack-release.html" target="_blank" rel="noopener noreferrer">High Performance and Easy Deployment of vLLM in K8S with vLLM production-stack</a> (autoscaling, observability, prefix-aware routing, KV cache sharing).</li>
-          <li id="source-23">Red Hat Developer, <a href="https://developers.redhat.com/articles/2025/06/20/guidellm-evaluate-llm-deployments-real-world-inference" target="_blank" rel="noopener noreferrer">GuideLLM: Evaluate LLM deployments for real-world inference</a> (load profiles, pre-deployment benchmarking, capacity planning).</li>
-          <li id="source-24">Red Hat Developer, <a href="https://developers.redhat.com/articles/2025/10/06/optimize-and-deploy-llms-production-openshift-ai" target="_blank" rel="noopener noreferrer">Optimize and deploy LLMs for production with OpenShift AI</a> (quantization with LLM Compressor, ModelCar packaging, enterprise deployment).</li>
-          <li id="source-25">vLLM Docs, <a href="https://docs.vllm.ai/en/latest/usage/metrics.html" target="_blank" rel="noopener noreferrer">Production Metrics</a> (Prometheus metric names, types, and descriptions for all vLLM gauges, counters, and histograms).</li>
-          <li id="source-26">vLLM Docs, <a href="https://docs.vllm.ai/en/latest/examples/online_serving/prometheus_grafana.html" target="_blank" rel="noopener noreferrer">Prometheus and Grafana</a> (Docker Compose setup, Prometheus scraping, Grafana dashboard example).</li>
-          <li id="source-27">vLLM Docs, <a href="https://docs.vllm.ai/en/latest/examples/online_serving/dashboards/" target="_blank" rel="noopener noreferrer">Monitoring Dashboards</a> (pre-built Grafana dashboards for vLLM).</li>
-          <li id="source-28">vLLM Docs, <a href="https://docs.vllm.ai/en/latest/usage/security.html" target="_blank" rel="noopener noreferrer">Security</a> (inter-node communication, API key limitations, protected vs. unprotected endpoints, FIPS, SSRF, reverse proxy recommendations).</li>
-          <li id="source-29">vLLM Project, <a href="https://blog.vllm.ai/2025/12/13/vllm-router-release.html" target="_blank" rel="noopener noreferrer">vLLM Router: A High-Performance and Prefill/Decode Aware Load Balancer</a> (consistent hashing, K8s service discovery, circuit breakers).</li>
-          <li id="source-30">Red Hat Developer, <a href="https://developers.redhat.com/articles/2026/01/13/accelerate-multi-turn-workloads-llm-d" target="_blank" rel="noopener noreferrer">Accelerate multi-turn LLM workloads on OpenShift AI with llm-d intelligent routing</a> (KV-cache-aware routing for multi-replica vLLM).</li>
-          <li id="source-31">OpenAI, <a href="https://openai.com/api/pricing" target="_blank" rel="noopener noreferrer">API Pricing</a> (published per-token pricing used as an API baseline in the TCO section).</li>
+          <li id="source-9">Kwon et al., <a href="https://arxiv.org/abs/2309.06180" target="_blank" rel="noopener noreferrer">Efficient Memory Management for Large Language Model Serving with PagedAttention</a>, SOSP 2023.</li>
+          <li id="source-10">vLLM project, <a href="https://github.com/vllm-project/vllm" target="_blank" rel="noopener noreferrer">GitHub repository and README</a> (project scope, feature overview, hardware and plugin links).</li>
+          <li id="source-11">vLLM docs, <a href="https://docs.vllm.ai/en/stable/design/arch_overview.html" target="_blank" rel="noopener noreferrer">Architecture Overview</a> (V1 engine roles, process topology, API server / engine core / worker split).</li>
+          <li id="source-12">vLLM docs, <a href="https://docs.vllm.ai/en/latest/serving/parallelism_scaling.html" target="_blank" rel="noopener noreferrer">Parallelism and Scaling</a>; see also <a href="https://docs.vllm.ai/en/latest/serving/data_parallel_deployment.html" target="_blank" rel="noopener noreferrer">Data Parallel Deployment</a>, <a href="https://docs.vllm.ai/en/latest/serving/expert_parallel_deployment.html" target="_blank" rel="noopener noreferrer">Expert Parallel Deployment</a>, and <a href="https://docs.vllm.ai/en/latest/serving/context_parallel_deployment.html" target="_blank" rel="noopener noreferrer">Context Parallel Deployment</a>.</li>
+          <li id="source-13">vLLM docs, <a href="https://docs.vllm.ai/en/latest/design/prefix_caching.html" target="_blank" rel="noopener noreferrer">Automatic Prefix Caching</a>.</li>
+          <li id="source-14">vLLM docs, <a href="https://docs.vllm.ai/en/latest/models/supported_models.html" target="_blank" rel="noopener noreferrer">Supported Models</a>.</li>
+          <li id="source-15">vLLM docs, <a href="https://docs.vllm.ai/en/latest/usage/structured_outputs.html" target="_blank" rel="noopener noreferrer">Structured Outputs</a>.</li>
+          <li id="source-16">vLLM docs, <a href="https://docs.vllm.ai/en/latest/deployment/integrations/kserve.html" target="_blank" rel="noopener noreferrer">Deploying with KServe</a>.</li>
+          <li id="source-17">Yu et al., <a href="https://www.usenix.org/conference/osdi22/presentation/yu" target="_blank" rel="noopener noreferrer">Orca: A Distributed Serving System for Transformer-Based Generative Models</a>, OSDI 2022.</li>
+          <li id="source-18">SGLang project, <a href="https://github.com/sgl-project/sglang" target="_blank" rel="noopener noreferrer">GitHub repository</a>.</li>
+          <li id="source-19">Artificial Analysis, <a href="https://artificialanalysis.ai/models/open-source" target="_blank" rel="noopener noreferrer">Open Source Models</a>.</li>
+          <li id="source-20">Hugging Face docs, <a href="https://huggingface.co/docs/text-generation-inference/en/index" target="_blank" rel="noopener noreferrer">Text Generation Inference</a> (maintenance mode notice and downstream engine recommendations).</li>
+          <li id="source-21">Trevor Royer (Red Hat Developer), <a href="https://developers.redhat.com/articles/2026/03/03/practical-strategies-vllm-performance-tuning" target="_blank" rel="noopener noreferrer">Practical strategies for vLLM performance tuning</a>.</li>
+          <li id="source-22">vLLM Project, <a href="https://blog.vllm.ai/2025/01/21/stack-release.html" target="_blank" rel="noopener noreferrer">High Performance and Easy Deployment of vLLM in K8S with vLLM production-stack</a>.</li>
+          <li id="source-23">Red Hat Developer, <a href="https://developers.redhat.com/articles/2025/06/20/guidellm-evaluate-llm-deployments-real-world-inference" target="_blank" rel="noopener noreferrer">GuideLLM: Evaluate LLM deployments for real-world inference</a>.</li>
+          <li id="source-24">Red Hat Developer, <a href="https://developers.redhat.com/articles/2025/10/06/optimize-and-deploy-llms-production-openshift-ai" target="_blank" rel="noopener noreferrer">Optimize and deploy LLMs for production with OpenShift AI</a>.</li>
+          <li id="source-25">vLLM Docs, <a href="https://docs.vllm.ai/en/latest/usage/metrics.html" target="_blank" rel="noopener noreferrer">Production Metrics</a>.</li>
+          <li id="source-26">vLLM Docs, <a href="https://docs.vllm.ai/en/latest/examples/online_serving/prometheus_grafana.html" target="_blank" rel="noopener noreferrer">Prometheus and Grafana</a>.</li>
+          <li id="source-27">vLLM Docs, <a href="https://docs.vllm.ai/en/latest/examples/online_serving/dashboards/" target="_blank" rel="noopener noreferrer">Monitoring Dashboards</a>.</li>
+          <li id="source-28">vLLM Docs, <a href="https://docs.vllm.ai/en/latest/usage/security.html" target="_blank" rel="noopener noreferrer">Security</a>.</li>
+          <li id="source-29">vLLM Project, <a href="https://blog.vllm.ai/2025/12/13/vllm-router-release.html" target="_blank" rel="noopener noreferrer">vLLM Router: A High-Performance and Prefill/Decode Aware Load Balancer for Large-scale Serving</a>.</li>
+          <li id="source-30">Red Hat Developer, <a href="https://developers.redhat.com/articles/2026/01/13/accelerate-multi-turn-workloads-llm-d" target="_blank" rel="noopener noreferrer">Accelerate multi-turn LLM workloads on OpenShift AI with llm-d intelligent routing</a>.</li>
+          <li id="source-31">OpenAI, <a href="https://openai.com/api/pricing" target="_blank" rel="noopener noreferrer">API Pricing</a>.</li>
+          <li id="source-32">vLLM docs, <a href="https://docs.vllm.ai/en/stable/features/lora.html" target="_blank" rel="noopener noreferrer">LoRA Adapters</a>.</li>
+          <li id="source-33">vLLM docs, <a href="https://docs.vllm.ai/en/latest/cli/bench/serve/" target="_blank" rel="noopener noreferrer">vllm bench serve</a>.</li>
+          <li id="source-34">vLLM docs, <a href="https://docs.vllm.ai/en/latest/features/speculative_decoding/" target="_blank" rel="noopener noreferrer">Speculative Decoding</a>.</li>
         </ol>
       </div>
     </div>
@@ -2571,7 +2577,7 @@ curl http://localhost:8000/v1/models</code></pre>
           Inference Guide
         </strong> &middot;
         An open community resource.
-        Content grounded in vLLM open-source documentation plus selected April 2026 public references.
+        Content grounded in vLLM open-source documentation plus selected official April 2026 public references.
         <br><small class="footer-updated">Last updated: April 2026</small>
       </p>
       <p class="footer-sub">
