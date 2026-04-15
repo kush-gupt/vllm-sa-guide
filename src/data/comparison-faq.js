@@ -1,68 +1,74 @@
 export const comparisonFaq = [
   {
     id: 'cloud-apis',
-    question: 'We already use Cloud APIs — why self-host?',
-    response: 'Provider APIs bill per token, so steady high-volume traffic can concentrate spend on inference charges. Self-hosted vLLM shifts cost to GPU capacity and operations you control, keeps prompts and completions on your network, and lets you swap models without rewriting every integration.<a href="#source-10">[10]</a>',
+    question: 'We already use Cloud APIs - why self-host?',
+    response:
+      'Commercial APIs publish per-token pricing. Self-hosted vLLM changes that cost model: you pay for GPU capacity and operations you control, while keeping an OpenAI-compatible serving surface and choosing your own open-weight models.<a href="#source-31">[31]</a> <a href="#source-10">[10]</a>',
     keyPoints: [
-      'OpenAI-compatible server: point clients at your base URL and served model name',
-      'Data stays on your infrastructure — prompts and responses never leave your perimeter',
-      'At scale, GPU capacity cost is often easier to cap than open-ended per-token bills',
-      'Fine-tune and serve custom models without provider approval'
+      'OpenAI-compatible server: existing clients often only need a base URL and served model name change <a href="#source-10">[10]</a>',
+      'Inference traffic can stay on infrastructure you control when you self-host; secure it with the reverse-proxy and network-isolation guidance in the security docs <a href="#source-28">[28]</a>',
+      'Capacity cost, utilization, and operational overhead replace per-token provider billing in the cost model <a href="#source-21">[21]</a> <a href="#source-31">[31]</a>',
+      'Supported-model coverage stays under your team\'s control rather than the provider catalog <a href="#source-14">[14]</a>',
     ]
   },
   {
     id: 'tensorrt',
     question: 'NVIDIA says TensorRT-LLM is the fastest option',
-    response: 'TensorRT-LLM targets NVIDIA GPUs and the TensorRT build path. vLLM runs on NVIDIA, AMD, Intel, and several other accelerators, ships frequent releases, and lists thousands of GitHub contributors. Typical vLLM path: load Hugging Face weights directly; TensorRT-LLM workflows often include a separate engine build step.<a href="#source-3">[3]</a>',
+    response:
+      'TensorRT-LLM is an NVIDIA-focused serving/runtime stack with detailed KV-cache controls and related optimizations. The vLLM project documents broader hardware coverage across its main repo and organization plugins, so the trade-off is usually specialized NVIDIA optimization versus broader portability and ecosystem fit.<a href="#source-3">[3]</a> <a href="#source-10">[10]</a>',
     keyPoints: [
-      'Runs on NVIDIA, AMD, Intel, TPU, Gaudi, and more <a href="#source-10">[10]</a>',
-      'Open source with 2,000+ GitHub contributors and frequent releases <a href="#source-10">[10]</a>',
-      'Loads Hugging Face models directly — no separate TensorRT engine build for typical flows',
-      'PagedAttention improves GPU memory utilization for batched KV state <a href="#source-9">[9]</a>'
+      'The vLLM project documents support paths across CUDA, ROCm, Intel XPU, CPU, TPU, Neuron, Gaudi, Spyre, Metal, and more <a href="#source-10">[10]</a>',
+      'TensorRT-LLM documentation emphasizes NVIDIA deployment and KV-cache optimization features <a href="#source-3">[3]</a>',
+      'vLLM introduced PagedAttention; TensorRT-LLM also documents paged KV-cache and KV reuse techniques <a href="#source-9">[9]</a> <a href="#source-3">[3]</a>',
+      'Choose based on your fleet, model mix, and whether you want a general-purpose serving layer or an NVIDIA-specialized stack',
     ]
   },
   {
     id: 'sglang',
-    question: 'SGLang benchmarks look faster — should we switch?',
-    response: 'SGLang uses RadixAttention for token-level prefix caching and shows lower latency at low concurrency; vLLM scales to higher peak throughput under production-level concurrency and handles long contexts more efficiently. Performance depends on concurrency, model size, and context length\u2014both engines improve rapidly across releases. vLLM\'s broader accelerator ecosystem (NVIDIA, AMD, Intel, TPU, Gaudi, Trainium, Inferentia, Spyre, Metal), five parallelism modes (TP, PP, DP, EP, CP), and the largest open-source LLM-serving contributor base differentiate at production scale.<a href="#source-10">[10]</a>',
+    question: 'SGLang benchmarks look faster - should we switch?',
+    response:
+      'SGLang is another active open-source serving stack. Its project materials highlight RadixAttention, structured generation, and gateway/routing features; vLLM highlights broad hardware coverage, multiple parallelism modes, and a large serving ecosystem. The better fit depends on your models, hardware, and latency/throughput targets.<a href="#source-18">[18]</a> <a href="#source-10">[10]</a>',
     keyPoints: [
-      'Broader accelerator ecosystem: both support NVIDIA, AMD, TPU, and Ascend NPU; vLLM adds Trainium, Inferentia, Spyre, and Metal plugins with no SGLang equivalent <a href="#source-10">[10]</a>',
-      'Five parallelism modes (TP, PP, DP, EP, CP) for large-model multi-node deployments <a href="#source-12">[12]</a>',
-      'Mature Kubernetes docs, Helm charts, and KServe integration for production ops <a href="#source-16">[16]</a>',
-      'Both support speculative decoding, disaggregated prefill, and structured outputs'
+      'vLLM docs cover TP, PP, DP, EP, and CP for larger-model and long-context deployments <a href="#source-12">[12]</a>',
+      'vLLM ships official KServe integration docs and a production-stack reference for Kubernetes deployments <a href="#source-16">[16]</a> <a href="#source-22">[22]</a>',
+      'SGLang official materials emphasize RadixAttention and structured-generation ergonomics <a href="#source-18">[18]</a>',
+      'Benchmark both stacks on your own workload before standardizing on one engine',
     ]
   },
   {
     id: 'gpu-expertise',
     question: "We don't have GPU expertise",
-    response: 'KServe documents running vLLM on Kubernetes through its Hugging Face serving runtime or through LLMInferenceService, so platform teams reuse familiar rollouts, autoscaling, and traffic rules. You still size GPU nodes, install drivers, and plan capacity. Red Hat (OpenShift AI) and Anyscale (managed Ray and vLLM guides) publish supported deployment paths and commercial offerings; other vendors do too.',
+    response:
+      'KServe documents running vLLM on Kubernetes through its Hugging Face serving runtime or through LLMInferenceService, so platform teams can reuse familiar rollouts, autoscaling, and traffic controls. Red Hat also documents vLLM-based deployment paths on OpenShift AI and related tooling for packaging and benchmarking.<a href="#source-16">[16]</a> <a href="#source-24">[24]</a>',
     keyPoints: [
-      'KServe runs vLLM on Kubernetes through the Hugging Face serving runtime or LLMInferenceService',
-      'Standard Kubernetes patterns for autoscaling and routing apply to the serving workload',
-      'Commercial support is available from vendors including Red Hat (OpenShift AI) and Anyscale (Ray-based serving)'
+      'KServe supports vLLM through the Hugging Face serving runtime and through LLMInferenceService <a href="#source-16">[16]</a>',
+      'Standard Kubernetes patterns for autoscaling, routing, and health probes still apply to the serving workload',
+      'OpenShift AI docs show packaging, deployment, and benchmarking workflows built around vLLM <a href="#source-24">[24]</a>',
     ]
   },
   {
     id: 'enterprise-support',
     question: 'We need enterprise support',
-    response: 'vLLM has multiple enterprise support options. The community publishes container images with vulnerability management, FIPS-aware crypto paths (configurable multimodal hashing, TLS cipher control, FIPS-tolerant internal hashing), and hardening guidance. Production deployments need a reverse proxy, network segmentation, and secrets management around the engine. Vendors like Red Hat ship certified images, support contracts, and production accountability on top of the open-source project.<a href="#source-10">[10]</a> <a href="#source-28">[28]</a>',
+    response:
+      'vLLM publishes security guidance for reverse proxies, network isolation, API-key limitations, and SSRF controls. Enterprise offerings come from vendors building on the project, including Red Hat AI Inference Server and OpenShift AI deployment workflows.<a href="#source-28">[28]</a> <a href="#source-24">[24]</a>',
     keyPoints: [
-      'Community container images with vulnerability management; vendor-certified images available (e.g. Red Hat AI Inference Server)',
-      'FIPS support: SHA-256/512 multimodal hashing, <code>--ssl-ciphers</code> for TLS, <code>usedforsecurity=False</code> on internal MD5 for FIPS-enabled hosts <a href="#source-10">[10]</a>',
-      'Reverse proxy with endpoint allowlisting required; <code>--api-key</code> alone does not secure all endpoints <a href="#source-28">[28]</a>',
-      'Dedicated support contacts for production issues'
+      'Do not rely on <code>--api-key</code> alone; the security guide explicitly recommends a reverse proxy and endpoint allowlisting <a href="#source-28">[28]</a>',
+      'Network isolation and media-domain controls are part of the documented production hardening guidance <a href="#source-28">[28]</a>',
+      'Red Hat documents packaging, deployment, and supportable workflows around vLLM-based serving <a href="#source-24">[24]</a>',
+      'Treat enterprise support as a vendor decision layered on top of the upstream project',
     ]
   },
   {
     id: 'model-quality',
     question: "Open-source model quality isn't there yet",
-    response: 'The gap has largely closed. The Artificial Analysis Intelligence Index shows open-weights models converging with proprietary over 2024\u20132026; on individual benchmarks like MMLU, HumanEval, and MATH the strongest open-weights models now match or exceed proprietary baselines.<a href="#source-19">[19]</a> Current-generation families\u2014Llama 4, DeepSeek V3.2/R2, Qwen 3.5, Gemma 4, Mistral, and IBM Granite\u2014cover chat, RAG, coding, math, and multilingual workloads, and all load directly in vLLM.<a href="#source-14">[14]</a> Benchmark them on your own prompts and documents before you standardize.',
+    response:
+      'Open-weight model quality now spans many production workloads, but the frontier still moves quickly by task and release. Artificial Analysis tracks steady progress in open models, and the vLLM supported-model docs show that current Llama, Qwen, Mistral, Granite, DeepSeek, and other families are directly serveable in vLLM.<a href="#source-19">[19]</a> <a href="#source-14">[14]</a> Benchmark on your own prompts, documents, and evaluation sets before standardizing.',
     keyPoints: [
-      'Benchmark convergence: the Artificial Analysis Intelligence Index shows open-weights models converging with proprietary over 2024\u20132026; on MMLU, HumanEval, and MATH the best open-weights models match or surpass proprietary offerings <a href="#source-19">[19]</a>',
-      'Current model families all supported by vLLM: Llama 4 Maverick, DeepSeek R2, Gemma 4, Qwen 3.5, Mistral, IBM Granite <a href="#source-14">[14]</a>',
-      'Self-hosted open-weights inference can run at substantially lower per-token cost than proprietary APIs, depending on utilization and workload',
-      'Fine-tuning on domain data routinely outperforms generic frontier checkpoints, and open weights make this possible without vendor approval',
-      'Evaluate with your own data, not only public leaderboards'
+      'Artificial Analysis tracks open-weight progress against proprietary systems over time <a href="#source-19">[19]</a>',
+      'vLLM supported-model docs list current open-weight families across text, multimodal, and pooling tasks <a href="#source-14">[14]</a>',
+      'Model quality should be validated on your domain data, not only on public leaderboards',
+      'Open weights give you deployment and fine-tuning flexibility when your policy allows it',
+      'Do not treat any single public leaderboard as a complete substitute for task-specific evaluation',
     ]
-  }
+  },
 ];

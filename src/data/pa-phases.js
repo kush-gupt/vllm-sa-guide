@@ -66,7 +66,7 @@ export const paPhases = [
       },
       {
         title: 'The result',
-        caption: 'Waste stays near zero because blocks never relocate and reservations are never over-provisioned. Memory goes to tokens instead of bookkeeping.',
+        caption: 'Waste stays low in this layout because blocks are allocated on demand and reservations are not oversized up front. More memory goes to tokens instead of unused padding.',
         cells: [
           { owner: 'B', label: 'B0', sub: 'Sys prompt', state: 'shared', tone: 'a' },
           { owner: 'B', label: 'B2', sub: 'Decode', state: 'active', tone: 'b' },

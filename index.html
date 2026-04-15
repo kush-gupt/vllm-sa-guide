@@ -214,7 +214,7 @@
       </div>
 
       <div class="exec-summary reveal">
-        <p>When your application uses an AI model to answer questions, write text, or process documents, every response requires GPU compute time. <strong>vLLM is open-source software that makes those responses faster and serves more users on the same hardware.</strong> Teams adopt it to reduce cloud GPU costs, keep data on their own infrastructure, and avoid per-query billing from API providers.</p>
+        <p>When your application uses an AI model to answer questions, write text, or process documents, every response requires GPU compute time. <strong>vLLM is an open-source inference and serving engine built for high-throughput, memory-efficient LLM serving.</strong> Teams adopt it when they want more control over hardware choice, deployment shape, and cost model than a managed API provides. <a href="#source-10">[10]</a></p>
       </div>
 
       <div class="journey-map reveal">
@@ -307,12 +307,12 @@
                 <svg width="36" height="36" fill="none" stroke="var(--green)" stroke-width="1.5"><use href="#icon-shield-check"/></svg>
               </div>
               <h3>Production-Ready</h3>
-              <p>Run on <abbr data-tip="Orchestrates containers: schedules pods, scales replicas, and rolls out updates across a cluster.">Kubernetes</abbr> with community images, follow published security guidance, and buy enterprise support from vendors such as Red Hat.</p>
+              <p>Run on <abbr data-tip="Orchestrates containers: schedules pods, scales replicas, and rolls out updates across a cluster.">Kubernetes</abbr> with documented KServe integrations, published security guidance, and vendor-supported deployment options. <a href="#source-16">[16]</a> <a href="#source-28">[28]</a> <a href="#source-24">[24]</a></p>
             </div>
           </div>
 
           <div class="quickstart-cost-callout">
-            <strong>Cost impact:</strong> Cloud GPU list prices often land from a few dollars to tens of dollars per GPU-hour, depending on chip, region, and contract. Cutting the GPU count for the same traffic can trim that bill by a significant amount.
+            <strong>Cost impact:</strong> GPU-hour pricing varies widely by accelerator, region, and contract. The useful comparison is your own measured cost per token or cost per request under representative load, not a generic market average. <a href="#source-21">[21]</a> <a href="#source-23">[23]</a>
           </div>
 
           <div class="quickstart-biz-outcomes">
@@ -324,11 +324,11 @@
               </div>
               <div class="biz-outcome">
                 <strong>Data stays yours</strong>
-                <span>Prompts and responses never leave your network.</span>
+                <span>Self-hosted inference lets prompts and responses stay on infrastructure you control.</span>
               </div>
               <div class="biz-outcome">
                 <strong>No per-token billing</strong>
-                <span>Costs scale with GPU capacity, not request volume.</span>
+                <span>Self-hosted costs are driven mainly by capacity and utilization rather than per-request token metering.</span>
               </div>
               <div class="biz-outcome">
                 <strong>Vendor flexibility</strong>
@@ -397,11 +397,11 @@
         <div class="landscape-grid">
           <div class="landscape-card landscape-vllm">
             <h4>vLLM</h4>
-            <p>Strong open-source default for high-<abbr data-tip="Output tokens per second summed across all in-flight requests. Use it to size batch-scale capacity.">throughput</abbr> serving, broad model support, OpenAI-compatible APIs, and research-to-production features such as PagedAttention, unified scheduling, and prefix caching. <a href="#source-10">[10]</a></p>
+            <p>Open-source serving engine focused on high-<abbr data-tip="Output tokens per second summed across all in-flight requests. Use it to size batch-scale capacity.">throughput</abbr> inference, broad model support, OpenAI-compatible APIs, and features such as PagedAttention, unified scheduling, and prefix caching. <a href="#source-10">[10]</a></p>
           </div>
           <div class="landscape-card">
             <h4><abbr data-tip="Text Generation Inference, Hugging Face's stack for serving text generation models.">TGI</abbr></h4>
-            <p>Hugging Face moved TGI to maintenance mode in late 2025 and documents vLLM or SGLang as replacement engines. The TGI README states the same maintenance policy and recommends vLLM, SGLang, llama.cpp, or MLX for new serving stacks where those runtimes fit.</p>
+            <p>Hugging Face documents TGI as maintenance mode and recommends newer engines such as vLLM or SGLang for future serving-stack work where they fit. <a href="#source-20">[20]</a></p>
           </div>
           <div class="landscape-card">
             <h4><abbr data-tip="NVIDIA's compiled LLM runtime for CUDA GPUs.">TensorRT-LLM</abbr></h4>
@@ -409,7 +409,7 @@
           </div>
           <div class="landscape-card">
             <h4><abbr data-tip="Open LLM server with RadixAttention prefix caching, structured outputs, and a program-style frontend API.">SGLang</abbr></h4>
-            <p>Shows up in fast-moving research and developer conversations around structured generation, scheduling ideas, and advanced serving ergonomics.</p>
+            <p>SGLang is an active open-source serving stack whose official materials emphasize RadixAttention, structured generation, and gateway/routing features. <a href="#source-18">[18]</a></p>
           </div>
         </div>
       </div>
@@ -529,7 +529,7 @@
                 <td><strong>Structured Output</strong></td>
                 <td>JSON schema constraints and regex or grammar guards</td>
                 <td>Safer integration with tools and downstream systems</td>
-                <td class="col-plain">The model's output always matches a format your code can parse</td>
+                <td class="col-plain">The model's output is constrained to a format your code can parse</td>
               </tr>
               <tr>
                 <td><strong>Prefix Caching</strong></td>
@@ -674,11 +674,11 @@
       <div class="section-header reveal">
         <span class="section-num">04</span>
         <h2>TCO &amp; ROI <span class="section-tier tier-1">Business focus</span></h2>
-        <p class="section-lead">The economics of self-hosted inference depend on three variables: GPU infrastructure cost, operational overhead, and what you would pay an API provider for the same work. <a href="#source-21">[21]</a></p>
+        <p class="section-lead">The economics of self-hosted inference depend on infrastructure cost, operational overhead, and what an API provider charges for the same workload. Use representative benchmarking instead of generic break-even claims. <a href="#source-21">[21]</a> <a href="#source-31">[31]</a></p>
       </div>
 
       <div class="exec-summary reveal">
-        <p>Self-hosted inference trades a fixed GPU cost for variable per-token API billing. At low volume the API wins on simplicity; at production scale the math reverses. <strong>The break-even depends on your traffic pattern, model size, and serving-stack configuration.</strong> GuideLLM and vLLM&rsquo;s built-in benchmarks produce the throughput numbers you need for this calculation. <a href="#source-21">[21]</a></p>
+        <p>Self-hosted inference trades metered API pricing for capacity you manage. Break-even depends on measured throughput, utilization, infrastructure cost, and operations. GuideLLM and vLLM benchmarks provide the throughput side of that equation, but the answer is still workload-specific. <a href="#source-21">[21]</a> <a href="#source-23">[23]</a> <a href="#source-31">[31]</a></p>
       </div>
 
       <div class="problem-grid reveal stagger-children">
@@ -687,156 +687,120 @@
             <svg width="48" height="48" fill="none" stroke="var(--green)" stroke-width="1.5"><use href="#icon-monitor"/></svg>
           </div>
           <h3>GPU Infrastructure</h3>
-          <p>Cloud GPU pricing spans five generations today&mdash;from the still-common A100 through Blackwell Ultra (B300&thinsp;/&thinsp;GB300). Raw hourly cost is misleading; the metric that matters is <strong>effective cost per token = hourly rate &divide; (throughput &times; 3,600)</strong>. A more expensive GPU that doubles throughput delivers a lower per-token cost. The table below compares the landscape. <a href="#source-19">[19]</a></p>
+          <p>Raw GPU-hour cost is only one input. The more useful metric is an effective cost per token or per request: take your real hourly or amortized infrastructure cost and divide it by measured throughput under representative prompts and concurrency. <a href="#source-21">[21]</a> <a href="#source-23">[23]</a></p>
         </div>
         <div class="problem-card">
           <div class="problem-icon">
             <svg width="48" height="48" fill="none" stroke="var(--green)" stroke-width="1.5"><use href="#icon-gear"/></svg>
           </div>
           <h3>Operational Overhead</h3>
-          <p>Running your own inference means monitoring, upgrades, and on-call staffing. The <a href="https://blog.vllm.ai/2025/01/21/stack-release.html" target="_blank" rel="noopener noreferrer">vLLM production-stack</a> ships built-in autoscaling, observability, and fault tolerance. Enterprise support from Red Hat covers patching and on-call escalation. <a href="#source-22">[22]</a></p>
+          <p>Running your own inference adds deployment, monitoring, upgrades, and support work. The vLLM production-stack and OpenShift AI materials show reference patterns for autoscaling, observability, packaging, and cluster deployment; include that work in the business case. <a href="#source-22">[22]</a> <a href="#source-24">[24]</a></p>
         </div>
         <div class="problem-card">
           <div class="problem-icon">
             <svg width="48" height="48" fill="none" stroke="var(--green)" stroke-width="1.5"><use href="#icon-bolt"/></svg>
           </div>
           <h3>API Pricing at Scale</h3>
-          <p>Per-token billing from cloud API providers adds up at high volume. When a self-hosted GPU achieves thousands of tokens per second, the effective cost per million tokens drops by orders of magnitude compared to API pricing. <a href="#source-19">[19]</a></p>
+          <p>Commercial APIs publish per-token prices. Compare those published prices directly against your self-hosted cost model instead of assuming one universal traffic threshold where the economics flip. <a href="#source-31">[31]</a> <a href="#source-21">[21]</a></p>
         </div>
       </div>
 
       <div class="feature-matrix-wrap reveal" style="margin-bottom: 36px;">
-        <h3 style="margin-bottom: 12px;">GPU Landscape for LLM Inference</h3>
+        <h3 style="margin-bottom: 12px;">Inputs for a Cost Model</h3>
         <table class="feature-matrix">
           <thead>
             <tr>
-              <th>GPU</th>
-              <th><abbr data-tip="High-Bandwidth Memory per GPU.">HBM</abbr></th>
-              <th><abbr data-tip="Memory bandwidth per GPU.">BW</abbr></th>
-              <th>Cloud&thinsp;$/hr<br><small>(specialist&thinsp;&ndash;&thinsp;major)</small></th>
-              <th><abbr data-tip="Approximate relative decode throughput on a Llama-70B-class dense model vs. A100 baseline. Actual numbers depend on model, batch size, quantization, and vLLM tuning.">Relative tok/s</abbr></th>
-              <th><abbr data-tip="Estimated effective cost per million output tokens using midrange hourly pricing and typical throughput. Formula: $/hr &divide; (tok/s &times; 3,600) &times; 1M. Actuals vary with utilization and workload.">~$/M&thinsp;tokens</abbr></th>
+              <th>Input</th>
+              <th>How to Measure</th>
+              <th>Why It Matters</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><strong>A100 80&thinsp;GB</strong></td>
-              <td>80&thinsp;GB HBM2e</td>
-              <td>2.0&thinsp;TB/s</td>
-              <td>$0.70&ndash;6</td>
-              <td>1&times;</td>
-              <td>~$0.28</td>
+              <td><strong>Infrastructure cost</strong></td>
+              <td>Use your real hourly GPU rate, reserved-instance rate, or amortized on-prem cost.</td>
+              <td>This is the numerator in any self-hosted cost-per-token calculation.</td>
             </tr>
             <tr>
-              <td><strong>H100 SXM</strong></td>
-              <td>80&thinsp;GB HBM3</td>
-              <td>3.35&thinsp;TB/s</td>
-              <td>$1.30&ndash;12</td>
-              <td>~2&times;</td>
-              <td>~$0.19</td>
+              <td><strong>Measured throughput</strong></td>
+              <td>Benchmark on representative prompts, outputs, and concurrency with GuideLLM or vLLM tools.</td>
+              <td>Throughput determines how much useful work that infrastructure cost actually buys. <a href="#source-21">[21]</a> <a href="#source-23">[23]</a></td>
             </tr>
             <tr>
-              <td><strong>H200</strong></td>
-              <td>141&thinsp;GB HBM3e</td>
-              <td>4.8&thinsp;TB/s</td>
-              <td>$1.50&ndash;11</td>
-              <td>~2.5&ndash;3&times;</td>
-              <td>~$0.14</td>
+              <td><strong>Utilization and duty cycle</strong></td>
+              <td>Estimate how often the GPUs are busy versus idle across your real traffic pattern.</td>
+              <td>Idle capacity can dominate the economics of spiky or low-volume workloads.</td>
             </tr>
             <tr>
-              <td><strong>B200</strong> <small>(Blackwell)</small></td>
-              <td>192&thinsp;GB HBM3e</td>
-              <td>8&thinsp;TB/s</td>
-              <td>$1.70&ndash;7</td>
-              <td>~4&ndash;5&times;</td>
-              <td>~$0.10</td>
+              <td><strong>Operational overhead</strong></td>
+              <td>Include deployment, monitoring, patching, on-call, and support contracts.</td>
+              <td>Self-hosting is not only a hardware decision. <a href="#source-22">[22]</a> <a href="#source-24">[24]</a></td>
             </tr>
             <tr>
-              <td><strong>B300</strong> <small>(Blackwell Ultra)</small></td>
-              <td>288&thinsp;GB HBM3e</td>
-              <td>8&thinsp;TB/s</td>
-              <td colspan="1">Preorder</td>
-              <td>~5&ndash;6&times;</td>
-              <td>&mdash;</td>
-            </tr>
-            <tr>
-              <td><strong>GB200 NVL72</strong> <small>(rack-scale)</small></td>
-              <td>192&thinsp;GB/GPU</td>
-              <td>NVLink&thinsp;72</td>
-              <td>$11&ndash;19/GPU</td>
-              <td colspan="2" style="text-align:center;"><em>See <a href="https://blog.vllm.ai/2026/02/03/dsr1-gb200-part1.html" target="_blank" rel="noopener noreferrer">vLLM GB200 blog</a></em></td>
-            </tr>
-            <tr>
-              <td><strong>GB300 NVL72</strong> <small>(rack-scale)</small></td>
-              <td>288&thinsp;GB/GPU</td>
-              <td>NVLink&thinsp;72</td>
-              <td>Preorder</td>
-              <td colspan="2" style="text-align:center;"><em>8&ndash;20&times; vs.&thinsp;Hopper on MoE&thinsp;+&thinsp;FP4 &mdash; <a href="https://blog.vllm.ai/2026/02/13/gb300-deepseek.html" target="_blank" rel="noopener noreferrer">vLLM GB300 blog</a></em></td>
+              <td><strong>API pricing baseline</strong></td>
+              <td>Use the provider&rsquo;s published token pricing for the model and tier you are actually comparing against.</td>
+              <td>This is the baseline alternative to self-hosting. <a href="#source-31">[31]</a></td>
             </tr>
           </tbody>
         </table>
         <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 10px;">
-          <strong>$/M&thinsp;tokens</strong> estimates assume midrange specialist-provider pricing and Llama-70B-class decode throughput. GB200&thinsp;/&thinsp;GB300 are rack-scale systems; per-GPU throughput benchmarks on DeepSeek MoE models with <abbr data-tip="NVIDIA FP4 quantization format. Halves weight memory vs. FP8 and leverages Blackwell's native FP4 Tensor Cores.">NVFP4</abbr> are from vLLM v0.14.1. Hourly rates span specialist providers (RunPod, Lambda, Verda) to major clouds (AWS, Azure, GCP); reserved and spot pricing can be significantly lower. Self-hosting amortizes a fixed GPU cost across all requests rather than paying per token. <a href="#source-19">[19]</a>
+          A practical self-hosted comparison is: <strong>effective cost per million tokens = hourly or amortized infrastructure cost / measured tokens per second / 3,600 × 1,000,000</strong>. Use representative workloads, not toy prompts, when you collect the throughput number. <a href="#source-21">[21]</a> <a href="#source-23">[23]</a>
         </p>
       </div>
 
       <div class="quickstart-banner reveal">
         <div class="quickstart-header">
-          <span class="section-tier tier-overview">Cost comparison</span>
-          <h3>Self-Hosted vs. API: When Does the Math Flip?</h3>
+          <span class="section-tier tier-overview">Workload patterns</span>
+          <h3>How Different Workloads Change the Math</h3>
         </div>
         <div class="quickstart-body">
-          <p class="quickstart-pitch">The break-even point depends on volume. Low-traffic prototypes cost less on cloud APIs. Production workloads with consistent throughput favor self-hosting. Three common workload profiles show where the line falls.</p>
+          <p class="quickstart-pitch">The same engine can look cheap or expensive depending on duty cycle, prompt shape, and latency targets. Use workload-specific benchmarks to decide which side of the trade-off matters more.</p>
 
           <div class="feature-matrix-wrap reveal">
             <table class="feature-matrix">
               <thead>
                 <tr>
                   <th>Workload Profile</th>
-                  <th>Traffic Pattern</th>
-                  <th>API Provider Cost Driver</th>
-                  <th>Self-Hosted Cost Driver</th>
-                  <th>Break-Even Favors</th>
+                  <th>Important Variables</th>
+                  <th>What to Measure First</th>
+                  <th>Likely Outcome</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td><strong>RAG Chatbot</strong></td>
-                  <td>Short prompts, moderate concurrency, Poisson arrivals</td>
-                  <td>Per-token output billing; volume unpredictable</td>
-                  <td>GPU mostly idle at low QPS; prefix caching helps shared-context workloads</td>
-                  <td>Self-host above ~100 concurrent users</td>
+                  <td>Prefix reuse, burstiness, TTFT and ITL targets, traffic predictability</td>
+                  <td>TTFT, ITL, prefix-cache hit rate, and average utilization</td>
+                  <td>Can go either way; self-hosting gets more compelling as demand and reuse become steady</td>
                 </tr>
                 <tr>
                   <td><strong>Batch Document Processing</strong></td>
-                  <td>Long prompts, high throughput, saturated GPU</td>
-                  <td>Input token costs dominate; large batch bills accumulate quickly</td>
-                  <td>GPU fully utilized; cost is fixed per hour regardless of tokens processed</td>
-                  <td>Self-host almost always at batch scale</td>
+                  <td>Long prompts, high duty cycle, queue tolerance, sustained throughput</td>
+                  <td>Output tokens/sec, queue time, and effective cost per token</td>
+                  <td>Often the easiest case for self-hosting because utilization can stay high</td>
                 </tr>
                 <tr>
                   <td><strong>Code Assistant</strong></td>
-                  <td>Streaming, low latency SLOs, interactive</td>
-                  <td>Low latency requires premium API tiers; output tokens add up</td>
-                  <td>Requires tuned <code>--max-num-batched-tokens</code> and potentially TP for TTFT SLOs</td>
-                  <td>Self-host when latency SLO matters and volume justifies a dedicated GPU</td>
+                  <td>Low-latency SLOs, long contexts, multi-turn locality, peak concurrency</td>
+                  <td>P95 TTFT, P99 ITL, context-length distribution, and required headroom</td>
+                  <td>Dedicated self-hosted capacity can make sense when latency SLOs and demand are both steady</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <p class="quickstart-pitch" style="margin-top: 20px;">These profiles map to <a href="https://github.com/vllm-project/guidellm" target="_blank" rel="noopener noreferrer">GuideLLM</a> load profiles: Poisson arrivals for the chatbot, throughput-saturated for batch processing, and constant-rate for the code assistant. Run <code>guidellm</code> against your own endpoint to get real numbers. <a href="#source-23">[23]</a></p>
+          <p class="quickstart-pitch" style="margin-top: 20px;">GuideLLM supports synthetic or custom datasets plus rate types such as constant, concurrency, Poisson, and sweep-style tests. Use those modes to build a benchmark that actually resembles your production traffic. <a href="#source-23">[23]</a></p>
         </div>
       </div>
 
       <details class="plain-english reveal">
         <summary>When self-hosting does <em>not</em> save money</summary>
-        <p>Self-hosting is not always the right call. API providers win when traffic volume is low or unpredictable (below roughly 50M tokens per month), when you need access to frontier proprietary models that are not available as open weights, or when the team lacks GPU infrastructure and the speed of getting started matters more than per-token cost. Start with an API for prototyping, measure your production volume with GuideLLM, and migrate to self-hosted when the numbers justify it. <a href="#source-21">[21]</a></p>
+        <p>Self-hosting is not always the right call. Managed APIs often win when traffic is sporadic, when proprietary model access matters more than infrastructure control, or when GPU operations overhead would dominate the savings. Keep the decision empirical: measure representative throughput, compare it to published API pricing, and include support and operations in the model. <a href="#source-21">[21]</a> <a href="#source-31">[31]</a></p>
       </details>
 
       <details class="plain-english reveal">
         <summary>How to measure your own cost-per-token</summary>
-        <p>Divide your GPU-hour cost by measured throughput (tokens/sec) to get cost per million tokens, then compare against your API provider&rsquo;s pricing. The <a href="#tuning">Performance Tuning</a> section covers representative benchmarking methodology with GuideLLM in detail. <a href="#source-21">[21]</a></p>
+        <p>Divide your hourly or amortized infrastructure cost by measured throughput (tokens/sec) to get cost per million tokens, then compare that against the provider&rsquo;s published token pricing for the model tier you are using. The <a href="#tuning">Performance Tuning</a> section covers representative benchmarking methodology with GuideLLM in more detail. <a href="#source-21">[21]</a> <a href="#source-31">[31]</a></p>
       </details>
     </div>
   </section>
@@ -847,11 +811,11 @@
       <div class="section-header reveal">
         <span class="section-num">05</span>
         <h2>Adoption Playbook <span class="section-tier tier-1">Business focus</span></h2>
-        <p class="section-lead">A structured path from evaluation to production. Each phase maps to vLLM deployment modes, tooling, and enterprise support options.</p>
+        <p class="section-lead">A structured path from evaluation to production. Each phase maps to documented vLLM deployment modes, benchmarking steps, and support options.</p>
       </div>
 
       <div class="exec-summary reveal">
-        <p><strong>vLLM can serve its first request in one command, and the same engine scales to Kubernetes without rewriting anything.</strong> Three phases, each with concrete exit criteria, take you from a single-GPU proof of concept to production.</p>
+        <p><strong>You can start with <code>vllm serve &lt;model&gt;</code> for local evaluation and then move into Kubernetes-based deployment patterns documented by vLLM and KServe.</strong> Three phases, each with concrete exit criteria, take you from a single-GPU proof of concept to production. <a href="#source-10">[10]</a> <a href="#source-16">[16]</a></p>
       </div>
 
       <div class="problem-grid reveal stagger-children">
@@ -860,14 +824,14 @@
             <svg width="48" height="48" fill="none" stroke="var(--green)" stroke-width="1.5"><use href="#icon-crosshair"/></svg>
           </div>
           <h3>Data Residency</h3>
-          <p>Do prompts and responses need to stay on your network? All vLLM inter-node communication is local by design. No data leaves your infrastructure. The security guide documents how to isolate those channels. <a href="#source-28">[28]</a></p>
+          <p>Do prompts and responses need to stay on your network? Self-hosted vLLM lets inference traffic stay on infrastructure you control, but the security guide also notes that multi-node communications are insecure by default and should be isolated on trusted networks. <a href="#source-28">[28]</a></p>
         </div>
         <div class="problem-card">
           <div class="problem-icon">
             <svg width="48" height="48" fill="none" stroke="var(--green)" stroke-width="1.5"><use href="#icon-chip"/></svg>
           </div>
           <h3>Hardware Compatibility</h3>
-          <p>vLLM runs on CUDA, ROCm, Intel XPU, and CPU. If you have GPU instances from any major cloud or on-prem accelerators, there is likely a supported path. <a href="#source-14">[14]</a></p>
+          <p>The vLLM project documents support for CUDA, ROCm, Intel XPU, CPU, and additional accelerator plugins in the wider vllm-project organization. If you already run modern accelerator fleets, there is usually a documented path to start evaluating. <a href="#source-10">[10]</a></p>
         </div>
         <div class="problem-card">
           <div class="problem-icon">
@@ -938,8 +902,8 @@
                 <tr>
                   <td><strong>3 &mdash; Production</strong></td>
                   <td>vLLM production-stack or KServe with autoscaling, observability, and routing <a href="#source-22">[22]</a> <a href="#source-16">[16]</a></td>
-                  <td>Multi-model serving, LoRA adapters, enterprise support (Red Hat AI Inference Server) <a href="#source-24">[24]</a></td>
-                  <td>Uptime SLO met; cost savings validated against API billing baseline</td>
+                  <td>Multi-model serving, LoRA adapters, and supportable operational ownership <a href="#source-24">[24]</a></td>
+                  <td>Uptime SLO met; cost model reviewed against measured throughput and current API pricing baseline <a href="#source-31">[31]</a></td>
                 </tr>
               </tbody>
             </table>
@@ -963,21 +927,21 @@
             <svg width="48" height="48" fill="none" stroke="var(--red)" stroke-width="1.5"><use href="#icon-shield"/></svg>
           </div>
           <h3>Security</h3>
-          <p>Data residency, endpoint protection (reverse proxy, API key limits), network isolation for inter-node ZMQ and PyTorch Distributed traffic, FIPS compliance. <a href="#source-28">[28]</a></p>
+          <p>Data residency, endpoint protection (reverse proxy, API-key limitations), network isolation for inter-node ZMQ and PyTorch Distributed traffic, and pre-production hardening checks. <a href="#source-28">[28]</a></p>
         </div>
         <div class="problem-card">
           <div class="problem-icon">
             <svg width="48" height="48" fill="none" stroke="var(--red)" stroke-width="1.5"><use href="#icon-chip"/></svg>
           </div>
           <h3>ML / Data Science</h3>
-          <p>Model selection from 200+ supported architectures, quantization options (AWQ, GPTQ, FP8), accuracy validation with lm_eval, LoRA adapter management. <a href="#source-14">[14]</a></p>
+          <p>Model selection from the supported-model catalog, quantization options, accuracy validation, and LoRA adapter management. <a href="#source-14">[14]</a></p>
         </div>
         <div class="problem-card">
           <div class="problem-icon">
             <svg width="48" height="48" fill="none" stroke="var(--green)" stroke-width="1.5"><use href="#icon-target"/></svg>
           </div>
           <h3>Procurement / Finance</h3>
-          <p>TCO analysis from the <a href="#tco">previous section</a>, enterprise support contracts (Red Hat AI Inference Server), GPU lease vs. buy decisions, and measurable success criteria.</p>
+          <p>TCO analysis from the <a href="#tco">previous section</a>, support contracts, GPU lease-vs-buy decisions, and measurable success criteria. <a href="#source-24">[24]</a></p>
         </div>
       </div>
 
@@ -985,10 +949,10 @@
         <summary>Success criteria template</summary>
         <p>Tie your go/no-go decision to metrics vLLM exposes:</p>
         <ul>
-          <li><strong>Latency SLOs:</strong> TTFT &lt; X ms, ITL &lt; Y ms, measured via <code>vllm:time_to_first_token_seconds</code> and <code>vllm:inter_token_latency_seconds</code> Prometheus histograms</li>
-          <li><strong>Cost reduction:</strong> tokens/sec per GPU-dollar, compared against API provider billing. Measured via GuideLLM throughput benchmarks <a href="#source-21">[21]</a></li>
-          <li><strong>Uptime:</strong> <code>/health</code> endpoint availability &ge; target (e.g. 99.9%). vLLM returns 200 when healthy, 503 on engine failure</li>
-          <li><strong>Operational readiness:</strong> Monitoring dashboards active, on-call runbook documented, graceful shutdown tested (<code>--shutdown-timeout</code>)</li>
+          <li><strong>Latency SLOs:</strong> TTFT &lt; X ms, ITL &lt; Y ms, measured via <code>vllm:time_to_first_token_seconds</code> and <code>vllm:inter_token_latency_seconds</code> Prometheus histograms <a href="#source-25">[25]</a></li>
+          <li><strong>Cost reduction:</strong> tokens/sec per infrastructure dollar, compared against published API pricing. Measured via GuideLLM throughput benchmarks <a href="#source-21">[21]</a> <a href="#source-31">[31]</a></li>
+          <li><strong>Uptime:</strong> <code>/health</code> endpoint availability meets your target, paired with platform probes and alerting</li>
+          <li><strong>Operational readiness:</strong> Monitoring dashboards active, on-call runbook documented, graceful shutdown tested (<code>--shutdown-timeout</code>) <a href="#source-22">[22]</a></li>
         </ul>
       </details>
     </div>
@@ -1018,7 +982,7 @@
               <svg width="36" height="36" fill="none" stroke="var(--red)" stroke-width="1.5"><use href="#icon-box"/></svg>
             </div>
             <h4>Optimized Models</h4>
-            <p>Multiple organizations publish optimized, quantized models on Hugging Face that are tested and ready for production with vLLM.</p>
+            <p>Many organizations publish quantized or otherwise optimized checkpoints on Hugging Face. Treat those as starting points for evaluation rather than automatic production approval, and validate them on your own prompts, latency targets, and safety requirements.</p>
           </div>
         </div>
 
@@ -1027,7 +991,7 @@
             <svg width="28" height="28" fill="none" stroke="var(--red)" stroke-width="1.5"><use href="#icon-shield"/></svg>
             <h4>Security and Compliance</h4>
           </div>
-          <p class="security-callout-lead">vLLM is built for throughput; production security requires layers around it. The <a href="#hardening">Production Hardening</a> section covers reverse proxy setup, network isolation, FIPS compliance, SSRF protection, and the full pre-production security checklist. <a href="#source-28">[28]</a></p>
+          <p class="security-callout-lead">vLLM is built for throughput; production security requires layers around it. The <a href="#hardening">Production Hardening</a> section covers reverse proxy setup, network isolation, SSRF protection, FIPS-sensitive deployment considerations, and the full pre-production security checklist. <a href="#source-28">[28]</a></p>
         </div>
       </div>
 
@@ -1402,7 +1366,7 @@ spec:
           </tbody>
         </table>
       </div>
-      <p class="reveal" style="color: var(--text-muted); margin-top: 12px;">On each completed request, vLLM&rsquo;s output processor emits a <code>llm_request</code> span with GenAI-style attributes. These spans flow into Jaeger, Tempo, Datadog, or any OTLP-compatible backend.</p>
+      <p class="reveal" style="color: var(--text-muted); margin-top: 12px;">With an OTLP collector configured, request traces can flow into Jaeger, Tempo, Datadog, or any other OTLP-compatible backend you already use.</p>
 
       <h3 class="reveal" style="margin-top: 36px;">Troubleshooting Decision Tree</h3>
       <p class="reveal" style="color: var(--text-muted); margin-bottom: 16px;">Each branch pairs a Prometheus metric with the configuration flag to change.</p>
@@ -1501,9 +1465,9 @@ spec:
               <td><code>--ssl-keyfile</code>, <code>--ssl-certfile</code>, <code>--ssl-ca-certs</code>. For TLS 1.2 cipher control: <code>--ssl-ciphers</code></td>
             </tr>
             <tr>
-              <td><strong>FIPS 140-3 compliance</strong></td>
-              <td>Required for government and regulated deployments</td>
-              <td>Set <code>VLLM_MM_HASHER_ALGORITHM=sha256</code> (default <code>blake3</code> is not FIPS-compliant). Internal config hashing uses <code>safe_hash(usedforsecurity=False)</code> which falls back from MD5 to SHA-256 in FIPS-constrained environments</td>
+              <td><strong>FIPS-sensitive environments</strong></td>
+              <td>Some regulated deployments need approved cryptographic settings and validation.</td>
+              <td>Use the documented hashing and TLS-related settings from the security guide, then validate the full deployment with your compliance team before claiming FIPS readiness. <a href="#source-28">[28]</a></td>
             </tr>
             <tr>
               <td><strong>Network isolation</strong></td>
@@ -1523,7 +1487,7 @@ spec:
             <tr>
               <td><strong>Request parameter limits</strong></td>
               <td>The <code>n</code> parameter can cause resource exhaustion if set very high</td>
-              <td><code>VLLM_MAX_N_SEQUENCES</code> (default 16384). For public-facing deployments, set to 64 or 128</td>
+              <td>Set <code>VLLM_MAX_N_SEQUENCES</code> to a deployment-appropriate cap for public-facing traffic rather than leaving the risk unbounded. <a href="#source-28">[28]</a></td>
             </tr>
           </tbody>
         </table>
@@ -1548,13 +1512,13 @@ spec:
             </tr>
             <tr>
               <td><strong>Health endpoint</strong></td>
-              <td><code>GET /health</code> returns 200 when the engine is healthy, 503 on <code>EngineDeadError</code></td>
-              <td>Use for both liveness and readiness probes: <code>httpGet /health:8000</code> with <code>initialDelaySeconds: 60</code>. Increase <code>failureThreshold</code> for large models (load time can exceed default timeout)</td>
+              <td><code>GET /health</code> gives the orchestrator a simple liveness and readiness signal.</td>
+              <td>Use it for both liveness and readiness probes, and tune initial delays and thresholds for the model load time you actually observe.</td>
             </tr>
             <tr>
               <td><strong>Graceful shutdown</strong></td>
-              <td>Default behavior (<code>--shutdown-timeout 0</code>) aborts all in-flight requests on SIGTERM</td>
-              <td>Set <code>--shutdown-timeout N</code> (seconds) to drain in-flight requests before exit. The engine logs &ldquo;Draining N in-flight requests (timeout=Xs)&rdquo; when N &gt; 0</td>
+              <td>Without a drain window, restarts can interrupt in-flight requests.</td>
+              <td>Set <code>--shutdown-timeout N</code> to give the server time to finish or drain active work before exit.</td>
             </tr>
             <tr>
               <td><strong>Logging controls</strong></td>
@@ -1639,7 +1603,7 @@ spec:
           <span class="pa-pill">Grow without relocating</span>
           <span class="pa-pill">Share prefix KV blocks</span>
           <span class="pa-pill">Return blocks to the pool on completion</span>
-          <span class="pa-pill">Near-zero KV cache waste</span>
+          <span class="pa-pill">Lower KV cache waste</span>
         </div>
       </div>
       <div class="pa-cinema reveal" id="pa-cinema" data-phase="0">
@@ -2112,7 +2076,7 @@ engine_core_outputs = self.scheduler.update_from_output(
             </button>
             <div class="comp-card-body">
               <div>
-                <p>The Input Processor tokenizes text (and encodes images/audio) in the API server process. The Output Processor detokenizes new tokens and streams them back as <abbr data-tip="Server-Sent Events: one HTTP response streams chunks to the client as they are ready.">SSE</abbr> events. Both run in the API process, which communicates with the engine core via ZMQ, so the engine core never stalls on string operations.</p>
+                <p>The Input Processor tokenizes text (and encodes images/audio) in the API server process. The Output Processor detokenizes new tokens and streams them back as <abbr data-tip="Server-Sent Events: one HTTP response streams chunks to the client as they are ready.">SSE</abbr> events. Both run in the API process, which communicates with the engine core via ZMQ, so tokenization and detokenization stay off the core GPU scheduling path.</p>
                 <p class="comp-card-why"><strong>Why it matters:</strong> Tokenization and detokenization are CPU-bound. Running them in a separate process from the GPU scheduler prevents them from adding latency to the critical engine loop.</p>
                 <code class="code-path">vllm/v1/engine/input_processor.py</code>
                 <code class="code-path">vllm/v1/engine/output_processor.py</code>
@@ -2564,17 +2528,17 @@ curl http://localhost:8000/v1/models</code></pre>
           <li id="source-7">IETF Internet-Draft, <a href="https://www.ietf.org/archive/id/draft-gaikwad-llm-benchmarking-methodology-00.html" target="_blank" rel="noopener noreferrer">Benchmarking Methodology for Large Language Model Serving</a>.</li>
           <li id="source-8">vLLM docs, <a href="https://docs.vllm.ai/en/latest/configuration/optimization.html" target="_blank" rel="noopener noreferrer">Optimization and Tuning</a> (chunked prefill defaults, preemption, tuning parameters).</li>
           <li id="source-9">Kwon et al., <a href="https://arxiv.org/abs/2309.06180" target="_blank" rel="noopener noreferrer">Efficient Memory Management for Large Language Model Serving with PagedAttention</a>, SOSP 2023 (2&ndash;4&times; throughput improvement, PagedAttention design).</li>
-          <li id="source-10">vLLM project, <a href="https://github.com/vllm-project/vllm" target="_blank" rel="noopener noreferrer">GitHub repository and README</a> (contributor count, hardware support, feature list, model coverage).</li>
+          <li id="source-10">vLLM project, <a href="https://github.com/vllm-project/vllm" target="_blank" rel="noopener noreferrer">GitHub repository and README</a> (hardware support, feature list, OpenAI-compatible serving, project links).</li>
           <li id="source-11">vLLM docs, <a href="https://github.com/vllm-project/vllm/blob/main/docs/design/arch_overview.md" target="_blank" rel="noopener noreferrer">Architecture Overview</a> (V1 multi-process architecture, process counts, entrypoints).</li>
           <li id="source-12">vLLM docs, <a href="https://docs.vllm.ai/en/latest/serving/parallelism_scaling.html" target="_blank" rel="noopener noreferrer">Parallelism and Scaling</a> (TP, PP overview); see also <a href="https://docs.vllm.ai/en/latest/serving/data_parallel_deployment.html" target="_blank" rel="noopener noreferrer">Data Parallel Deployment</a> (DP + MoE), <a href="https://docs.vllm.ai/en/latest/serving/expert_parallel_deployment.html" target="_blank" rel="noopener noreferrer">Expert Parallel Deployment</a> (EP), and <a href="https://docs.vllm.ai/en/latest/serving/context_parallel_deployment.html" target="_blank" rel="noopener noreferrer">Context Parallel Deployment</a> (CP).</li>
           <li id="source-13">vLLM docs, <a href="https://github.com/vllm-project/vllm/blob/main/docs/design/prefix_caching.md" target="_blank" rel="noopener noreferrer">Automatic Prefix Caching</a> (hash-based block caching design, <abbr data-tip="Least Recently Used eviction. When memory is full, the longest-untouched blocks go first.">LRU eviction</abbr>).</li>
-          <li id="source-14">vLLM docs, <a href="https://docs.vllm.ai/en/latest/models/supported_models.html" target="_blank" rel="noopener noreferrer">Supported Models</a> (200+ model architectures across decoder, MoE, multimodal, embedding).</li>
+          <li id="source-14">vLLM docs, <a href="https://docs.vllm.ai/en/latest/models/supported_models.html" target="_blank" rel="noopener noreferrer">Supported Models</a> (broad model coverage across decoder, MoE, multimodal, pooling, and embedding tasks).</li>
           <li id="source-15">vLLM project, <a href="https://github.com/vllm-project/media-kit" target="_blank" rel="noopener noreferrer">Media Kit</a> (official logo assets and brand colors).</li>
           <li id="source-16">vLLM docs, <a href="https://docs.vllm.ai/en/latest/deployment/integrations/kserve.html" target="_blank" rel="noopener noreferrer">Deploying with KServe</a> (Kubernetes-native serving integration).</li>
           <li id="source-17">Yu et al., <a href="https://www.usenix.org/conference/osdi22/presentation/yu" target="_blank" rel="noopener noreferrer">Orca: A Distributed Serving System for Transformer-Based Generative Models</a>, OSDI 2022 (iteration-level scheduling / continuous batching).</li>
           <li id="source-18">SGLang project, <a href="https://github.com/sgl-project/sglang" target="_blank" rel="noopener noreferrer">GitHub repository</a> (RadixAttention, structured outputs, hardware platform docs).</li>
           <li id="source-19">Artificial Analysis, <a href="https://artificialanalysis.ai/trends#open-source" target="_blank" rel="noopener noreferrer">Open Source Models: Progress in Open Weights vs. Proprietary Intelligence</a> (Intelligence Index trend data).</li>
-          <li id="source-20">Supplementary: Michael Hannecke, <a href="https://medium.com/@michael.hannecke/vllm-in-production-a-security-hardening-guide-for-enterprise-deployments-56a9c2c213dd" target="_blank" rel="noopener noreferrer">vLLM in Production: A Security Hardening Guide for Enterprise Deployments</a> (community blog; claims independently verified against the official vLLM security docs <a href="#source-28">[28]</a>).</li>
+          <li id="source-20">Hugging Face, <a href="https://raw.githubusercontent.com/huggingface/text-generation-inference/main/README.md" target="_blank" rel="noopener noreferrer">Text Generation Inference README</a> (maintenance-mode notice and recommendation to use vLLM, SGLang, llama.cpp, or MLX for new engine work).</li>
           <li id="source-21">Trevor Royer (Red Hat Developer), <a href="https://developers.redhat.com/articles/2026/03/03/practical-strategies-vllm-performance-tuning" target="_blank" rel="noopener noreferrer">Practical strategies for vLLM performance tuning</a> (GuideLLM, representative datasets, SLO-driven benchmarking).</li>
           <li id="source-22">vLLM Project, <a href="https://blog.vllm.ai/2025/01/21/stack-release.html" target="_blank" rel="noopener noreferrer">High Performance and Easy Deployment of vLLM in K8S with vLLM production-stack</a> (autoscaling, observability, prefix-aware routing, KV cache sharing).</li>
           <li id="source-23">Red Hat Developer, <a href="https://developers.redhat.com/articles/2025/06/20/guidellm-evaluate-llm-deployments-real-world-inference" target="_blank" rel="noopener noreferrer">GuideLLM: Evaluate LLM deployments for real-world inference</a> (load profiles, pre-deployment benchmarking, capacity planning).</li>
@@ -2585,6 +2549,7 @@ curl http://localhost:8000/v1/models</code></pre>
           <li id="source-28">vLLM Docs, <a href="https://docs.vllm.ai/en/latest/usage/security.html" target="_blank" rel="noopener noreferrer">Security</a> (inter-node communication, API key limitations, protected vs. unprotected endpoints, FIPS, SSRF, reverse proxy recommendations).</li>
           <li id="source-29">vLLM Project, <a href="https://blog.vllm.ai/2025/12/13/vllm-router-release.html" target="_blank" rel="noopener noreferrer">vLLM Router: A High-Performance and Prefill/Decode Aware Load Balancer</a> (consistent hashing, K8s service discovery, circuit breakers).</li>
           <li id="source-30">Red Hat Developer, <a href="https://developers.redhat.com/articles/2026/01/13/accelerate-multi-turn-workloads-llm-d" target="_blank" rel="noopener noreferrer">Accelerate multi-turn LLM workloads on OpenShift AI with llm-d intelligent routing</a> (KV-cache-aware routing for multi-replica vLLM).</li>
+          <li id="source-31">OpenAI, <a href="https://openai.com/api/pricing" target="_blank" rel="noopener noreferrer">API Pricing</a> (published per-token pricing used as an API baseline in the TCO section).</li>
         </ol>
       </div>
     </div>

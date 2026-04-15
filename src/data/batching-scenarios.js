@@ -166,7 +166,7 @@ export const batchingScenarios = {
       [{ name: 'Utilization', value: 'High' }, { name: 'TTFT', value: 'Stable' }, { name: 'Queue', value: 'Contained' }],
     ],
     takeaways: [
-      'Prompt-heavy traffic is exactly where chunked and continuous scheduling become visible to end users.',
+      'Prompt-heavy traffic is often where chunked and continuous scheduling become visible to end users.',
       'The continuous engine converts freed capacity into TTFT for queued users instead of making them wait for huge prefills.',
       'Static batching pays a queue penalty while the continuous scheduler has multiple prompt-heavy requests in flight.',
       'This points toward disaggregated prefill: when prompt pressure dominates, isolating prefill from decode is easier to justify.',

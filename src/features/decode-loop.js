@@ -157,7 +157,7 @@ export function init() {
     const maxProb = phase.candidates[0].prob;
     let html = '<div class="cand-header">';
     html += '<span class="cand-title">Sampling: top predictions</span>';
-    html += '<span class="cand-note">The model outputs a probability for every token in its vocabulary. The highest-probability token is selected.</span>';
+    html += '<span class="cand-note">The model outputs a probability distribution over next tokens. Greedy decoding picks the highest-probability token; sampling can choose another token from that distribution.</span>';
     html += '</div>';
     html += '<div class="cand-rows">';
 

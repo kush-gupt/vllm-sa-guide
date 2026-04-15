@@ -2,89 +2,97 @@ export const objections = [
   {
     id: 'openai',
     objection: 'We already use Cloud APIs',
-    response: 'Cloud APIs meter by token, so cost tracks every request. Data leaves your perimeter unless you buy isolated endpoints. vLLM serves an OpenAI-compatible API on hardware you run; most clients only change base URL and model id. See the <a href="#tco">TCO &amp; ROI</a> section for workload-specific cost modeling.',
+    response:
+      'Commercial APIs publish per-token pricing. Self-hosted vLLM changes that cost model: you pay for GPU capacity and operations you control, while keeping an OpenAI-compatible serving surface and choosing your own open-weight models.<a href="#source-31">[31]</a> <a href="#source-10">[10]</a>',
     keyPoints: [
-      'At scale, GPU capacity cost is often easier to cap than open-ended per-token bills',
-      'Data sovereignty: prompts and responses stay in your environment',
-      'Model flexibility: deploy open weights and fine-tune without vendor sign-off'
+      'OpenAI-compatible server: existing clients often only need a base URL and served model name change <a href="#source-10">[10]</a>',
+      'Inference traffic can stay on infrastructure you control when you self-host; secure it with the reverse-proxy and network-isolation guidance in the security docs <a href="#source-28">[28]</a>',
+      'Capacity cost, utilization, and operational overhead replace per-token provider billing in the cost model <a href="#source-21">[21]</a> <a href="#source-31">[31]</a>',
+      'Supported-model coverage stays under your team\'s control rather than the provider catalog <a href="#source-14">[14]</a>',
     ]
   },
   {
     id: 'gpu-expertise',
     objection: "We don't have GPU expertise",
-    response: 'KServe documents running vLLM on Kubernetes through its Hugging Face serving runtime or through LLMInferenceService, so platform teams reuse familiar rollouts, autoscaling, and traffic rules. You still size GPU nodes, install drivers, and plan capacity. Red Hat (OpenShift AI) and Anyscale (managed Ray and vLLM guides) publish supported deployment paths and commercial offerings; other vendors do too.',
+    response:
+      'KServe documents running vLLM on Kubernetes through its Hugging Face serving runtime or through LLMInferenceService, so platform teams can reuse familiar rollouts, autoscaling, and traffic controls. Red Hat also documents vLLM-based deployment paths on OpenShift AI and related tooling for packaging and benchmarking.<a href="#source-16">[16]</a> <a href="#source-24">[24]</a>',
     keyPoints: [
-      'KServe runs vLLM on Kubernetes through the Hugging Face serving runtime or LLMInferenceService',
-      'Standard Kubernetes patterns for autoscaling and routing apply to the serving workload',
-      'Commercial support is available from vendors including Red Hat (OpenShift AI) and Anyscale (Ray-based serving)'
+      'KServe supports vLLM through the Hugging Face serving runtime and through LLMInferenceService <a href="#source-16">[16]</a>',
+      'Standard Kubernetes patterns for autoscaling, routing, and health probes still apply to the serving workload',
+      'OpenShift AI docs show packaging, deployment, and benchmarking workflows built around vLLM <a href="#source-24">[24]</a>',
     ]
   },
   {
     id: 'enterprise-support',
     objection: 'We need enterprise support',
-    response: 'vLLM has multiple enterprise support options. The community publishes container images with vulnerability management, configurable hashing (including FIPS-friendly algorithms for multimodal inputs), and hardening guidance. Vendors like Red Hat ship certified images, support contracts, and production accountability on top of the open-source project.<a href="#source-10">[10]</a>',
+    response:
+      'vLLM publishes security guidance for reverse proxies, network isolation, API-key limitations, and SSRF controls. Enterprise offerings come from vendors building on the project, including Red Hat AI Inference Server and OpenShift AI deployment workflows.<a href="#source-28">[28]</a> <a href="#source-24">[24]</a>',
     keyPoints: [
-      'Community container images with vulnerability management; vendor-certified images available (e.g. Red Hat AI Inference Server)',
-      'FIPS-friendly hashing options (for example SHA-256 for multimodal content) and hardening guidance <a href="#source-10">[10]</a>',
-      'Vulnerability management and security patching',
-      'Dedicated support contacts for production issues'
+      'Do not rely on <code>--api-key</code> alone; the security guide explicitly recommends a reverse proxy and endpoint allowlisting <a href="#source-28">[28]</a>',
+      'Network isolation and media-domain controls are part of the documented production hardening guidance <a href="#source-28">[28]</a>',
+      'Red Hat documents packaging, deployment, and supportable workflows around vLLM-based serving <a href="#source-24">[24]</a>',
+      'Treat enterprise support as a vendor decision layered on top of the upstream project',
     ]
   },
   {
     id: 'model-quality',
     objection: "Open-source model quality isn't there yet",
-    response: 'The gap has largely closed. The Artificial Analysis Intelligence Index shows open-weights models converging with proprietary over 2024\u20132026; on individual benchmarks like MMLU, HumanEval, and MATH the strongest open-weights models now match or exceed proprietary baselines.<a href="#source-19">[19]</a> Current-generation families\u2014Llama 4, DeepSeek V3.2/R2, Qwen 3.5, Gemma 4, Mistral, and IBM Granite\u2014cover chat, RAG, coding, math, and multilingual workloads, and all load directly in vLLM.<a href="#source-14">[14]</a> Benchmark them on your own prompts and documents before you standardize.',
+    response:
+      'Open-weight model quality now spans many production workloads, but the frontier still moves quickly by task and release. Artificial Analysis tracks steady progress in open models, and the vLLM supported-model docs show that current Llama, Qwen, Mistral, Granite, DeepSeek, and other families are directly serveable in vLLM.<a href="#source-19">[19]</a> <a href="#source-14">[14]</a> Benchmark on your own prompts, documents, and evaluation sets before standardizing.',
     keyPoints: [
-      'Benchmark convergence: the Artificial Analysis Intelligence Index shows open-weights models converging with proprietary over 2024\u20132026; on MMLU, HumanEval, and MATH the best open-weights models match or surpass proprietary offerings <a href="#source-19">[19]</a>',
-      'Current model families all supported by vLLM: Llama 4 Maverick (400B MoE, 17B active, 1M-token context), DeepSeek R2 (32B dense, reported 92.7% AIME), Gemma 4 (Apache 2.0, 31B), Qwen 3.5 (MoE, multilingual), Mistral, IBM Granite <a href="#source-14">[14]</a>',
-      'Open-source reasoning models (DeepSeek R2, Gemma 4) rival proprietary reasoning systems on math and coding benchmarks',
-      'Self-hosted open-weights inference can run at substantially lower per-token cost than proprietary APIs, depending on utilization and workload',
-      'Fine-tuning on domain data routinely outperforms generic frontier checkpoints, and open weights make this possible without vendor approval',
-      'Evaluate with your own data, not only public leaderboards'
+      'Artificial Analysis tracks open-weight progress against proprietary systems over time <a href="#source-19">[19]</a>',
+      'vLLM supported-model docs list current open-weight families across text, multimodal, and pooling tasks <a href="#source-14">[14]</a>',
+      'Model quality should be validated on your domain data, not only on public leaderboards',
+      'Open weights give you deployment and fine-tuning flexibility when your policy allows it',
+      'Do not treat any single public leaderboard as a complete substitute for task-specific evaluation',
     ]
   },
   {
     id: 'already-using',
     objection: "We're already using TGI / TensorRT-LLM",
-    response: 'Both remain usable in their lanes. From TGI, migration is usually straightforward because vLLM loads the same Hugging Face checkpoints and serves an OpenAI-compatible API. From TensorRT-LLM, the main operational change is dropping the separate TensorRT engine build for models vLLM serves straight from weights.<a href="#source-10">[10]</a> Teams often switch for higher throughput under concurrency, hardware beyond NVIDIA-only fleets, or features such as disaggregated prefill, prefix caching, or expert parallelism.',
+    response:
+      'Hugging Face documents TGI as maintenance mode and recommends vLLM, SGLang, llama.cpp, or MLX for new engine work. TensorRT-LLM remains a strong NVIDIA-specific option. Teams usually pick vLLM when they want OpenAI-compatible serving, broad hardware coverage, and documented parallelism/disaggregation paths.<a href="#source-20">[20]</a> <a href="#source-10">[10]</a> <a href="#source-12">[12]</a>',
     keyPoints: [
-      'Loads Hugging Face models directly, no TensorRT engine build for typical vLLM flows',
-      'PagedAttention improves GPU memory utilization for batched KV state <a href="#source-9">[9]</a>',
-      'Broader accelerator support if the fleet is not all NVIDIA <a href="#source-10">[10]</a>',
-      'Large contributor base with frequent feature releases <a href="#source-10">[10]</a>'
+      'TGI is in maintenance mode and points users to newer engines including vLLM <a href="#source-20">[20]</a>',
+      'TensorRT-LLM is specialized for NVIDIA deployments <a href="#source-3">[3]</a>',
+      'vLLM covers broader hardware and organization-plugin support if your fleet is not all NVIDIA <a href="#source-10">[10]</a>',
+      'Parallelism and disaggregated-prefill docs are published in the official serving guides <a href="#source-12">[12]</a> <a href="#source-2">[2]</a>',
     ]
   },
   {
     id: 'cost-savings',
     objection: 'How much will this actually save us?',
-    response: 'The cost model shifts from per-token API billing to GPU capacity you control. The <a href="#tco">TCO &amp; ROI</a> section breaks down cost drivers across RAG chatbot, batch processing, and code assistant workloads. The exact savings depend on your request volume, prompt lengths, and current provider pricing.',
+    response:
+      'No universal savings number exists. The cost model shifts from per-token API billing to GPU capacity, utilization, and operational overhead you control. Use the TCO section plus GuideLLM and vLLM benchmarking to compute your own cost per million tokens or cost per request.<a href="#source-21">[21]</a> <a href="#source-23">[23]</a> <a href="#source-31">[31]</a>',
     keyPoints: [
-      'Per-token API costs grow linearly with traffic; GPU capacity costs can be capped with reserved instances or on-prem hardware',
-      'PagedAttention reduces wasted GPU memory, fitting more concurrent users on each GPU <a href="#source-9">[9]</a>',
-      'Self-hosted open-weights inference can run at substantially lower per-token cost than proprietary API pricing, depending on utilization and workload',
-      'Start with a pilot workload and compare your actual spend to current API bills'
+      'Compare measured throughput against published API pricing, not against generic industry averages <a href="#source-21">[21]</a> <a href="#source-31">[31]</a>',
+      'Prefix reuse, prompt length, and duty cycle change the economics as much as raw GPU price',
+      'Operational overhead matters; include monitoring, upgrades, and support in the model <a href="#source-22">[22]</a> <a href="#source-24">[24]</a>',
+      'Start with a representative pilot workload and use that measured output to size the production case',
     ]
   },
   {
     id: 'security-regulated',
     objection: 'Is this secure enough for regulated data?',
-    response: 'Self-hosted vLLM keeps all prompts and responses on your infrastructure\u2014nothing leaves your network perimeter. The <a href="#hardening">Production Hardening</a> section has the full security and resilience checklist covering reverse proxy, network isolation, FIPS, SSRF, and more.<a href="#source-28">[28]</a>',
+    response:
+      'Self-hosting lets you keep inference traffic on infrastructure you control, but the default deployment still needs hardening. The security guide calls for reverse proxying, network isolation, and SSRF controls rather than assuming the out-of-the-box server is production-safe.<a href="#source-28">[28]</a>',
     keyPoints: [
-      'Data sovereignty: prompts and completions never leave your environment when self-hosted',
-      'Full security checklist in the <a href="#hardening">Production Hardening</a> section <a href="#source-28">[28]</a>',
-      'FIPS-friendly hashing options available for multimodal content <a href="#source-10">[10]</a>',
-      'Vendor-certified images (e.g. Red Hat AI Inference Server) provide enterprise vulnerability management and patching'
+      'Place vLLM behind a reverse proxy; <code>--api-key</code> does not protect every endpoint <a href="#source-28">[28]</a>',
+      'Isolate inter-node traffic on trusted networks; multi-node communications are insecure by default <a href="#source-28">[28]</a>',
+      'Restrict media-fetch domains to reduce SSRF risk <a href="#source-28">[28]</a>',
+      'Use vendor workflows where needed for compliance, packaging, and support <a href="#source-24">[24]</a>',
     ]
   },
   {
     id: 'time-to-deploy',
     objection: 'How long does it take to get running?',
-    response: 'A basic vLLM deployment can serve requests within minutes. Run <code>vllm serve &lt;model&gt;</code> to start a local server with an OpenAI-compatible API. The <a href="#adoption">Adoption Playbook</a> maps the full path from POC to production in three phases with concrete exit criteria.',
+    response:
+      'A local proof of concept can start with <code>vllm serve &lt;model&gt;</code>, and the official docs cover the path into Kubernetes-based deployments with KServe. The <a href="#adoption">Adoption Playbook</a> maps that progression into POC, pilot, and production phases.<a href="#source-10">[10]</a> <a href="#source-16">[16]</a>',
     keyPoints: [
-      'Local: <code>vllm serve &lt;model&gt;</code> starts an OpenAI-compatible API server in minutes',
-      'Kubernetes: KServe integration and community Helm charts provide production-ready templates <a href="#source-16">[16]</a>',
-      'OpenAI-compatible API means existing client code usually only needs a base URL change',
-      'Full phased rollout plan in the <a href="#adoption">Adoption Playbook</a>'
+      'Local: <code>vllm serve &lt;model&gt;</code> starts an OpenAI-compatible API server for initial evaluation <a href="#source-10">[10]</a>',
+      'Kubernetes: KServe integration docs cover vLLM-based deployment patterns <a href="#source-16">[16]</a>',
+      'OpenAI-compatible serving means many clients only need a base URL and model-name change <a href="#source-10">[10]</a>',
+      'Full phased rollout plan in the <a href="#adoption">Adoption Playbook</a>',
     ]
-  }
+  },
 ];
